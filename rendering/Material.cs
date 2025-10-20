@@ -45,9 +45,6 @@ namespace Rendering
             nint fragmentShader;
 
             // Load Vertex shader
-            //byte[] vtxShader = vert;
-            //nuint vtxSize = (nuint)(sizeof(byte) * vtxShader.Length);
-
             ShaderCross.SPIRVInfo vertexInfo = new ShaderCross.SPIRVInfo();
             vertexInfo.ByteCode = vertPtr;
             vertexInfo.ByteCodeSize = vertSize;
@@ -61,9 +58,6 @@ namespace Rendering
             SDL.Free(vertexMetadataPtr);
 
             // Load Fragment shader
-            //byte[] fragShader = frag;
-            //nuint fragSize = (nuint)(sizeof(byte) * fragShader.Length);
-
             ShaderCross.SPIRVInfo fragInfo = new ShaderCross.SPIRVInfo();
             fragInfo.ByteCode = fragPtr;
             fragInfo.ByteCodeSize = fragSize;
@@ -75,6 +69,7 @@ namespace Rendering
             fragmentShader = ShaderCross.CompileGraphicsShaderFromSPIRV(App.GetDevice(), fragInfo, fragMetadata, 0);
             SDL.Free(fragMetadataPtr);
 
+            // Vertex buffer description
             SDL.GPUVertexBufferDescription[] vertexBufferDescriptions = [
                 new SDL.GPUVertexBufferDescription()
             ];
@@ -86,6 +81,7 @@ namespace Rendering
                 vertexBufferDescriptions[0].Pitch = (uint)sizeof(Vertex);
             }
 
+            // Pipeline info
             var pipelineInfo = new SDL.GPUGraphicsPipelineCreateInfo();
             pipelineInfo.VertexShader = vertexShader;
             pipelineInfo.FragmentShader = fragmentShader;
@@ -126,13 +122,15 @@ namespace Rendering
             SDL.ReleaseGPUShader(App.GetDevice(), fragmentShader);
         }
 
-        public void SetUniforms<Type>(Type uniforms)
+        public void SetUniformFloat(float[] uniforms)
         {
             unsafe
             {
-                Type* ptr = &uniforms;
-                uint len = (uint)sizeof(Type);
-                SDL.PushGPUFragmentUniformData(App.GetCommandBuffer(), 0, (nint)ptr, len);
+                fixed (float* ptr = &uniforms[0])
+                {
+                    uint len = (uint)(sizeof(float) * uniforms.Length);
+                    SDL.PushGPUFragmentUniformData(App.GetCommandBuffer(), 0, (nint)ptr, len);
+                }
             }
         }
     }

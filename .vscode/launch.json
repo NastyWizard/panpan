@@ -5,8 +5,7 @@
             "name": "C#: dotnettest Debug",
             "type": "dotnet",
             "request": "launch",
-            "projectPath": "${workspaceFolder}/dotnettest.csproj",
-            "preLaunchTask": "assets"
+            "projectPath": "${workspaceFolder}/dotnettest.csproj"
         }
 
     ]

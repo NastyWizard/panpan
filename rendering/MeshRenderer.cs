@@ -16,6 +16,7 @@ namespace Rendering
         struct Uniforms
         {
             public float time;
+            public float[] color; 
         }
         public void Draw(nint renderPass)
         {
@@ -26,9 +27,15 @@ namespace Rendering
             gpuBufferBindings[0].Offset = 0;
 
             SDL.BindGPUVertexBuffers(renderPass, 0, gpuBufferBindings, 1);
-            // Uniforms unf = new Uniforms();
-            // unf.time = SDL.GetTicks() / 1000.0f;
-            // material.SetUniforms<Uniforms>(unf);
+
+            float[] uniforms = new float[8] {
+                // time
+                SDL.GetTicks() / 1000.0f,
+                0.0f, 0.0f, 0.0f, // padding
+                // color
+                0.0f, 1.0f, 1.0f, 1.0f
+            };
+            material.SetUniformFloat(uniforms);
 
             SDL.DrawGPUPrimitives(renderPass, 3, 1, 0, 0);
         }
