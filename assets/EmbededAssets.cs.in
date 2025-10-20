@@ -1,0 +1,18 @@
+using Game;
+namespace Assets
+{
+    public class Shaders
+    {
+        @SHADER_ASSETS@
+    }
+
+    public class Sprites
+    {
+        @SPRITE_ASSETS@
+    }
+
+    public class Audio
+    {
+        @AUDIO_ASSETS@
+    }
+}
