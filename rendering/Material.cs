@@ -90,7 +90,7 @@ namespace Rendering
             pipelineInfo.VertexInputState.VertexBufferDescriptions = SDL.StructureArrayToPointer(vertexBufferDescriptions);
 
             // Vertex attributes
-            SDL.GPUVertexAttribute[] vertexAttributes = new SDL.GPUVertexAttribute[2];
+            SDL.GPUVertexAttribute[] vertexAttributes = new SDL.GPUVertexAttribute[3];
 
             // a_position
             vertexAttributes[0] = new SDL.GPUVertexAttribute();
@@ -106,7 +106,14 @@ namespace Rendering
             vertexAttributes[1].Format = SDL.GPUVertexElementFormat.Float4;
             vertexAttributes[1].Offset = sizeof(float) * 3;
 
-            pipelineInfo.VertexInputState.NumVertexAttributes = 2;
+            // a_uv
+            vertexAttributes[2] = new SDL.GPUVertexAttribute();
+            vertexAttributes[2].BufferSlot = 0;
+            vertexAttributes[2].Location = 2;
+            vertexAttributes[2].Format = SDL.GPUVertexElementFormat.Float2;
+            vertexAttributes[2].Offset = sizeof(float) * 3 + sizeof(float) * 4;
+
+            pipelineInfo.VertexInputState.NumVertexAttributes = 3;
             pipelineInfo.VertexInputState.VertexAttributes = SDL.StructureArrayToPointer(vertexAttributes);
 
             SDL.GPUColorTargetDescription[] colorTargetDescriptions = new SDL.GPUColorTargetDescription[1];

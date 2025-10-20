@@ -77,7 +77,6 @@ namespace Game
         internal bool Init()
         {
             var mat = new Material(Assets.Shaders.standard_frag_hlsl, Assets.Shaders.standard_vert_hlsl);
-
             meshTest = new MeshRenderer(Shapes.quad, mat);
             return true;
         }

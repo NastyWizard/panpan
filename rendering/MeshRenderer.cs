@@ -12,12 +12,6 @@ namespace Rendering
             mesh = _mesh;
             material = _mat;
         }
-
-        struct Uniforms
-        {
-            public float time;
-            public float[] color; 
-        }
         public void Draw(nint renderPass)
         {
             SDL.BindGPUGraphicsPipeline(renderPass, material.Pipeline);
