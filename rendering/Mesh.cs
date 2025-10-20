@@ -11,65 +11,129 @@ namespace Rendering
         {
             get { return vertexBuffer; }
         }
-        public nint TransferBuffer
+
+        public nint IndexBuffer
         {
-            get { return transferBuffer; }
+            get { return indexBuffer; }
+        }
+
+        public uint NumIndices
+        {
+            get { return (uint)indices.Length; }
         }
 
         private nint vertexBuffer;
-        private nint transferBuffer;
+        private nint indexBuffer;
+        private nint vertexTransferBuffer;
+        private nint indexTransferBuffer;
         private Vertex[] vertices;
-        private uint size;
+        private uint[] indices;
+        private uint vertexSize;
+        private uint indexSize;
 
-        public Mesh(in Vertex[] _vertices)
+        public Mesh(in Vertex[] _vertices, in uint[] _indices)
         {
-            unsafe
-            {
-                vertices = _vertices;
-
-                var vSize = sizeof(Vertex);
-                size = (uint)(vSize * vertices.Length);
-                
-                SDL.GPUBufferCreateInfo bufferInfo = new SDL.GPUBufferCreateInfo();
-                bufferInfo.Size = size;
-                bufferInfo.Usage = SDL.GPUBufferUsageFlags.Vertex;
-                vertexBuffer = SDL.CreateGPUBuffer(App.GetDevice(), bufferInfo);
-
-                SDL.GPUTransferBufferCreateInfo transferInfo = new SDL.GPUTransferBufferCreateInfo();
-                transferInfo.Size = size;
-                transferInfo.Usage = SDL.GPUTransferBufferUsage.Upload;
-                transferBuffer = SDL.CreateGPUTransferBuffer(App.GetDevice(), transferInfo);
-
-                Vertex* data = (Vertex*)SDL.MapGPUTransferBuffer(App.GetDevice(), transferBuffer, false);
-                fixed (Vertex* inData = vertices)
-                {
-                    Buffer.MemoryCopy(inData, data, size, size);
-                }
-                SDL.UnmapGPUTransferBuffer(App.GetDevice(), transferBuffer);
-            }
+            HandleVerticies(_vertices);
+            HandleIndices(_indices);
+            CopyPass();
         }
 
         ~Mesh()
         {
             SDL.ReleaseGPUBuffer(App.GetDevice(), vertexBuffer);
-            SDL.ReleaseGPUTransferBuffer(App.GetDevice(), transferBuffer);
+            SDL.ReleaseGPUBuffer(App.GetDevice(), indexBuffer);
+            SDL.ReleaseGPUTransferBuffer(App.GetDevice(), vertexTransferBuffer);
+            SDL.ReleaseGPUTransferBuffer(App.GetDevice(), indexTransferBuffer);
         }
 
-        public void CopyPass()
+
+        private void HandleVerticies(in Vertex[] _vertices)
+        {
+            vertices = _vertices;
+
+            unsafe
+            {
+                var vSize = sizeof(Vertex);
+                vertexSize = (uint)(vSize * vertices.Length);
+            }
+
+            // Vertex Buff
+            SDL.GPUBufferCreateInfo vertexBufferInfo = new SDL.GPUBufferCreateInfo();
+            vertexBufferInfo.Size = vertexSize;
+            vertexBufferInfo.Usage = SDL.GPUBufferUsageFlags.Vertex;
+            vertexBuffer = SDL.CreateGPUBuffer(App.GetDevice(), vertexBufferInfo);
+
+            // Transfer buffer
+            SDL.GPUTransferBufferCreateInfo transferInfo = new SDL.GPUTransferBufferCreateInfo();
+            transferInfo.Size = vertexSize;
+            transferInfo.Usage = SDL.GPUTransferBufferUsage.Upload;
+            vertexTransferBuffer = SDL.CreateGPUTransferBuffer(App.GetDevice(), transferInfo);
+
+            unsafe
+            {
+                Vertex* data = (Vertex*)SDL.MapGPUTransferBuffer(App.GetDevice(), vertexTransferBuffer, false);
+                fixed (Vertex* inData = vertices)
+                {
+                    Buffer.MemoryCopy(inData, data, vertexSize, vertexSize);
+                }
+            }
+            SDL.UnmapGPUTransferBuffer(App.GetDevice(), vertexTransferBuffer);
+        }
+
+        private void HandleIndices(in uint[] _indicies)
+        {
+            indices = _indicies;
+            indexSize = (uint)(sizeof(uint) * _indicies.Length);
+            // Index Buffer
+            SDL.GPUBufferCreateInfo indexBufferInfo = new SDL.GPUBufferCreateInfo();
+            indexBufferInfo.Size = indexSize;
+            indexBufferInfo.Usage = SDL.GPUBufferUsageFlags.Index;
+            indexBuffer = SDL.CreateGPUBuffer(App.GetDevice(), indexBufferInfo);
+
+            // Transfer buffer
+            SDL.GPUTransferBufferCreateInfo transferInfo = new SDL.GPUTransferBufferCreateInfo();
+            transferInfo.Size = indexSize;
+            transferInfo.Usage = SDL.GPUTransferBufferUsage.Upload;
+            indexTransferBuffer = SDL.CreateGPUTransferBuffer(App.GetDevice(), transferInfo);
+
+            unsafe
+            {
+                uint* data = (uint*)SDL.MapGPUTransferBuffer(App.GetDevice(), indexTransferBuffer, false);
+                fixed (uint* inData = indices)
+                {
+                    Buffer.MemoryCopy(inData, data, indexSize, indexSize);
+                }
+            }
+            SDL.UnmapGPUTransferBuffer(App.GetDevice(), indexTransferBuffer);
+        }
+        private void CopyPass()
         {
             var commandBuffer = SDL.AcquireGPUCommandBuffer(App.GetDevice());
             var copyPass = SDL.BeginGPUCopyPass(commandBuffer);
 
-            SDL.GPUTransferBufferLocation location = new SDL.GPUTransferBufferLocation();
-            location.TransferBuffer = TransferBuffer;
-            location.Offset = 0;
+            // Upload Verticies
+            SDL.GPUTransferBufferLocation vertexLocation = new SDL.GPUTransferBufferLocation();
+            vertexLocation.TransferBuffer = vertexTransferBuffer;
+            vertexLocation.Offset = 0;
 
-            SDL.GPUBufferRegion region = new SDL.GPUBufferRegion();
-            region.Buffer = VertexBuffer;
-            region.Size = size;
-            region.Offset = 0;
+            SDL.GPUBufferRegion vertexRegion = new SDL.GPUBufferRegion();
+            vertexRegion.Buffer = vertexBuffer;
+            vertexRegion.Size = vertexSize;
+            vertexRegion.Offset = 0;
 
-            SDL.UploadToGPUBuffer(copyPass, location, region, true);
+            SDL.UploadToGPUBuffer(copyPass, vertexLocation, vertexRegion, true);
+
+            // Upload Indices
+            SDL.GPUTransferBufferLocation indexLocation = new SDL.GPUTransferBufferLocation();
+            indexLocation.TransferBuffer = indexTransferBuffer;
+            indexLocation.Offset = 0;
+
+            SDL.GPUBufferRegion indexRegion = new SDL.GPUBufferRegion();
+            indexRegion.Buffer = indexBuffer;
+            indexRegion.Size = indexSize;
+            indexRegion.Offset = 0;
+
+            SDL.UploadToGPUBuffer(copyPass, indexLocation, indexRegion, true);
 
             SDL.EndGPUCopyPass(copyPass);
             SDL.SubmitGPUCommandBuffer(commandBuffer);

@@ -20,13 +20,17 @@ namespace Rendering
         }
         public void Draw(nint renderPass)
         {
-            mesh.CopyPass();
             SDL.BindGPUGraphicsPipeline(renderPass, material.Pipeline);
-            SDL.GPUBufferBinding[] gpuBufferBindings = new SDL.GPUBufferBinding[1];
-            gpuBufferBindings[0].Buffer = mesh.VertexBuffer;
-            gpuBufferBindings[0].Offset = 0;
+            SDL.GPUBufferBinding[] vertexBufferBindings = new SDL.GPUBufferBinding[1];
+            vertexBufferBindings[0].Buffer = mesh.VertexBuffer;
+            vertexBufferBindings[0].Offset = 0;
 
-            SDL.BindGPUVertexBuffers(renderPass, 0, gpuBufferBindings, 1);
+            SDL.GPUBufferBinding indexBufferBinding = new SDL.GPUBufferBinding();
+            indexBufferBinding.Buffer = mesh.IndexBuffer;
+            indexBufferBinding.Offset = 0;
+
+            SDL.BindGPUVertexBuffers(renderPass, 0, vertexBufferBindings, 1);
+            SDL.BindGPUIndexBuffer(renderPass, indexBufferBinding, SDL.GPUIndexElementSize.IndexElementSize32Bit);
 
             float[] uniforms = new float[8] {
                 // time
@@ -37,7 +41,7 @@ namespace Rendering
             };
             material.SetUniformFloat(uniforms);
 
-            SDL.DrawGPUPrimitives(renderPass, 3, 1, 0, 0);
+            SDL.DrawGPUIndexedPrimitives(renderPass, mesh.NumIndices, 1, 0, 0, 0);
         }
     }
 }

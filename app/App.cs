@@ -76,14 +76,9 @@ namespace Game
 
         internal bool Init()
         {
-            var mesh = new Mesh([
-                new Vertex(0.0f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f),
-                new Vertex(-0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f),
-                new Vertex(0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f),
-            ]);
             var mat = new Material(Assets.Shaders.standard_frag_hlsl, Assets.Shaders.standard_vert_hlsl);
 
-            meshTest = new MeshRenderer(mesh, mat);
+            meshTest = new MeshRenderer(Shapes.quad, mat);
             return true;
         }
 
