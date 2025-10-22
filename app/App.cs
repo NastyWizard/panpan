@@ -78,6 +78,10 @@ namespace Game
         {
             var mat = new Material(Assets.Shaders.standard_frag_hlsl, Assets.Shaders.standard_vert_hlsl);
             meshTest = new MeshRenderer(Shapes.quad, mat);
+            meshTest.SetTexture(new Texture(Assets.Sprites.test, 72, 72));
+
+            meshTest.Init();
+            
             return true;
         }
 

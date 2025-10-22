@@ -1,4 +1,5 @@
 
+using Game;
 using SDL3;
 
 namespace Rendering
@@ -26,6 +27,8 @@ namespace Rendering
             SDL.BindGPUVertexBuffers(renderPass, 0, vertexBufferBindings, 1);
             SDL.BindGPUIndexBuffer(renderPass, indexBufferBinding, SDL.GPUIndexElementSize.IndexElementSize32Bit);
 
+            material.UseTexture(renderPass);
+
             float[] uniforms = new float[8] {
                 // time
                 SDL.GetTicks() / 1000.0f,
@@ -36,6 +39,29 @@ namespace Rendering
             material.SetUniformFloat(uniforms);
 
             SDL.DrawGPUIndexedPrimitives(renderPass, mesh.NumIndices, 1, 0, 0, 0);
+        }
+
+        public void Init()
+        {
+            CopyPass();
+        }
+
+        public void SetTexture(Texture tex)
+        {
+            material.SetTexture(tex);
+        }
+
+        private void CopyPass()
+        {
+            var commandBuffer = SDL.AcquireGPUCommandBuffer(App.GetDevice());
+            var copyPass = SDL.BeginGPUCopyPass(commandBuffer);
+            
+            mesh.CopyPass(copyPass);
+            if (material.Texture != null)
+                material.Texture.CopyPass(copyPass);
+            
+            SDL.EndGPUCopyPass(copyPass);
+            SDL.SubmitGPUCommandBuffer(commandBuffer);
         }
     }
 }

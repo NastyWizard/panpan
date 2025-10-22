@@ -16,7 +16,7 @@ VertexOutput main(VertexInput input)
 {
     VertexOutput output;
     output.position = float4(input.position, 1.0f);
-    output.color = input.color;
+    output.color = float4(1.0f,1.0f,1.0f,1.0f);//input.color;
     output.uv = input.uv;
     return output;
 }

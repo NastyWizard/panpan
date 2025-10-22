@@ -1,4 +1,5 @@
 
+using System.ComponentModel;
 using System.IO.Pipelines;
 using System.Runtime.InteropServices;
 using Game;
@@ -9,6 +10,8 @@ namespace Rendering
     public class Material
     {
         nint pipeline;
+        Texture? texture;
+        public Texture? Texture => texture;
         public nint Pipeline
         {
             get { return pipeline; }
@@ -136,11 +139,26 @@ namespace Rendering
                 fixed (float* ptr = &uniforms[0])
                 {
                     uint len = (uint)(sizeof(float) * uniforms.Length);
-                    SDL.PushGPUFragmentUniformData(App.GetCommandBuffer(), 0, (nint)ptr, len);
+                    SDL.PushGPUFragmentUniformData(App.GetCommandBuffer(), 1, (nint)ptr, len);
                 }
             }
         }
 
+        public void SetTexture(Texture tex)
+        {
+            texture = tex;
+        }
+
+        public void UseTexture(nint renderPass)
+        {
+            if (texture == null)
+                return;
+
+            SDL.GPUTextureSamplerBinding[] bindings = new SDL.GPUTextureSamplerBinding[1];
+            bindings[0].Texture = texture.GPUTexture;
+            bindings[0].Sampler = texture.GPUSampler;
+            SDL.BindGPUFragmentSamplers(renderPass, 0, bindings, 1);
+        }
         
     }
 }

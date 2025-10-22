@@ -35,7 +35,7 @@ namespace Rendering
         {
             HandleVerticies(_vertices);
             HandleIndices(_indices);
-            CopyPass();
+            //CopyPass();
         }
 
         ~Mesh()
@@ -106,11 +106,8 @@ namespace Rendering
             }
             SDL.UnmapGPUTransferBuffer(App.GetDevice(), indexTransferBuffer);
         }
-        private void CopyPass()
+        public void CopyPass(nint copyPass)
         {
-            var commandBuffer = SDL.AcquireGPUCommandBuffer(App.GetDevice());
-            var copyPass = SDL.BeginGPUCopyPass(commandBuffer);
-
             // Upload Verticies
             SDL.GPUTransferBufferLocation vertexLocation = new SDL.GPUTransferBufferLocation();
             vertexLocation.TransferBuffer = vertexTransferBuffer;
@@ -134,9 +131,6 @@ namespace Rendering
             indexRegion.Offset = 0;
 
             SDL.UploadToGPUBuffer(copyPass, indexLocation, indexRegion, true);
-
-            SDL.EndGPUCopyPass(copyPass);
-            SDL.SubmitGPUCommandBuffer(commandBuffer);
         }
     }
 }

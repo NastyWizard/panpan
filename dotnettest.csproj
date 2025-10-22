@@ -17,6 +17,7 @@
     <None Include="/Users/caseymacneil/dev/SDL_shadercross/build/libSDL3_shadercross.dylib">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <PackageReference Include="StbImageSharp" Version="2.30.15" />
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
