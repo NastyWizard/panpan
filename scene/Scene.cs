@@ -22,6 +22,7 @@ namespace panpan.Scene
 
         public virtual void Init()
         {
+            camera.Init();
             foreach (Entity ent in entities)
             {
                 ent.Init();
@@ -30,6 +31,7 @@ namespace panpan.Scene
 
         public virtual void Update()
         {
+            camera.Update();
             foreach (Entity ent in entities)
             {
                 ent.Update();
@@ -37,7 +39,7 @@ namespace panpan.Scene
         }
         public virtual void Render(nint renderPass)
         {
-            //camera.PushUniformData();
+            camera.PushUniformData();
             foreach (Entity ent in entities)
             {
                 ent.Render(renderPass);

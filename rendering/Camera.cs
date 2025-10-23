@@ -22,8 +22,8 @@ namespace panpan.Rendering
 
         public override void Init()
         {
-            Position = vec3.Zero;
-            projection = mat4.Ortho(-width / 2, width / 2, -height / 2, height / 2);
+            Position = vec3.UnitZ;
+            projection = mat4.Ortho(-width / 2, width / 2, -height / 2, height / 2, 0.1f, 100.0f);
             Update();
             base.Init();
         }
@@ -31,9 +31,8 @@ namespace panpan.Rendering
         public override void Update()
         {
             base.Update();
-            mat4 view = mat4.LookAt(Position, Position + vec3.UnitZ, vec3.UnitY);
-            viewProjection = projection * view;
-            viewProjection = mat4.Identity;
+            mat4 view = mat4.LookAt(Position, Position - vec3.UnitZ, vec3.UnitY);
+            viewProjection = (projection * view).Transposed;
         }
 
         public void PushUniformData()

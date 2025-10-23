@@ -28,7 +28,7 @@ namespace panpan.Rendering
 
             SDL.BindGPUVertexBuffers(renderPass, 0, vertexBufferBindings, 1);
             SDL.BindGPUIndexBuffer(renderPass, indexBufferBinding, SDL.GPUIndexElementSize.IndexElementSize32Bit);
-
+    
             material.UseTexture(renderPass);
 
             float[] uniforms = new float[8] {
@@ -39,6 +39,8 @@ namespace panpan.Rendering
                 0.0f, 1.0f, 1.0f, 1.0f
             };
             material.SetUniformFloat(uniforms);
+
+            //Parent.Scene.Camera.PushUniformData();
 
             SDL.DrawGPUIndexedPrimitives(renderPass, mesh.NumIndices, 1, 0, 0, 0);
             
