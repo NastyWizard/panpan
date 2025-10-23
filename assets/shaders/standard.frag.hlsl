@@ -16,6 +16,8 @@ SamplerState mainSampler : register(s0);
 float4 main(FragInput input) : SV_TARGET
 {
     float4 col = mainTexture.Sample(mainSampler, input.uv);
+    if(col.a < 0.1)
+        discard;
     //col.r = sin(time + input.uv.x);
     return col;
 }

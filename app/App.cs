@@ -23,6 +23,7 @@ namespace panpan
         static nint commandBuffer;
 
         static SceneManager sceneManager;
+        static Input inputManager;
         
         MeshRenderer? meshTest;
 
@@ -85,6 +86,7 @@ namespace panpan
         internal bool Init()
         {
             sceneManager = new SceneManager(new TestScene());
+            inputManager = new panpan.Input();
             return true;
         }
 
@@ -102,7 +104,9 @@ namespace panpan
                     {
                         tokenSource.Cancel();
                     }
+                    Input.HandleEvents(evt);
                 }
+                Input.Update();
 
                 Update();
                 Render();
