@@ -1,8 +1,8 @@
 using System.Runtime.InteropServices;
-using Game;
+using panpan;
 using SDL3;
 
-namespace Rendering
+namespace panpan.Rendering
 {
     public class Mesh
     {

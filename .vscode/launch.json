@@ -2,10 +2,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "C#: dotnettest Debug",
+            "name": "C#: panpan Debug",
             "type": "dotnet",
             "request": "launch",
-            "projectPath": "${workspaceFolder}/dotnettest.csproj"
+            "projectPath": "${workspaceFolder}/panpan.csproj"
         }
 
     ]

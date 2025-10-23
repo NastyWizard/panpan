@@ -1,10 +1,12 @@
 
-using Game;
+using System.ComponentModel;
+using panpan;
+using panpan.Scene;
 using SDL3;
 
-namespace Rendering
+namespace panpan.Rendering
 {
-    public class MeshRenderer
+    public class MeshRenderer : Scene.Component
     {
         private Mesh mesh;
         private Material material;
@@ -13,7 +15,7 @@ namespace Rendering
             mesh = _mesh;
             material = _mat;
         }
-        public void Draw(nint renderPass)
+        public override void Render(nint renderPass)
         {
             SDL.BindGPUGraphicsPipeline(renderPass, material.Pipeline);
             SDL.GPUBufferBinding[] vertexBufferBindings = new SDL.GPUBufferBinding[1];
@@ -39,11 +41,15 @@ namespace Rendering
             material.SetUniformFloat(uniforms);
 
             SDL.DrawGPUIndexedPrimitives(renderPass, mesh.NumIndices, 1, 0, 0, 0);
+            
+            base.Render(renderPass);
         }
 
-        public void Init()
+        public override void Init()
         {
             CopyPass();
+
+            base.Init();
         }
 
         public void SetTexture(Texture tex)

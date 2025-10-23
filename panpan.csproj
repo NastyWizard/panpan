@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="GlmSharp" Version="0.9.8" />
     <PackageReference Include="SDL3-CS" Version="3.2.24" />
     <PackageReference Include="SDL3-CS.Native" Version="3.2.24" />
     <PackageReference Include="SDL3-CS.Native.Image" Version="3.2.4" />

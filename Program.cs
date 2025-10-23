@@ -1,4 +1,4 @@
-﻿using Game;
+﻿using panpan;
 
 internal class Program
 {

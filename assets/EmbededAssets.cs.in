@@ -1,5 +1,5 @@
-using Game;
-namespace Assets
+using panpan;
+namespace panpan.Assets
 {
     public class Shaders
     {

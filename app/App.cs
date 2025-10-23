@@ -1,9 +1,11 @@
 using SDL3;
 using System.Runtime.InteropServices;
 
-using Rendering;
+using panpan.Rendering;
+using panpan.Assets;
+using panpan.Scene;
 
-namespace Game
+namespace panpan
 {
     enum Platform
     {
@@ -20,6 +22,8 @@ namespace Game
         static nint window;
         static nint commandBuffer;
 
+        static SceneManager sceneManager;
+        
         MeshRenderer? meshTest;
 
         public App()
@@ -73,15 +77,14 @@ namespace Game
         {
             return commandBuffer;
         }
+        public static SceneManager GetSceneManager()
+        {
+            return sceneManager;
+        }
 
         internal bool Init()
         {
-            var mat = new Material(Assets.Shaders.standard_frag_hlsl, Assets.Shaders.standard_vert_hlsl);
-            meshTest = new MeshRenderer(Shapes.quad, mat);
-            meshTest.SetTexture(new Texture(Assets.Sprites.test, 72, 72));
-
-            meshTest.Init();
-            
+            sceneManager = new SceneManager(new TestScene());
             return true;
         }
 
@@ -114,7 +117,7 @@ namespace Game
 
         public void Update()
         {
-
+            sceneManager.ActiveScene.Update();
         }
 
         public void Render()
@@ -152,8 +155,7 @@ namespace Game
                 );
                 Marshal.FreeHGlobal(ptr);
 
-                // Draw
-                meshTest.Draw(renderPass);
+                sceneManager.ActiveScene.Render(renderPass);
 
 
                 SDL.EndGPURenderPass(renderPass);

@@ -1,9 +1,9 @@
 
-using Game;
+using panpan;
 using SDL3;
 using StbImageSharp;
 
-namespace Rendering
+namespace panpan.Rendering
 {
     public class Texture
     {

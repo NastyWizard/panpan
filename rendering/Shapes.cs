@@ -1,5 +1,5 @@
 
-namespace Rendering
+namespace panpan.Rendering
 {
 
     public static class Shapes

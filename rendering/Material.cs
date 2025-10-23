@@ -1,11 +1,11 @@
-
 using System.ComponentModel;
 using System.IO.Pipelines;
 using System.Runtime.InteropServices;
-using Game;
+using panpan;
+using panpan.Assets;
 using SDL3;
 
-namespace Rendering
+namespace panpan.Rendering
 {
     public class Material
     {
