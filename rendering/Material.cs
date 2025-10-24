@@ -10,8 +10,6 @@ namespace panpan.Rendering
     public class Material
     {
         nint pipeline;
-        Texture? texture;
-        public Texture? Texture => texture;
         public nint Pipeline
         {
             get { return pipeline; }
@@ -142,22 +140,6 @@ namespace panpan.Rendering
                     SDL.PushGPUFragmentUniformData(App.GetCommandBuffer(), 1, (nint)ptr, len);
                 }
             }
-        }
-
-        public void SetTexture(Texture tex)
-        {
-            texture = tex;
-        }
-
-        public void UseTexture(nint renderPass)
-        {
-            if (texture == null)
-                return;
-
-            SDL.GPUTextureSamplerBinding[] bindings = new SDL.GPUTextureSamplerBinding[1];
-            bindings[0].Texture = texture.GPUTexture;
-            bindings[0].Sampler = texture.GPUSampler;
-            SDL.BindGPUFragmentSamplers(renderPass, 0, bindings, 1);
         }
         
     }

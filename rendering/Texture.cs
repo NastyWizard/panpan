@@ -147,6 +147,14 @@ namespace panpan.Rendering
             return;
         }
 
+        public void BindTexture(nint renderPass)
+        {
+            SDL.GPUTextureSamplerBinding[] bindings = new SDL.GPUTextureSamplerBinding[1];
+            bindings[0].Texture = GPUTexture;
+            bindings[0].Sampler = GPUSampler;
+            SDL.BindGPUFragmentSamplers(renderPass, 0, bindings, 1);
+        }
+
         public void Dispose()
         {
             if (gpuSampler != nint.Zero)

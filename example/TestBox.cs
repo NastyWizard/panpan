@@ -9,13 +9,10 @@ namespace panpanExample
 {
     public class TestBox : Entity
     {
-        MeshRenderer renderer;
+        SpriteRenderer renderer;
         public override void Init()
         {
-            renderer = (MeshRenderer)AddComponent(new MeshRenderer(Shapes.quad, new Material()));
-            renderer.SetTexture(new Texture(Sprites.test, 72, 72));
-            Scale.x = 72;
-            Scale.y = 72;
+            renderer = (SpriteRenderer)AddComponent(new SpriteRenderer(new Texture(Sprites.test, 72, 72)));
             Input.RegisterOnKeyHeld(OnKeyHeld);
             base.Init();
         }
@@ -30,10 +27,12 @@ namespace panpanExample
             if (e == SDL.Keycode.Left)
             {
                 Position.x -= 5;
+                Scale.x = 1;
             }
             if (e == SDL.Keycode.Right)
             {
                 Position.x += 5;    
+                Scale.x = -1;
             }
         }
     }
