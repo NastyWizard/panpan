@@ -4,35 +4,74 @@ using panpan.Scene;
 using panpan.Assets;
 using SDL3;
 using panpan;
+using GlmSharp;
 
 namespace panpanExample
 {
     public class TestBox : Entity
     {
         SpriteRenderer renderer;
+        vec2 speed;
+        float grav = 0.3f;
         public override void Init()
         {
-            renderer = (SpriteRenderer)AddComponent(new SpriteRenderer(new Texture(Sprites.test, 72, 72)));
+            Position.x = 320 / 2;
+            speed = vec2.Zero;
+            renderer = (SpriteRenderer)AddComponent(new SpriteRenderer(new Texture(Sprites.test, 16, 16)));
+            renderer.Origin = new vec2(0f, -1f);
             Input.RegisterOnKeyHeld(OnKeyHeld);
+            Input.RegisterOnKeyDown(OnKeyDown);
             base.Init();
         }
 
         public override void Update()
         {
+            // TODO replace with move / colision func
+
+            if (Position.y + speed.y < 0)
+            {
+                Position.y = 0;
+                speed.y = 0;
+            }
+
+            Position.xy += speed;
+
+            speed.x = 0;
+            speed.y -= grav;
+            Position.x = Input.MousePosition.x;
+            Position.y = Input.MousePosition.y;
+
             base.Update();
         }
 
-        private void OnKeyHeld(SDL.Keycode? e)
+        public override void Render(nint renderPass)
         {
-            if (e == SDL.Keycode.Left)
+            base.Render(renderPass);
+
+            Draw.Line(Position.xy, Input.MousePosition);
+        }
+
+        private void OnKeyHeld(SDL.Keycode? k)
+        {
+            if (k == SDL.Keycode.Left)
             {
-                Position.x -= 5;
+                speed.x = -5;
                 Scale.x = 1;
             }
-            if (e == SDL.Keycode.Right)
+            if (k == SDL.Keycode.Right)
             {
-                Position.x += 5;    
+                speed.x = 5;
                 Scale.x = -1;
+            }
+
+        }
+
+        private void OnKeyDown(SDL.Keycode? k)
+        {
+            
+            if (k == SDL.Keycode.Z)
+            {
+                speed.y = 5;
             }
         }
     }

@@ -23,6 +23,15 @@ namespace panpan.Rendering
                 1, 2, 3  // second triangle
             ]
         );
+        public static Mesh line = new Mesh([
+                //         x       y     z     r   g   b   a   u   v
+                new Vertex(0.0f,  1.0f, 0.0f, 1f, 1f, 1f, 1f, 0f, 0f), // top
+                new Vertex(0.0f,  0.0f, 0.0f, 1f, 1f, 1f, 1f, 0f, 1f), // bottom
+            ],
+            [
+                0, 1
+            ]
+        );
     }
 
 }

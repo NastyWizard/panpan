@@ -137,7 +137,7 @@ namespace panpan.Rendering
                 fixed (float* ptr = &uniforms[0])
                 {
                     uint len = (uint)(sizeof(float) * uniforms.Length);
-                    SDL.PushGPUFragmentUniformData(App.GetCommandBuffer(), 1, (nint)ptr, len);
+                    SDL.PushGPUFragmentUniformData(App.GetCommandBuffer(), 0, (nint)ptr, len);
                 }
             }
         }

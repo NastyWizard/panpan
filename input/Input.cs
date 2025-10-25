@@ -1,4 +1,5 @@
 
+using GlmSharp;
 using SDL3;
 
 namespace panpan
@@ -10,7 +11,9 @@ namespace panpan
         public static Dictionary<string, InputDelegate> keyUpEvents = new Dictionary<string, InputDelegate>();
         public static Dictionary<string, InputDelegate> keyHeldEvents = new Dictionary<string, InputDelegate>();
 
-        private static Dictionary<SDL.Keycode, bool> keysCurrentlyDown= new Dictionary<SDL.Keycode, bool>();
+        private static Dictionary<SDL.Keycode, bool> keysCurrentlyDown = new Dictionary<SDL.Keycode, bool>();
+
+        public static vec2 MousePosition;
 
         public static void HandleEvents(SDL.Event e)
         {
@@ -35,10 +38,17 @@ namespace panpan
 
         public static void Update()
         {
-            foreach(var key in keysCurrentlyDown.Keys)
+            foreach (var key in keysCurrentlyDown.Keys)
             {
                 KeyHeld(key);
             }
+            int w, h;
+            SDL.GetWindowSize(App.GetWindow(), out w, out h);
+            SDL.GetMouseState(out MousePosition.x, out MousePosition.y);
+
+            vec4 clipPos = new vec4((2.0f * MousePosition.x) / w - 1.0f, (2.0f * MousePosition.y) / h - 1.0f, 0f, 1f);
+            vec4 worldPos = App.GetSceneManager().ActiveScene.Camera.GetViewProjectionMatrix().Inverse * clipPos;
+            MousePosition = new vec2(worldPos.x, -worldPos.y) + App.GetSceneManager().ActiveScene.Camera.Position.xy;
         }
 
         public static void RegisterOnKeyHeld(InputDelegate action)

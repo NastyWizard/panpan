@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using panpan.Rendering;
 using panpan.Assets;
 using panpan.Scene;
+using GlmSharp;
 
 namespace panpan
 {
@@ -21,14 +22,15 @@ namespace panpan
         static nint gpuDevice;
         static nint window;
         static nint commandBuffer;
+        static vec4 bgColor;  
 
         static SceneManager sceneManager;
-        static Input inputManager;
-        
-        MeshRenderer? meshTest;
+        static Input inputManager;      
 
-        public App()
+        public App(string title = "panpan", int width = 320, int height = 180)
         {
+            bgColor = Color.SkyBlue;
+
             SDL.Init(SDL.InitFlags.Video);
 
             var gpuShaderFormat = SDL.GPUShaderFormat.SPIRV;
@@ -57,7 +59,8 @@ namespace panpan
                 Console.WriteLine($"Error: Failed to create gpu device: {SDL.GetError()}");
                 Environment.Exit(1);
             }
-            window = SDL.CreateWindow("GPU_API_Circular_Color_Fade", 800, 600, 0);
+            window = SDL.CreateWindow(title, width, height, 0);
+
             if (!SDL.ClaimWindowForGPUDevice(gpuDevice, window))
             {
                 Console.WriteLine($"Error: Failed to create window for gpu device: {SDL.GetError()}");
@@ -81,6 +84,11 @@ namespace panpan
         public static SceneManager GetSceneManager()
         {
             return sceneManager;
+        }
+
+        public static void SetBGColor(vec4 col)
+        {
+            bgColor = col;
         }
 
         internal bool Init()
@@ -143,10 +151,10 @@ namespace panpan
                     StoreOp = SDL.GPUStoreOp.Store,
                     ClearColor = new SDL.FColor
                     {
-                        R = 0.0f,
-                        G = 0.3f,
-                        B = 0.8f,
-                        A = 1
+                        R = bgColor.r,
+                        G = bgColor.g,
+                        B = bgColor.b,
+                        A = bgColor.a
                     }
                 };
 
@@ -159,6 +167,7 @@ namespace panpan
                 );
                 Marshal.FreeHGlobal(ptr);
 
+                Draw.SetRenderPass(renderPass);
                 sceneManager.ActiveScene.Render(renderPass);
 
 
@@ -167,6 +176,5 @@ namespace panpan
 
             SDL.SubmitGPUCommandBuffer(commandBuffer);
         }
-
     }
 }

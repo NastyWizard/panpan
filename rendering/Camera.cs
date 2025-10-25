@@ -16,14 +16,12 @@ namespace panpan.Rendering
 
         public Camera(uint width, uint height)
         {
-            this.width = width;
-            this.height = height;
+            SetBounds(width, height);
         }
 
         public override void Init()
         {
             Position = vec3.UnitZ;
-            projection = mat4.Ortho(-width / 2, width / 2, -height / 2, height / 2, 0.1f, 100.0f);
             Update();
             base.Init();
         }
@@ -45,5 +43,14 @@ namespace panpan.Rendering
                 }
             }
         }
+
+        public void SetBounds(uint w, uint h)
+        {
+            width = w;
+            height = h;
+            projection = mat4.Ortho(-width / 2, width / 2, -height / 2, height / 2, 0.1f, 100.0f);
+        }
+
+        public mat4 GetViewProjectionMatrix() { return viewProjection; }
     }
 }

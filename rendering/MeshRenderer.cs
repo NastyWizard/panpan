@@ -15,6 +15,7 @@ namespace panpan.Rendering
         protected Texture texture;
 
         public uint Width, Height;
+        public vec2 Origin;
 
         public MeshRenderer(Mesh _mesh, Material _mat)
         {
@@ -22,6 +23,7 @@ namespace panpan.Rendering
             material = _mat;
             Width = 1;
             Height = 1;
+            Origin = vec2.Zero;
         }
         public override void Render(nint renderPass)
         {
@@ -51,11 +53,7 @@ namespace panpan.Rendering
             };
             material.SetUniformFloat(uniforms);
 
-            var scale = Parent.Scale;
-            scale.x *= Width;
-            scale.y *= Height;
-            modelMatrix = mat4.Translate(Parent.Position) * mat4.RotateZ(Parent.Angle) * mat4.Scale(scale);
-            modelMatrix = modelMatrix.Transposed;
+            modelMatrix = ComputeModelMatrix();
             unsafe
             {
                 fixed (mat4* ptr = &modelMatrix)
@@ -81,17 +79,35 @@ namespace panpan.Rendering
             texture = tex;
         }
 
+        public void SetMesh(Mesh mesh)
+        {
+            this.mesh = mesh;
+            CopyPass();
+        }
+
         private void CopyPass()
         {
             var commandBuffer = SDL.AcquireGPUCommandBuffer(App.GetDevice());
             var copyPass = SDL.BeginGPUCopyPass(commandBuffer);
-            
+
             mesh.CopyPass(copyPass);
             if (texture != null)
                 texture.CopyPass(copyPass);
-            
+
             SDL.EndGPUCopyPass(copyPass);
             SDL.SubmitGPUCommandBuffer(commandBuffer);
+        }
+        
+        protected virtual mat4 ComputeModelMatrix()
+        {
+            var pos = Parent.Position;
+            var rot = Parent.Angle;
+            var scale = Parent.Scale * new vec3(Width/2, Height/2, 1.0f);
+
+            return (mat4.Translate(pos) *
+                mat4.RotateZ(rot) *
+                mat4.Scale(scale) *
+                mat4.Translate(-new vec3(Origin.x, Origin.y, 0))).Transposed;
         }
     }
 }
