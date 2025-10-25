@@ -16,7 +16,11 @@
     <PackageReference Include="SDL3-CS.Native.Image" Version="3.2.4" />
     <PackageReference Include="SDL3-CS.Native.Mixer" Version="2.8.1.1" />
     <PackageReference Include="SDL3-CS.Native.TTF" Version="3.2.2" />
-    <Content Include="thirdparty/osx/**">
+    <Content Include="thirdparty/osx/**" Condition=" '$(OS)' != 'Windows_NT' ">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="thirdparty/win64/**" Condition=" '$(OS)' == 'Windows_NT' ">
       <Link>%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -24,7 +28,7 @@
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="./embed_assets.rb" />
+    <Exec Command="ruby ./embed_assets.rb" />
   </Target>
 
 </Project>

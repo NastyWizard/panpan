@@ -43,6 +43,7 @@ namespace panpan
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 platform = Platform.Windows;
+                gpuShaderFormat |= SDL.GPUShaderFormat.DXBC | SDL.GPUShaderFormat.DXIL;
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {

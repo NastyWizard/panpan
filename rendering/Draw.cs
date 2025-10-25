@@ -21,7 +21,7 @@ namespace panpan.Rendering
 
             renderer.Position = new vec3(p1.xy, 1);
             renderer.Scale = new vec3(10, dist, 1);
-            renderer.Angle =  MathF.Atan2(p2.y - p1.y, p2.x - p1.x);
+            renderer.Angle = MathF.Atan2(p2.y - p1.y, p2.x - p1.x) - PMath.DegToRad(90);
 
             renderer.Render(renderPass);
         }

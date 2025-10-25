@@ -38,8 +38,6 @@ namespace panpanExample
 
             speed.x = 0;
             speed.y -= grav;
-            Position.x = Input.MousePosition.x;
-            Position.y = Input.MousePosition.y;
 
             base.Update();
         }

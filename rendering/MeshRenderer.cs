@@ -1,8 +1,5 @@
 
-using System.ComponentModel;
 using GlmSharp;
-using panpan;
-using panpan.Scene;
 using SDL3;
 
 namespace panpan.Rendering
@@ -12,7 +9,7 @@ namespace panpan.Rendering
         private Mesh mesh;
         private mat4 modelMatrix;
         protected Material material;
-        protected Texture texture;
+        protected Texture? texture;
 
         public uint Width, Height;
         public vec2 Origin;
