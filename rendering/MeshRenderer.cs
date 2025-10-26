@@ -4,12 +4,14 @@ using SDL3;
 
 namespace panpan.Rendering
 {
+    public delegate void UniformDelegate();
     public class MeshRenderer : Scene.Component
     {
         private Mesh mesh;
         private mat4 modelMatrix;
         protected Material material;
         protected Texture? texture;
+        private UniformDelegate? uniformDelegate;
 
         public uint Width, Height;
         public vec2 Origin;
@@ -41,14 +43,10 @@ namespace panpan.Rendering
                 texture.BindTexture(renderPass);
             }
 
-            float[] uniforms = new float[8] {
-                // time
-                SDL.GetTicks() / 1000.0f,
-                0.0f, 0.0f, 0.0f, // padding
-                // color
-                0.0f, 1.0f, 1.0f, 1.0f
-            };
-            material.SetUniformFloat(uniforms);
+            if (uniformDelegate != null)
+            {
+                uniformDelegate();
+            }
 
             modelMatrix = ComputeModelMatrix();
             unsafe
@@ -80,6 +78,16 @@ namespace panpan.Rendering
         {
             this.mesh = mesh;
             CopyPass();
+        }
+
+        public void RegisterSetUniforms(UniformDelegate uniformDelegate)
+        {
+            this.uniformDelegate = uniformDelegate;
+        }
+
+        public void SetUniformFloat(float[] uniforms)
+        {
+            material.SetUniformFloat(uniforms);
         }
 
         private void CopyPass()

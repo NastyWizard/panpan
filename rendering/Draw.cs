@@ -15,13 +15,13 @@ namespace panpan.Rendering
         {
             color ??= Color.White;
 
-            renderer.SetMesh(Shapes.quad);
-
             var dist = vec2.Distance(p1, p2);
 
             renderer.Position = new vec3(p1.xy, 1);
-            renderer.Scale = new vec3(10, dist, 1);
-            renderer.Angle = MathF.Atan2(p2.y - p1.y, p2.x - p1.x) - PMath.DegToRad(90);
+            renderer.Height = (uint)dist;
+            renderer.Width = 5;
+            renderer.Angle = MathF.Atan2(p2.y - p1.y, p2.x - p1.x);
+            renderer.Origin = vec2.UnitY;
 
             renderer.Render(renderPass);
         }
@@ -31,18 +31,18 @@ namespace panpan.Rendering
             Draw.renderPass = renderPass;
         }
 
-        private class BasicRenderer : MeshRenderer
+        private class BasicRenderer : SpriteRenderer
         {
 
             public vec3 Position, Scale;
             public float Angle;
-            public BasicRenderer() : base(Shapes.quad, RenderUtil.DefaultMaterial) { }
+            public BasicRenderer() : base(new Texture()) { }
 
             protected override mat4 ComputeModelMatrix()
             {
                 var pos =   Position;
                 var rot =   Angle;
-                var scale = Scale;
+                var scale = Scale * new vec3(Width/2, Height/2, 1.0f);
 
                 return (mat4.Translate(pos) *
                     mat4.RotateZ(rot) *

@@ -17,14 +17,31 @@ namespace panpan.Rendering
         public uint Width => width;
         public uint Height => height;
 
-        public Texture(byte[] pngData, uint width, uint height)
+        public Texture(byte[]? pngData, uint width, uint height)
         {
             this.width = width;
             this.height = height;
 
             CreateTexture();
             CreateSampler();
-            pixelData = DecodePNG(pngData, width, height);
+            if (pngData == null)
+            {
+                pixelData = CreateTestPattern(width, height);
+            }
+            else
+            {
+                pixelData = DecodePNG(pngData, width, height);
+            }
+        }
+
+        public Texture()
+        {
+            this.width = 2;
+            this.height = 2;
+
+            CreateTexture();
+            CreateSampler();
+            pixelData = CreateWhiteTex(this.width,this.height);
         }
 
         private void CreateTexture()
@@ -79,7 +96,7 @@ namespace panpan.Rendering
 
         private byte[] CreateTestPattern(uint width, uint height)
         {
-            // Create a simple test pattern, pink/black checker
+            // Create a test pattern, pink/black checker
             uint pixelCount = width * height;
             byte[] pd = new byte[pixelCount * 4]; // RGBA format
 
@@ -89,7 +106,6 @@ namespace panpan.Rendering
                 uint x = i % width;
                 uint y = i / width;
 
-                // Create a simple pattern
                 if (x >= width / 2 && y <= height / 2 || x < width / 2 && y > height / 2)
                 { // pink
                     pd[pixelIndex] = 255;        // R
@@ -104,6 +120,25 @@ namespace panpan.Rendering
                     pd[pixelIndex + 2] = 0;    // B
                     pd[pixelIndex + 3] = 255;    // A
                 }
+            }
+            return pd;
+        }
+
+        private byte[] CreateWhiteTex(uint width, uint height)
+        {
+            uint pixelCount = width * height;
+            byte[] pd = new byte[pixelCount * 4];
+
+            for (uint i = 0; i < pixelCount; i++)
+            {
+                uint pixelIndex = i * 4;
+                uint x = i % width;
+                uint y = i / width;
+
+                pd[pixelIndex] = 255;        // R
+                pd[pixelIndex + 1] = 255;      // G
+                pd[pixelIndex + 2] = 255;    // B
+                pd[pixelIndex + 3] = 255;    // A
             }
             return pd;
         }

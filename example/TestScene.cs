@@ -8,14 +8,17 @@ using panpanExample;
 public class TestScene : Scene
 {
     public TestScene() : base("test") { } // Init should handle most setup
-    TestBox player;
+    TestPlayer player;
     public override void Init()
     {
         // base.Init should usually be called last
-        player = (TestBox)AddChild(new TestBox());
+        player = (TestPlayer)AddChild(new TestPlayer());
+
         base.Init();
+
+        // Camera is setup in base.Init so it must be adjusted after.
         Camera.SetBounds(320, 180);
         Camera.Position.x = 320 / 2;
-        Camera.Position.y = 180 / 2;
+        //Camera.Position.y = 180 / 2;
     }
 }
