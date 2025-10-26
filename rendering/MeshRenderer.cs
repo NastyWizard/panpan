@@ -13,7 +13,7 @@ namespace panpan.Rendering
         protected Texture? texture;
         private UniformDelegate? uniformDelegate;
 
-        public uint Width, Height;
+        public float Width, Height;
         public vec2 Origin;
 
         public MeshRenderer(Mesh _mesh, Material _mat)
@@ -107,7 +107,7 @@ namespace panpan.Rendering
         {
             var pos = Parent.Position;
             var rot = Parent.Angle;
-            var scale = Parent.Scale * new vec3(Width/2, Height/2, 1.0f);
+            var scale = Parent.Scale * new vec3(Width, Height, 1.0f);
 
             return (mat4.Translate(pos) *
                 mat4.RotateZ(rot) *

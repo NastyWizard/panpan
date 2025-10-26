@@ -20,7 +20,7 @@ namespace panpanExample
             speed = vec2.Zero;
             renderer = (SpriteRenderer)AddComponent(new SpriteRenderer(new Texture(Sprites.test, 16, 16)));
             renderer.RegisterSetUniforms(SetUniforms);
-            renderer.Origin = new vec2(0f, -1f);
+            renderer.Origin = new vec2(8f/16f, 0f);
             Input.RegisterOnKeyHeld(OnKeyHeld);
             Input.RegisterOnKeyDown(OnKeyDown);
             base.Init();
@@ -52,7 +52,7 @@ namespace panpanExample
                 SDL.GetTicks() / 1000.0f,
                 0.0f, 0.0f, 0.0f, // padding
                 // color
-                0.0f, 1.0f, 1.0f, 1.0f
+                1.0f, 1.0f, 1.0f, 1.0f
             };
             renderer.SetUniformFloat(uniforms);
         }
@@ -60,19 +60,29 @@ namespace panpanExample
         {
             base.Render(renderPass);
 
-            Draw.Line(Position.xy, Input.MousePosition);
+            vec4 col = Color.Hex("#88ff33ff");
+
+            //Draw.Rect(Position.xy - vec2.UnitX * 8, new vec2(15f, 15f));
+            Draw.Line(Position.xy, Input.MousePosition, Color.Black);
+
+            Draw.Dot(Position.xy - vec2.UnitX*8, col);
+            Draw.Dot(Position.xy + vec2.UnitX*7, col);
+            Draw.Dot(Position.xy + vec2.UnitY*15 - vec2.UnitX*8, col);
+            Draw.Dot(Position.xy + vec2.UnitY * 15 + vec2.UnitX * 7, col);
+            
+            Draw.Dot(Input.MousePosition, Color.Hex("#ff00ffff"));
         }
 
         private void OnKeyHeld(SDL.Keycode? k)
         {
-            if (k == SDL.Keycode.Left)
+            if (k == SDL.Keycode.Left || k == SDL.Keycode.A)
             {
-                speed.x = -1.5f;
+                speed.x = -2f;
                 Scale.x = -1;
             }
-            if (k == SDL.Keycode.Right)
+            if (k == SDL.Keycode.Right || k == SDL.Keycode.D)
             {
-                speed.x = 1.5f;
+                speed.x = 2f;
                 Scale.x = 1;
             }
         }
@@ -80,7 +90,7 @@ namespace panpanExample
         private void OnKeyDown(SDL.Keycode? k)
         {
             
-            if (k == SDL.Keycode.Z)
+            if (k == SDL.Keycode.Z || k == SDL.Keycode.Space)
             {
                 speed.y = 5;
             }

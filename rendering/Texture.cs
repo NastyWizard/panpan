@@ -34,16 +34,6 @@ namespace panpan.Rendering
             }
         }
 
-        public Texture()
-        {
-            this.width = 2;
-            this.height = 2;
-
-            CreateTexture();
-            CreateSampler();
-            pixelData = CreateWhiteTex(this.width,this.height);
-        }
-
         private void CreateTexture()
         {
             // Create texture info
@@ -132,8 +122,6 @@ namespace panpan.Rendering
             for (uint i = 0; i < pixelCount; i++)
             {
                 uint pixelIndex = i * 4;
-                uint x = i % width;
-                uint y = i / width;
 
                 pd[pixelIndex] = 255;        // R
                 pd[pixelIndex + 1] = 255;      // G

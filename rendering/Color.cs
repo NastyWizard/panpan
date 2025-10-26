@@ -8,7 +8,7 @@ namespace panpan.Rendering
     public class Color
     {
         public static vec4 White = vec4.Ones;
-        public static vec4 Black = vec4.Zero;
+        public static vec4 Black = vec4.UnitW;
 
         public static vec4 SkyBlue = Hex("#639bff");
 
