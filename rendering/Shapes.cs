@@ -13,10 +13,10 @@ namespace panpan.Rendering
 
         public static Mesh quad = new Mesh([
                 //         x       y     z     r   g   b   a   u   v
-                new Vertex(-0.0f,  1.0f, 0.0f, 1f, 1f, 1f, 1f, 0f, 0f), // top-left
-                new Vertex( 1.0f,  1.0f, 0.0f, 1f, 1f, 1f, 1f, 1f, 0f), // top-right
-                new Vertex(-0.0f, -0.0f, 0.0f, 1f, 1f, 1f, 1f, 0f, 1f), // bottom-left
-                new Vertex( 1.0f, -0.0f, 0.0f, 1f, 1f, 1f, 1f, 1f, 1f), // bottom-right
+                new Vertex(-0.0f,  0.0f, 0.0f, 1f, 1f, 1f, 1f, 0f, 0f), // top-left
+                new Vertex( 1.0f,  0.0f, 0.0f, 1f, 1f, 1f, 1f, 1f, 0f), // top-right
+                new Vertex(-0.0f, -1.0f, 0.0f, 1f, 1f, 1f, 1f, 0f, 1f), // bottom-left
+                new Vertex( 1.0f, -1.0f, 0.0f, 1f, 1f, 1f, 1f, 1f, 1f), // bottom-right
             ],
             [
                 0, 2, 1, // first triangle

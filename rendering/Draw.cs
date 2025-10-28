@@ -2,6 +2,7 @@
 using GlmSharp;
 using panpan.Util;
 using panpan.Assets;
+using System.Drawing;
 
 namespace panpan.Rendering
 {
@@ -11,17 +12,27 @@ namespace panpan.Rendering
         static BasicRenderer renderer = new BasicRenderer();
         static vec4 color;
 
-        public static void Rect(vec2 bl, vec2 size, vec4? color = null)
+        public static void Rect(vec2 tl, vec2 size, vec4? color = null)
         {
             color ??= Color.White;
             Draw.color = color.Value;
+            size -= vec2.Ones;
 
-            Draw.Line(bl, bl + size * vec2.UnitX, color); // bl - br
-            Draw.Line(bl, bl + size * vec2.UnitY, color); // bl - tl
-            Draw.Line(bl + size * vec2.UnitX, bl + size * vec2.UnitY + size * vec2.UnitX + vec2.UnitY, color); // br - tr
-            Draw.Line(bl + size * vec2.UnitY, bl + size * vec2.UnitY + size * vec2.UnitX, color); // tl - tr
-            
+            var tr = tl + size * vec2.UnitX;
+            var bl = tl - size * vec2.UnitY;
+            var br = bl + size * vec2.UnitX;
+
+            Draw.Line(tl, tr, color);
+            Draw.Line(tl, bl, color);
+            Draw.Line(bl, br, color);
+            Draw.Line(br, tr + vec2.UnitY, color);
+
         }
+        public static void Rect(Rectangle rect, vec4? color = null)
+        {
+            Draw.Rect(new vec2(rect.X, rect.Y), new vec2(rect.Width, rect.Height), color);
+        }
+
         public static void Line(vec2 p1, vec2 p2, vec4? color = null)
         {
             color ??= Color.White;

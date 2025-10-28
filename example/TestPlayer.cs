@@ -6,21 +6,28 @@ using panpan.Util;
 using SDL3;
 using panpan;
 using GlmSharp;
+using panpan.Collision;
 
 namespace panpanExample
 {
     public class TestPlayer : Entity
     {
         SpriteRenderer renderer;
+        BoxCollider collider;
         vec2 speed;
         float grav = 0.3f;
         public override void Init()
         {
             Position.x = 320 / 2;
             speed = vec2.Zero;
+            
             renderer = (SpriteRenderer)AddComponent(new SpriteRenderer(new Texture(Sprites.test, 16, 16)));
             renderer.RegisterSetUniforms(SetUniforms);
-            renderer.Origin = new vec2(8f/16f, 0f);
+            renderer.Origin = new vec2(8f/16f, -15f/16f);
+
+            collider = (BoxCollider)AddComponent(new BoxCollider(16, 16));
+            collider.SetOffset(-8,15);
+
             Input.RegisterOnKeyHeld(OnKeyHeld);
             Input.RegisterOnKeyDown(OnKeyDown);
             base.Init();
@@ -58,19 +65,12 @@ namespace panpanExample
         }
         public override void Render(nint renderPass)
         {
+            collider.DrawDebug();
             base.Render(renderPass);
 
-            vec4 col = Color.Hex("#88ff33ff");
+            vec4 col = Color.Hex("#000000ff");
 
-            //Draw.Rect(Position.xy - vec2.UnitX * 8, new vec2(15f, 15f));
-            Draw.Line(Position.xy, Input.MousePosition, Color.Black);
-
-            Draw.Dot(Position.xy - vec2.UnitX*8, col);
-            Draw.Dot(Position.xy + vec2.UnitX*7, col);
-            Draw.Dot(Position.xy + vec2.UnitY*15 - vec2.UnitX*8, col);
-            Draw.Dot(Position.xy + vec2.UnitY * 15 + vec2.UnitX * 7, col);
-            
-            Draw.Dot(Input.MousePosition, Color.Hex("#ff00ffff"));
+            Draw.Dot(Position.xy, Color.Hex("#ff00ffff"));
         }
 
         private void OnKeyHeld(SDL.Keycode? k)

@@ -10,6 +10,8 @@ namespace panpan.Rendering
         public static vec4 White = vec4.Ones;
         public static vec4 Black = vec4.UnitW;
 
+        public static vec4 Green = new vec4(0f,1f,0f,1f);
+
         public static vec4 SkyBlue = Hex("#639bff");
 
         public static vec4 Hex(string hex)
