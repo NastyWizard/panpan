@@ -6,7 +6,7 @@ namespace panpan.Scene
         public Entity Parent;
         public virtual void Init() { }
         public virtual void Update() { }
-        public virtual void Render(nint renderPass) { }
+        public virtual void Render() { }
 
     }
 }

@@ -8,8 +8,8 @@ namespace panpan.Rendering
 {
     public class Draw
     {
-        static nint renderPass;
         static BasicRenderer renderer = new BasicRenderer();
+        static SpriteRenderer spriteRenderer = new SpriteRenderer(null);
         static vec4 color;
 
         public static void Rect(vec2 tl, vec2 size, vec4? color = null)
@@ -64,7 +64,7 @@ namespace panpan.Rendering
             renderer.Angle = MathF.Atan2(p2.y - p1.y, p2.x - p1.x) + PMath.DegToRad(90);
             renderer.Origin = vec2.UnitY;
 
-            renderer.Render(renderPass);
+            renderer.Render();
         }
         public static void Dot(vec2 p1, vec4? color = null)
         {
@@ -78,12 +78,15 @@ namespace panpan.Rendering
             renderer.Angle = 0;
             renderer.Origin = vec2.Zero;
 
-            renderer.Render(renderPass);
+            renderer.Render();
         }
 
-        public static void SetRenderPass(nint renderPass)
+        public static void RenderTarget(RenderTarget rt, vec2 pos, vec2? scale = null)
         {
-            Draw.renderPass = renderPass;
+            App.GetSceneManager().ActiveScene.Camera.PushUniformData();
+            spriteRenderer.SetTexture(rt.GetTexture());
+            spriteRenderer.SetTransform(new vec3(pos.x, pos.y, 0.0f));
+            spriteRenderer.Render();
         }
 
         private class BasicRenderer : MeshRenderer

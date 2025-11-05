@@ -1,6 +1,7 @@
 
 using GlmSharp;
 using SDL3;
+using panpan.Scene;
 
 namespace panpan.Rendering
 {
@@ -16,6 +17,8 @@ namespace panpan.Rendering
         public float Width, Height;
         public vec2 Origin;
 
+        private Transform transform;
+
         public MeshRenderer(Mesh _mesh, Material _mat)
         {
             mesh = _mesh;
@@ -23,10 +26,11 @@ namespace panpan.Rendering
             Width = 1;
             Height = 1;
             Origin = vec2.Zero;
+            transform = new Transform();
         }
-        public override void Render(nint renderPass)
+        public override void Render()
         {
-            SDL.BindGPUGraphicsPipeline(renderPass, material.Pipeline);
+            SDL.BindGPUGraphicsPipeline(App.GetRenderPass(), material.Pipeline);
             SDL.GPUBufferBinding[] vertexBufferBindings = new SDL.GPUBufferBinding[1];
             vertexBufferBindings[0].Buffer = mesh.VertexBuffer;
             vertexBufferBindings[0].Offset = 0;
@@ -35,19 +39,20 @@ namespace panpan.Rendering
             indexBufferBinding.Buffer = mesh.IndexBuffer;
             indexBufferBinding.Offset = 0;
 
-            SDL.BindGPUVertexBuffers(renderPass, 0, vertexBufferBindings, 1);
-            SDL.BindGPUIndexBuffer(renderPass, indexBufferBinding, SDL.GPUIndexElementSize.IndexElementSize32Bit);
+            SDL.BindGPUVertexBuffers(App.GetRenderPass(), 0, vertexBufferBindings, 1);
+            SDL.BindGPUIndexBuffer(App.GetRenderPass(), indexBufferBinding, SDL.GPUIndexElementSize.IndexElementSize32Bit);
 
             if (texture != null)
             {
-                texture.BindTexture(renderPass);
+                texture.BindTexture(App.GetRenderPass());
             }
 
-            if (uniformDelegate != null)
+            uniformDelegate?.Invoke();
+
+            if (Parent != null)
             {
-                uniformDelegate();
+                transform = Parent.Transform;
             }
-
             modelMatrix = ComputeModelMatrix();
             unsafe
             {
@@ -57,9 +62,9 @@ namespace panpan.Rendering
                 }
             }
 
-            SDL.DrawGPUIndexedPrimitives(renderPass, mesh.NumIndices, 1, 0, 0, 0);
+            SDL.DrawGPUIndexedPrimitives(App.GetRenderPass(), mesh.NumIndices, 1, 0, 0, 0);
             
-            base.Render(renderPass);
+            base.Render();
         }
 
         public override void Init()
@@ -72,6 +77,8 @@ namespace panpan.Rendering
         public void SetTexture(Texture tex)
         {
             texture = tex;
+            Width = tex.Width;
+            Height = tex.Height;
         }
 
         public void SetMesh(Mesh mesh)
@@ -102,17 +109,26 @@ namespace panpan.Rendering
             SDL.EndGPUCopyPass(copyPass);
             SDL.SubmitGPUCommandBuffer(commandBuffer);
         }
-        
+
         protected virtual mat4 ComputeModelMatrix()
         {
-            var pos = Parent.Position;
-            var rot = Parent.Angle;
-            var scale = Parent.Scale * new vec3(Width, Height, 1.0f);
+            var pos = transform.Position;
+            var rot = transform.Angle;
+            var scale = transform.Scale * new vec3(Width, Height, 1.0f);
 
             return (mat4.Translate(pos) *
                 mat4.RotateZ(rot) *
                 mat4.Scale(scale) *
                 mat4.Translate(-new vec3(Origin.x, Origin.y, 0))).Transposed;
+        }
+
+        public void SetTransform(vec3 pos, vec3? scale = null, float? angle = null)
+        {
+            transform.Position = pos;
+            if (scale != null)
+                transform.Scale = scale.Value;
+            if (angle != null)
+                transform.Angle = angle.Value;
         }
     }
 }

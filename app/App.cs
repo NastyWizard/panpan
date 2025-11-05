@@ -22,6 +22,9 @@ namespace panpan
         static nint gpuDevice;
         static nint window;
         static nint commandBuffer;
+        static nint renderPass;
+        static nint swapchainTexture;
+        static List<nint> renderFences = new List<nint>();
         static vec4 bgColor;  
 
         static SceneManager sceneManager;
@@ -87,11 +90,20 @@ namespace panpan
             return sceneManager;
         }
 
+        public static nint GetRenderPass()
+        {
+            return renderPass;
+        }
+
         public static void SetBGColor(vec4 col)
         {
             bgColor = col;
         }
 
+        /// <summary>
+        /// Initialize managers.
+        /// </summary>
+        /// <returns></returns>
         internal bool Init()
         {
             sceneManager = new SceneManager(new TestScene());
@@ -99,6 +111,9 @@ namespace panpan
             return true;
         }
 
+        /// <summary>
+        /// Called by Project.cs to start the app.
+        /// </summary>
         public void Run()
         {
             var tokenSource = new CancellationTokenSource();
@@ -128,54 +143,116 @@ namespace panpan
 
         }
 
-        public void Update()
+        /// <summary>
+        /// Updates the active scene.
+        /// </summary>
+        private void Update()
         {
             sceneManager.ActiveScene.Update();
         }
 
-        public void Render()
+        /// <summary>
+        /// Renders the active scene.
+        /// </summary>
+        private void Render()
         {
-            commandBuffer = SDL.AcquireGPUCommandBuffer(gpuDevice);
-            SDL.WaitAndAcquireGPUSwapchainTexture(
-                commandBuffer, window,
-                out var swapchainTexture,
-                out var _,
-                out var _
-            );
-
+            CreateDefaultRenderTarget(SDL.GPULoadOp.Clear);
             if (swapchainTexture != nint.Zero)
             {
-                var colorTargetInfo = new SDL.GPUColorTargetInfo
-                {
-                    Texture = swapchainTexture,
-                    LoadOp = SDL.GPULoadOp.Clear,
-                    StoreOp = SDL.GPUStoreOp.Store,
-                    ClearColor = new SDL.FColor
-                    {
-                        R = bgColor.r,
-                        G = bgColor.g,
-                        B = bgColor.b,
-                        A = bgColor.a
-                    }
-                };
+                sceneManager.ActiveScene.Render();
 
-                var ptr = SDL.StructureToPointer<SDL.GPUColorTargetInfo>(colorTargetInfo);
-                var renderPass = SDL.BeginGPURenderPass(
-                    commandBuffer,
-                    ptr,
-                    1,
-                    nint.Zero
+            }
+            EndRenderPass();
+            swapchainTexture = nint.Zero;
+        }
+
+        private static void CreateDefaultRenderTarget(SDL.GPULoadOp loadOp = SDL.GPULoadOp.Load)
+        {
+            commandBuffer = SDL.AcquireGPUCommandBuffer(gpuDevice);
+            WaitAndClearFences();
+
+            if (swapchainTexture == nint.Zero)
+            {
+                SDL.WaitAndAcquireGPUSwapchainTexture(
+                    commandBuffer, window,
+                    out swapchainTexture,
+                    out var _,
+                    out var _
                 );
-                Marshal.FreeHGlobal(ptr);
-
-                Draw.SetRenderPass(renderPass);
-                sceneManager.ActiveScene.Render(renderPass);
-
-
-                SDL.EndGPURenderPass(renderPass);
             }
 
-            SDL.SubmitGPUCommandBuffer(commandBuffer);
+            var colorTargetInfo = new SDL.GPUColorTargetInfo
+            {
+                Texture = swapchainTexture,
+                LoadOp = loadOp,
+                StoreOp = SDL.GPUStoreOp.Store
+            };
+            if (loadOp == SDL.GPULoadOp.Clear)
+            {
+                colorTargetInfo.ClearColor = new SDL.FColor
+                {
+                    R = bgColor.r,
+                    G = bgColor.g,
+                    B = bgColor.b,
+                    A = bgColor.a
+                };
+            }
+
+            var ptr = SDL.StructureToPointer<SDL.GPUColorTargetInfo>(colorTargetInfo);
+            renderPass = SDL.BeginGPURenderPass(
+                commandBuffer,
+                ptr,
+                1,
+                nint.Zero
+            );
+            Marshal.FreeHGlobal(ptr);
+        }
+
+        /// <summary>
+        /// Resets to use the swapchain render target on a new render pass
+        /// </summary>
+        /// <param name="loadOp"></param>
+        public static void ResetRenderTarget(SDL.GPULoadOp loadOp = SDL.GPULoadOp.Load)
+        {
+            EndRenderPass();
+            CreateDefaultRenderTarget(loadOp);
+        }
+
+        /// <summary>
+        /// Sets the active render pass to use passed in render target
+        /// </summary>
+        /// <param name="target">Render target</param>
+        public static void SetRenderTarget(RenderTarget target)
+        {
+            EndRenderPass();
+            commandBuffer = SDL.AcquireGPUCommandBuffer(gpuDevice);
+            WaitAndClearFences();
+            renderPass = target.CreateRenderPass();
+        }
+
+        /// <summary>
+        /// Ends currently active render pass.
+        /// </summary>
+        private static void EndRenderPass()
+        {
+            SDL.EndGPURenderPass(renderPass);
+            //SDL.SubmitGPUCommandBuffer(commandBuffer);
+            nint fence = SDL.SubmitGPUCommandBufferAndAcquireFence(commandBuffer);
+            renderFences.Add(fence);
+        }
+
+        private static void WaitAndClearFences()
+        {
+            if (renderFences.Count > 0)
+            {
+                SDL.WaitForGPUFences(GetDevice(), true, renderFences.ToArray(), (uint)renderFences.Count);
+
+                foreach (var fence in renderFences)
+                {
+                    SDL.ReleaseGPUFence(GetDevice(), fence);
+                }
+                renderFences.Clear();
+            }
         }
     }
 }

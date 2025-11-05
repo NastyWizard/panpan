@@ -21,7 +21,7 @@ namespace panpan.Collision
             base.Update();
         }
 
-        public override bool CollidesWith(Collider other)
+        public override bool Intersects(Collider other)
         {
             var colType = other.GetType();
             if (colType == typeof(BoxCollider))
@@ -45,6 +45,10 @@ namespace panpan.Collision
         {
             offset.x = x;
             offset.y = y;
+        }
+        public override vec2 CenterPoint()
+        {
+            return new vec2(bounds.X + bounds.Width/2, bounds.Y + bounds.Height/2);
         }
     }
 }

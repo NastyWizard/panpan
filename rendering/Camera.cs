@@ -51,6 +51,11 @@ namespace panpan.Rendering
             projection = mat4.Ortho(-width / 2, width / 2, -height / 2, height / 2, 0.1f, 100.0f);
         }
 
+        public vec2 GetBounds()
+        {
+            return new vec2(width, height);
+        }
+
         public mat4 GetViewProjectionMatrix() { return viewProjection; }
     }
 }

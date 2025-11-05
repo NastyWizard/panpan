@@ -18,11 +18,10 @@ namespace panpanExample
         float grav = 0.3f;
         public override void Init()
         {
-            Position.x = 320 / 2;
             speed = vec2.Zero;
             
             renderer = (SpriteRenderer)AddComponent(new SpriteRenderer(new Texture(Sprites.test, 16, 16)));
-            renderer.RegisterSetUniforms(SetUniforms);
+            //renderer.RegisterSetUniforms(SetUniforms);
             renderer.Origin = new vec2(8f/16f, -15f/16f);
 
             collider = (BoxCollider)AddComponent(new BoxCollider(16, 16));
@@ -63,10 +62,10 @@ namespace panpanExample
             };
             renderer.SetUniformFloat(uniforms);
         }
-        public override void Render(nint renderPass)
+        public override void Render()
         {
+            base.Render();
             collider.DrawDebug();
-            base.Render(renderPass);
 
             vec4 col = Color.Hex("#000000ff");
 

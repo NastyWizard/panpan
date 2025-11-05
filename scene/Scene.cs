@@ -37,12 +37,12 @@ namespace panpan.Scene
                 ent.Update();
             }
         }
-        public virtual void Render(nint renderPass)
+        public virtual void Render()
         {
             camera.PushUniformData();
             foreach (Entity ent in entities)
             {
-                ent.Render(renderPass);
+                ent.Render();
             }
         }
 

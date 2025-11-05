@@ -1,5 +1,6 @@
 
 using GlmSharp;
+using panpan.Rendering;
 using SDL3;
 
 namespace panpan.Scene
@@ -10,9 +11,10 @@ namespace panpan.Scene
 
         private List<Component> components = new List<Component>();
 
-        public vec3 Position = vec3.Zero;
-        public vec3 Scale = vec3.Ones;
-        public float Angle = 0;
+        public Transform Transform = new Transform();
+        public ref vec3 Position => ref Transform.Position;
+        public ref vec3 Scale => ref Transform.Scale;
+        public ref float Angle => ref Transform.Angle;
         
         public virtual void Init()
         {
@@ -28,11 +30,11 @@ namespace panpan.Scene
                 comp.Update();
             }
         }
-        public virtual void Render(nint renderPass)
+        public virtual void Render()
         {
             foreach (Component comp in components)
             {
-                comp.Render(renderPass);
+                comp.Render();
             }
         }
 

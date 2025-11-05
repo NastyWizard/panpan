@@ -22,18 +22,18 @@ namespace panpan.Rendering
             this.width = width;
             this.height = height;
 
-            CreateTexture();
-            CreateSampler();
-            if (pngData == null)
+            if (pngData != null)
             {
-                pixelData = CreateTestPattern(width, height);
-            }
-            else
-            {
+                CreateTexture();
                 pixelData = DecodePNG(pngData, width, height);
             }
+            CreateSampler();
         }
 
+        /// <summary>
+        /// Creates a gpu texture.
+        /// </summary>
+        /// <exception cref="Exception"></exception>
         private void CreateTexture()
         {
             // Create texture info
@@ -84,7 +84,7 @@ namespace panpan.Rendering
             }
         }
 
-        private byte[] CreateTestPattern(uint width, uint height)
+        public static byte[] CreateTestPattern(uint width, uint height)
         {
             // Create a test pattern, pink/black checker
             uint pixelCount = width * height;
@@ -131,12 +131,21 @@ namespace panpan.Rendering
             return pd;
         }
 
+        /// <summary>
+        /// Used to manually set a gpu texture, e.g. when using a <c>RenderTarget</c>.
+        /// </summary>
+        /// <param name="tex">GPU texture</param>
+        public void SetGPUTexture(nint tex)
+        {
+            this.gpuTexture = tex;
+        }
+
+
         public void CopyPass(nint copyPass)
         {
             if (pixelData == null)
             {
-                // Fallback to test pattern if PNG decoding fails
-                CreateTestPattern(width, height);
+                return;
             }
 
             var textureDataTransferBuffer = SDL.CreateGPUTransferBuffer(App.GetDevice(), new SDL.GPUTransferBufferCreateInfo
