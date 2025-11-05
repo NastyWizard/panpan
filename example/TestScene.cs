@@ -10,22 +10,24 @@ public class TestScene : Scene
 {
     public TestScene() : base("test") { } // Init should handle most setup
     TestPlayer player;
-    TestWall wall;
+    List<TestWall> walls = new List<TestWall>();
     RenderTarget testRT;
     public override void Init()
     {
         // base.Init should usually be called last
         testRT = new RenderTarget(320, 180, panpan.Rendering.Color.Black);
 
-        wall = (TestWall)AddChild(new TestWall());
+        for (var i = 0; i < 20; i++)
+        {
+            walls.Add((TestWall)AddChild(new TestWall(-320/2 + i * 8, 0)));
+        }
+
         player = (TestPlayer)AddChild(new TestPlayer());
 
         base.Init();
 
         // Camera is setup in base.Init so it must be adjusted after.
         Camera.SetBounds(320, 180);
-        //Camera.Position.x = 320 / 2;
-        //Camera.Position.y = 180 / 2;
     }
 
     public override void Render()

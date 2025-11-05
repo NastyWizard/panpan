@@ -2,16 +2,17 @@
 using System.Drawing;
 using GlmSharp;
 using panpan.Rendering;
+using panpan.Util;
 
 namespace panpan.Collision
 {
     public class BoxCollider : Collider
     {
-        public Rectangle bounds;
+        public Rect bounds;
         private ivec2 offset = ivec2.Zero;
         public BoxCollider(int width, int height)
         {
-            this.bounds = new Rectangle(0, 0, width, height);
+            this.bounds = new Rect(0, 0, width, height);
         }
 
         public override void Update()
@@ -21,13 +22,22 @@ namespace panpan.Collision
             base.Update();
         }
 
-        public override bool Intersects(Collider other)
+        public override bool Intersects(Collider other, vec2? pos = null)
         {
             var colType = other.GetType();
             if (colType == typeof(BoxCollider))
             {
                 var otherBox = (BoxCollider)other;
-                if (!Rectangle.Intersect(bounds, otherBox.bounds).IsEmpty)
+
+                var bnds = bounds;
+                
+                if (pos != null)
+                {
+                    bnds.X = (int)pos.Value.x + offset.x;
+                    bnds.Y = (int)pos.Value.y + offset.y;
+                }
+                
+                if (bnds.Intersects(otherBox.bounds))
                 {
                     return true;
                 }
@@ -39,6 +49,7 @@ namespace panpan.Collision
         {
             base.DrawDebug();
             Draw.Rect(bounds, debugColor);
+            Draw.Dot(new vec2(bounds.X, bounds.Y), Rendering.Color.SkyBlue);
         }
 
         public void SetOffset(int x, int y)

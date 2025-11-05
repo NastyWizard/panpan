@@ -14,6 +14,11 @@ namespace panpanExample
     {
         SpriteRenderer renderer;
         BoxCollider collider;
+
+        public TestWall(int x, int y)
+        {
+            Position.xy = new vec2(x, y);   
+        }
         public override void Init()
         {
             
@@ -21,6 +26,8 @@ namespace panpanExample
             renderer.RegisterSetUniforms(SetUniforms);
 
             collider = (BoxCollider)AddComponent(new BoxCollider(8, 8));
+            collider.SetOffset(0,-7);
+            collider.Update();
 
             base.Init();
         }

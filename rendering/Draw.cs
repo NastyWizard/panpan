@@ -12,14 +12,14 @@ namespace panpan.Rendering
         static SpriteRenderer spriteRenderer = new SpriteRenderer(null);
         static vec4 color;
 
-        public static void Rect(vec2 tl, vec2 size, vec4? color = null)
+        public static void Rect(vec2 bl, vec2 size, vec4? color = null)
         {
             color ??= Color.White;
             Draw.color = color.Value;
             size -= vec2.Ones;
 
-            var tr = tl + size * vec2.UnitX;
-            var bl = tl - size * vec2.UnitY;
+            var tr = bl + size;
+            var tl = bl + size * vec2.UnitY;
             var br = bl + size * vec2.UnitX;
 
             Draw.Line(tl, tr, color);
@@ -28,7 +28,7 @@ namespace panpan.Rendering
             Draw.Line(br, tr + vec2.UnitY, color);
 
         }
-        public static void Rect(Rectangle rect, vec4? color = null)
+        public static void Rect(Rect rect, vec4? color = null)
         {
             Draw.Rect(new vec2(rect.X, rect.Y), new vec2(rect.Width, rect.Height), color);
         }

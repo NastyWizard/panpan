@@ -5,6 +5,7 @@ using panpan.Rendering;
 using panpan.Assets;
 using panpan.Scene;
 using GlmSharp;
+using panpan.Collision;
 
 namespace panpan
 {
@@ -28,7 +29,8 @@ namespace panpan
         static vec4 bgColor;  
 
         static SceneManager sceneManager;
-        static Input inputManager;      
+        static Input inputManager;
+        static CollisionManager collisionManager;
 
         public App(string title = "panpan", int width = 320, int height = 180)
         {
@@ -70,6 +72,8 @@ namespace panpan
                 Console.WriteLine($"Error: Failed to create window for gpu device: {SDL.GetError()}");
                 Environment.Exit(1);
             }
+
+            SDL.SetGPUAllowedFramesInFlight(gpuDevice, 3);
         }
 
         public static nint GetDevice()
@@ -89,6 +93,10 @@ namespace panpan
         {
             return sceneManager;
         }
+        public static CollisionManager GetCollisionManager()
+        {
+            return collisionManager;
+        }
 
         public static nint GetRenderPass()
         {
@@ -106,8 +114,9 @@ namespace panpan
         /// <returns></returns>
         internal bool Init()
         {
+            collisionManager = new CollisionManager(CollisionManager.ManagerType.SPACIAL_HASH, 8, new vec2(320, 180));
             sceneManager = new SceneManager(new TestScene());
-            inputManager = new panpan.Input();
+            inputManager = new Input();
             return true;
         }
 
@@ -160,7 +169,6 @@ namespace panpan
             if (swapchainTexture != nint.Zero)
             {
                 sceneManager.ActiveScene.Render();
-
             }
             EndRenderPass();
             swapchainTexture = nint.Zero;
@@ -168,17 +176,20 @@ namespace panpan
 
         private static void CreateDefaultRenderTarget(SDL.GPULoadOp loadOp = SDL.GPULoadOp.Load)
         {
-            commandBuffer = SDL.AcquireGPUCommandBuffer(gpuDevice);
             WaitAndClearFences();
+            commandBuffer = SDL.AcquireGPUCommandBuffer(gpuDevice);
 
             if (swapchainTexture == nint.Zero)
             {
-                SDL.WaitAndAcquireGPUSwapchainTexture(
+                if (!SDL.WaitAndAcquireGPUSwapchainTexture(
                     commandBuffer, window,
                     out swapchainTexture,
                     out var _,
                     out var _
-                );
+                ))
+                {
+                    Console.WriteLine("SDL Error WaitAndAcquireGPUSwapchainTexture: " + SDL.GetError());
+                }
             }
 
             var colorTargetInfo = new SDL.GPUColorTargetInfo
@@ -225,8 +236,8 @@ namespace panpan
         public static void SetRenderTarget(RenderTarget target)
         {
             EndRenderPass();
-            commandBuffer = SDL.AcquireGPUCommandBuffer(gpuDevice);
             WaitAndClearFences();
+            commandBuffer = SDL.AcquireGPUCommandBuffer(gpuDevice);
             renderPass = target.CreateRenderPass();
         }
 

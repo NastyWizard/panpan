@@ -25,7 +25,7 @@ namespace panpanExample
             renderer.Origin = new vec2(8f/16f, -15f/16f);
 
             collider = (BoxCollider)AddComponent(new BoxCollider(16, 16));
-            collider.SetOffset(-8,15);
+            collider.SetOffset(-8,0);
 
             Input.RegisterOnKeyHeld(OnKeyHeld);
             Input.RegisterOnKeyDown(OnKeyDown);
@@ -65,7 +65,10 @@ namespace panpanExample
         public override void Render()
         {
             base.Render();
-            collider.DrawDebug();
+            if (App.GetCollisionManager().IntersectsWith(collider, typeof(TestWall), Position.xy))
+            {
+                collider.DrawDebug();
+            }
 
             vec4 col = Color.Hex("#000000ff");
 
@@ -88,7 +91,6 @@ namespace panpanExample
 
         private void OnKeyDown(SDL.Keycode? k)
         {
-            
             if (k == SDL.Keycode.Z || k == SDL.Keycode.Space)
             {
                 speed.y = 5;

@@ -16,4 +16,24 @@ namespace panpan.Util
         }
 
     }
+
+    public struct Rect
+    {
+        public int X, Y, Width, Height;
+        public Rect(int x, int y, int w, int h)
+        {
+            X = x;
+            Y = y;
+            Width = w;
+            Height = h;
+        }
+
+        public bool Intersects(Rect other)
+        {
+            return !(other.X > X + Width ||
+                    other.X + other.Width < X ||
+                    other.Y > Y + Height ||
+                    other.Y + other.Height < Y);
+        }
+    }
 }

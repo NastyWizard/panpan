@@ -7,6 +7,5 @@
             "request": "launch",
             "projectPath": "${workspaceFolder}/panpan.csproj"
         }
-
     ]
 }

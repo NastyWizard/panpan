@@ -13,8 +13,6 @@ namespace panpan.Collision
             QUADTREE,
             INVALID
         }
-
-        private List<Collider> colliders;
         private SpatialHash spatialHash;
         private Quadtree quadtree;
 
@@ -27,11 +25,20 @@ namespace panpan.Collision
             this.type = type;
             this.cellSize = cellSize;
             this.worldSize = worldSize;
+            if (type == ManagerType.SPACIAL_HASH)
+            {
+                spatialHash = new SpatialHash(cellSize, worldSize);
+            }
         }
 
         public void AddCollider(Collider col)
         {
-            colliders.Add(col);
+            spatialHash.AddCollider(col, col.Parent.GetType());
+        }
+
+        public bool IntersectsWith(Collider self, Type other, vec2? pos = null)
+        {
+            return spatialHash.IntersectsWith(self, other, pos);
         }
 
         //----------------------------
@@ -48,6 +55,7 @@ namespace panpan.Collision
         private class SpatialHash
         {
             private Dictionary<int, Collider> colliders;
+            private Dictionary<Type, Dictionary<int, Collider>> colliderTypes;
             private int cellSize;
             private vec2 worldSize;
 
@@ -55,24 +63,50 @@ namespace panpan.Collision
             {
                 this.cellSize = cellSize;
                 this.worldSize = worldSize;
+                colliders = new Dictionary<int, Collider>();
+                colliderTypes = new Dictionary<Type, Dictionary<int, Collider>>();
             }
-            public void AddCollider(Collider col)
+            public void AddCollider(Collider col, Type parentType)
             {
-                colliders.Add(CalculateHash(col),col);
+                colliders.Add(CalculateHash(col), col);
+                var key = parentType;
+                if (!colliderTypes.ContainsKey(key))
+                {
+                    colliderTypes.Add(key, new Dictionary<int, Collider>());
+                }
+                colliderTypes[key].Add(CalculateHash(col), col);
+            }
+
+            public bool IntersectsWith(Collider self, Type other, vec2? pos = null)
+            {
+                foreach (var key in colliderTypes[other].Keys)
+                {
+                    if (self.Intersects(colliderTypes[other][key], pos))
+                    {
+                        return true;
+                    }
+                }
+                return false;
             }
 
             private int CalculateHash(Collider col)
             {
                 vec2 c = col.CenterPoint();
-                c.x = CellCoord(c.x);
-                c.y = CellCoord(c.y);
-                int h = (int)Math.Pow(c.x * 92837111, c.y * 689287499);
-                return h % cellSize;
+                int cellX = (int)Math.Floor(c.x / cellSize);
+                int cellY = (int)Math.Floor(c.y / cellSize);
+                
+                // Large primes for hashing
+                const int p1 = 73856093;
+                const int p2 = 19349663;
+
+                int h = (cellX * p1) ^ (cellY * p2);
+                return h;
             }
             private int CellCoord(float coord)
             {
                 return (int)(coord / cellSize);
             }
+
         }
     }
 }

@@ -12,13 +12,20 @@ namespace panpan.Collision
         public CollisionDelegate OnCollisionEnter;
         public CollisionDelegate OnCollisionExit;
         public CollisionDelegate OnCollisionUpdate;
-        
+
         public Collider() { }
+
+        public override void Init()
+        {
+            App.GetCollisionManager().AddCollider(this);
+            base.Init();
+        }
+
         public void RegisterOnCollisionEnter(CollisionDelegate func) { OnCollisionEnter = func; }
         public void RegisterOnCollisionExit(CollisionDelegate func) { OnCollisionExit = func; }
         public void RegisterOnCollisionUpdate(CollisionDelegate func) { OnCollisionUpdate = func; }
         public virtual void DrawDebug() { }
         public virtual vec2 CenterPoint() { throw new Exception("Unimplemented CenterPoint"); }
-        public virtual bool Intersects(Collider other) { throw new Exception("Unimplemented Intersects"); }
+        public virtual bool Intersects(Collider other, vec2? pos = null) { throw new Exception("Unimplemented Intersects"); }
     }
 }
