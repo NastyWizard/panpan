@@ -15,11 +15,10 @@ namespace panpan.Collision
             SetBounds(new Rect(0, 0, width, height));
         }
 
-        public override void Update()
+        public override void UpdateBounds()
         {
             bounds.X = (int)Parent.Position.x + offset.x;
             bounds.Y = (int)Parent.Position.y + offset.y;
-            base.Update();
         }
 
         public override bool Intersects(Collider other, vec2? pos = null)

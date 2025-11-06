@@ -17,11 +17,10 @@ namespace panpanExample
 
         public TestWall(int x, int y)
         {
-            Position.xy = new vec2(x, y);   
+            Position.xy = new vec2(x, y);
         }
         public override void Init()
         {
-            
             renderer = (SpriteRenderer)AddComponent(new SpriteRenderer(new Texture(Sprites.tile, 8, 8)));
             renderer.RegisterSetUniforms(SetUniforms);
 

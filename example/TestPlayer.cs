@@ -15,7 +15,7 @@ namespace panpanExample
         SpriteRenderer renderer;
         BoxCollider collider;
         vec2 speed;
-        float grav = 0.3f;
+        float grav = 0.2f;
         public override void Init()
         {
             speed = vec2.Zero;

@@ -95,13 +95,18 @@ namespace panpan.Collision
                 vec2 c = col.CenterPoint();
                 int cellX = (int)Math.Floor(c.x / cellSize);
                 int cellY = (int)Math.Floor(c.y / cellSize);
-                
-                // Large primes for hashing
-                const int p1 = 73856093;
-                const int p2 = 19349663;
 
-                int h = (cellX * p1) ^ (cellY * p2);
-                return h;
+                // Encode negatives distinctly
+                uint ux = (uint)(cellX >= 0 ? cellX * 2 : (-cellX * 2 - 1));
+                uint uy = (uint)(cellY >= 0 ? cellY * 2 : (-cellY * 2 - 1));
+
+                // Large primes
+                const uint p1 = 73856093;
+                const uint p2 = 19349663;
+
+                // Mix and clamp to positive
+                uint h = (ux * p1) ^ (uy * p2);
+                return (int)(h & 0x7FFFFFFF);
             }
             private int CellCoord(float coord)
             {

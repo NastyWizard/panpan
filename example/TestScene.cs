@@ -1,20 +1,23 @@
 
 using System.Drawing;
+using GlmSharp;
+
 using panpan;
 using panpan.Scene;
 using panpan.Rendering;
 using panpanExample;
-using GlmSharp;
+using panpan.Util;
 
 public class TestScene : Scene
 {
     public TestScene() : base("test") { } // Init should handle most setup
     TestPlayer player;
     List<TestWall> walls = new List<TestWall>();
+    PTimer wallTimer;
     public override void Init()
     {
         // base.Init should usually be called last
-        for (var i = 0; i < 20; i++)
+        for (var i = 0; i < 200; i++)
         {
             walls.Add((TestWall)AddChild(new TestWall(-320 / 2 + i * 8, 0)));
         }
