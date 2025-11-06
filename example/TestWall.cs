@@ -50,8 +50,7 @@ namespace panpanExample
         public override void Render()
         {
             base.Render();
-            collider.DrawDebug();
-            Draw.Dot(Position.xy, Color.Hex("#ff00ffff"));
+            //collider.DrawDebug();
         }
     }
 }

@@ -12,7 +12,9 @@ namespace panpan.Rendering
 
         public static vec4 Transparent = vec4.Zero;
 
+        public static vec4 Red = new vec4(1f,0f,0f,1f);
         public static vec4 Green = new vec4(0f,1f,0f,1f);
+        public static vec4 Blue = new vec4(0f,0f,1f,1f);
 
         public static vec4 SkyBlue = Hex("#639bff");
 

@@ -14,17 +14,20 @@ public class TestScene : Scene
     public override void Init()
     {
         // base.Init should usually be called last
-        for (var i = 0; i < 40; i++)
+        for (var i = 0; i < 20; i++)
         {
-            walls.Add((TestWall)AddChild(new TestWall(-320/2 + i * 8, 0)));
+            walls.Add((TestWall)AddChild(new TestWall(-320 / 2 + i * 8, 0)));
         }
+        walls.Add((TestWall)AddChild(new TestWall(-64, 8)));
 
         player = (TestPlayer)AddChild(new TestPlayer());
+        player.Position.y = 1;
 
         base.Init();
 
         // Camera is setup in base.Init so it must be adjusted after.
         Camera.SetBounds(320, 180);
+        App.SetBGColor(panpan.Rendering.Color.Black);
     }
 
     public override void Render()

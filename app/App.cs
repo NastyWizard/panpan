@@ -115,6 +115,7 @@ namespace panpan
         public static void SetBGColor(vec4 col)
         {
             bgColor = col;
+            backBuffer.SetClearColor(bgColor);
         }
 
         /// <summary>
@@ -123,10 +124,10 @@ namespace panpan
         /// <returns></returns>
         internal bool Init()
         {
+            backBuffer = new RenderTarget((uint)gameSize.x, (uint)gameSize.y, bgColor);
             collisionManager = new CollisionManager(CollisionManager.ManagerType.SPACIAL_HASH, 8, new vec2(320, 180));
             sceneManager = new SceneManager(new TestScene());
             inputManager = new Input();
-            backBuffer = new RenderTarget((uint)gameSize.x, (uint)gameSize.y, panpan.Rendering.Color.Black);
             return true;
         }
 
@@ -218,10 +219,10 @@ namespace panpan
             {
                 colorTargetInfo.ClearColor = new SDL.FColor
                 {
-                    R = bgColor.r,
-                    G = bgColor.g,
-                    B = bgColor.b,
-                    A = bgColor.a
+                    R = 1.0f,
+                    G = 0.0f,
+                    B = 1.0f,
+                    A = 1.0f
                 };
             }
 

@@ -18,7 +18,7 @@ float4 main(FragInput input) : SV_TARGET
     float2 uv = input.uv;
     float4 col = mainTexture.Sample(mainSampler, uv);
 
-    if(col.a < 0.1)
+    if(col.a < 0.01)
         discard;
     return col;
 }

@@ -12,7 +12,7 @@ namespace panpan.Collision
         private ivec2 offset = ivec2.Zero;
         public BoxCollider(int width, int height)
         {
-            this.bounds = new Rect(0, 0, width, height);
+            SetBounds(new Rect(0, 0, width, height));
         }
 
         public override void Update()
@@ -49,7 +49,7 @@ namespace panpan.Collision
         {
             base.DrawDebug();
             Draw.Rect(bounds, debugColor);
-            Draw.Dot(new vec2(bounds.X, bounds.Y), Rendering.Color.SkyBlue);
+            Draw.Dot(new vec2(bounds.X, bounds.Y), Rendering.Color.Red);
         }
 
         public void SetOffset(int x, int y)
@@ -57,6 +57,13 @@ namespace panpan.Collision
             offset.x = x;
             offset.y = y;
         }
+        public void SetBounds(Rect bounds)
+        {
+            this.bounds = bounds;
+            this.bounds.Width -= 1;
+            this.bounds.Height -= 1;
+        }
+
         public override vec2 CenterPoint()
         {
             return new vec2(bounds.X + bounds.Width/2, bounds.Y + bounds.Height/2);

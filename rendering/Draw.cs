@@ -15,7 +15,6 @@ namespace panpan.Rendering
         public static void Rect(vec2 bl, vec2 size, vec4? color = null)
         {
             color ??= Color.White;
-            size -= vec2.Ones;
 
             var tr = bl + size;
             var tl = bl + size * vec2.UnitY;
@@ -67,6 +66,7 @@ namespace panpan.Rendering
         public static void Dot(vec2 p1, vec4? color = null)
         {
             color ??= Color.White;
+            Draw.color = color.Value;
 
             renderer.Position = new vec3(MathF.Round(p1.x), MathF.Round(p1.y), 1);
             renderer.Scale = vec3.Ones;

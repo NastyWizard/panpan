@@ -107,5 +107,10 @@ namespace panpan.Rendering
         {
             this.doesClear = doesClear;
         }
+
+        public void SetClearColor(vec4 col)
+        {
+            clearColor = col;
+        }
     }
 }

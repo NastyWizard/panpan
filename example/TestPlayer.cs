@@ -34,17 +34,8 @@ namespace panpanExample
 
         public override void Update()
         {
-            // TODO replace with move / colision func
-
-            if (Position.y + speed.y < 0)
-            {
-                Position.y = 0;
-                speed.y = 0;
-            }
-
-            Position.xy += speed;
-            
-            // Need to clear speed after, as input happens bedfore update
+            Move(ref speed);
+            // Need to clear speed after, as input happens before update
             speed.x = 0;
             speed.y -= grav;
 
@@ -65,14 +56,12 @@ namespace panpanExample
         public override void Render()
         {
             base.Render();
-            if (App.GetCollisionManager().IntersectsWith(collider, typeof(TestWall), Position.xy))
-            {
-                collider.DrawDebug();
-            }
+            
+            //collider.DrawDebug();
 
             vec4 col = Color.Hex("#000000ff");
 
-            Draw.Dot(Position.xy, Color.Hex("#ff00ffff"));
+            //Draw.Dot(Position.xy, Color.Hex("#ff00ffff"));
         }
 
         private void OnKeyHeld(SDL.Keycode? k)
@@ -93,8 +82,47 @@ namespace panpanExample
         {
             if (k == SDL.Keycode.Z || k == SDL.Keycode.Space)
             {
-                speed.y = 5;
+                speed.y = 3;
             }
+        }
+
+        private void Move(ref vec2 speed)
+        {
+            ivec2 sign = new ivec2(MathF.Sign(speed.x), MathF.Sign(speed.y));
+            ivec2 move = new ivec2((int)MathF.Round(speed.x), (int)MathF.Round(speed.y));
+            vec2 r = speed - move;
+
+            // Horizontal
+            while (move.x != 0)
+            {
+                if (!App.GetCollisionManager().IntersectsWith(collider, typeof(TestWall), Position.xy + new vec2(sign.x, 0.0f)))
+                {
+                    Position.x += sign.x;
+                    move.x -= sign.x;
+                }
+                else
+                {
+                    speed.x = 0;
+                    break;
+                }
+            }
+
+            // Vertical
+            while (move.y != 0)
+            {
+                if (!App.GetCollisionManager().IntersectsWith(collider, typeof(TestWall), Position.xy + new vec2(0.0f, sign.y)))
+                {
+                    Position.y += sign.y;
+                    move.y -= sign.y;
+                }
+                else
+                {
+                    speed.y = 0;
+                    break;
+                }
+            }
+            
+            //Position.xy += r;
         }
     }
 }
