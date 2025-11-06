@@ -9,13 +9,12 @@ namespace panpan.Rendering
     public class Draw
     {
         static BasicRenderer renderer = new BasicRenderer();
-        static SpriteRenderer spriteRenderer = new SpriteRenderer(null);
+        static SpriteRenderer spriteRenderer = new SpriteRenderer(null, Shapes.quad, new Material(Assets.Shaders.standard_frag_hlsl, Assets.Shaders.backbuffer_vert_hlsl));
         static vec4 color;
 
         public static void Rect(vec2 bl, vec2 size, vec4? color = null)
         {
             color ??= Color.White;
-            Draw.color = color.Value;
             size -= vec2.Ones;
 
             var tr = bl + size;
@@ -36,7 +35,6 @@ namespace panpan.Rendering
         public static void Line(vec2 p1, vec2 p2, vec4? color = null)
         {
             color ??= Color.White;
-            Draw.color = color.Value;
 
             p1.x = MathF.Round(p1.x);
             p1.y = MathF.Round(p1.y);
@@ -69,7 +67,6 @@ namespace panpan.Rendering
         public static void Dot(vec2 p1, vec4? color = null)
         {
             color ??= Color.White;
-            Draw.color = color.Value;
 
             renderer.Position = new vec3(MathF.Round(p1.x), MathF.Round(p1.y), 1);
             renderer.Scale = vec3.Ones;

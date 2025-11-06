@@ -68,6 +68,7 @@ namespace panpan.Collision
             }
             public void AddCollider(Collider col, Type parentType)
             {
+                col.Update();
                 colliders.Add(CalculateHash(col), col);
                 var key = parentType;
                 if (!colliderTypes.ContainsKey(key))

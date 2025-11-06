@@ -3,6 +3,6 @@ namespace panpan.Rendering
 {
     public class RenderUtil
     {
-        public static Material DefaultMaterial = new Material();
+        public static readonly Material DefaultMaterial = new Material();
     }
 }

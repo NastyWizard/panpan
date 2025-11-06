@@ -27,7 +27,6 @@ namespace panpanExample
 
             collider = (BoxCollider)AddComponent(new BoxCollider(8, 8));
             collider.SetOffset(0,-7);
-            collider.Update();
 
             base.Init();
         }

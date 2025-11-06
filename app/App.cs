@@ -19,6 +19,7 @@ namespace panpan
     public class App
     {
 
+        // Rendering data
         Platform platform;
         static nint gpuDevice;
         static nint window;
@@ -26,15 +27,23 @@ namespace panpan
         static nint renderPass;
         static nint swapchainTexture;
         static List<nint> renderFences = new List<nint>();
-        static vec4 bgColor;  
 
+        // Managers
         static SceneManager sceneManager;
         static Input inputManager;
         static CollisionManager collisionManager;
 
+        // Settings
+        static vec4 bgColor;
+
+        // Backbuffer
+        RenderTarget backBuffer;
+        ivec2 gameSize;
+
         public App(string title = "panpan", int width = 320, int height = 180)
         {
             bgColor = Color.SkyBlue;
+            gameSize = new ivec2(width, height);
 
             SDL.Init(SDL.InitFlags.Video);
 
@@ -117,6 +126,7 @@ namespace panpan
             collisionManager = new CollisionManager(CollisionManager.ManagerType.SPACIAL_HASH, 8, new vec2(320, 180));
             sceneManager = new SceneManager(new TestScene());
             inputManager = new Input();
+            backBuffer = new RenderTarget((uint)gameSize.x, (uint)gameSize.y, panpan.Rendering.Color.Black);
             return true;
         }
 
@@ -165,10 +175,15 @@ namespace panpan
         /// </summary>
         private void Render()
         {
+            
+            SetRenderTarget(backBuffer);
+            sceneManager.ActiveScene.Render();
+            EndRenderPass();
+
             CreateDefaultRenderTarget(SDL.GPULoadOp.Clear);
             if (swapchainTexture != nint.Zero)
             {
-                sceneManager.ActiveScene.Render();
+                Draw.RenderTarget(backBuffer, new vec2(-gameSize.x/2, gameSize.y/2));
             }
             EndRenderPass();
             swapchainTexture = nint.Zero;
@@ -235,7 +250,6 @@ namespace panpan
         /// <param name="target">Render target</param>
         public static void SetRenderTarget(RenderTarget target)
         {
-            EndRenderPass();
             WaitAndClearFences();
             commandBuffer = SDL.AcquireGPUCommandBuffer(gpuDevice);
             renderPass = target.CreateRenderPass();

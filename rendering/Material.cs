@@ -120,6 +120,8 @@ namespace panpan.Rendering
             pipelineInfo.TargetInfo.NumColorTargets = 1;
             pipelineInfo.TargetInfo.ColorTargetDescriptions = SDL.StructureArrayToPointer(colorTargetDescriptions);
 
+            //pipelineInfo.RasterizerState.CullMode = SDL.GPUCullMode.Back;
+
             pipeline = SDL.CreateGPUGraphicsPipeline(App.GetDevice(), pipelineInfo);
 
             SDL.ReleaseGPUShader(App.GetDevice(), vertexShader);
