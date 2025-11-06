@@ -37,7 +37,7 @@ namespace panpan
         static vec4 bgColor;
 
         // Backbuffer
-        RenderTarget backBuffer;
+        static RenderTarget backBuffer;
         ivec2 gameSize;
 
         public App(string title = "panpan", int width = 320, int height = 180)
@@ -176,6 +176,7 @@ namespace panpan
         private void Render()
         {
             
+            backBuffer.SetDoesClear(true);
             SetRenderTarget(backBuffer);
             sceneManager.ActiveScene.Render();
             EndRenderPass();
@@ -241,7 +242,8 @@ namespace panpan
         public static void ResetRenderTarget(SDL.GPULoadOp loadOp = SDL.GPULoadOp.Load)
         {
             EndRenderPass();
-            CreateDefaultRenderTarget(loadOp);
+            backBuffer.SetDoesClear(false);
+            SetRenderTarget(backBuffer);
         }
 
         /// <summary>

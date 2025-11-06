@@ -14,6 +14,8 @@ namespace panpan.Rendering
         nint renderPass;
         vec4 clearColor;
 
+        bool doesClear = true;
+
         public uint Width, Height;
 
         public RenderTarget(uint width, uint height, vec4? clearColor = null)
@@ -48,7 +50,7 @@ namespace panpan.Rendering
             var colorTargetInfo = new SDL.GPUColorTargetInfo
             {
                 Texture = gpuTexture.Value,
-                LoadOp = SDL.GPULoadOp.Clear,
+                LoadOp = doesClear ? SDL.GPULoadOp.Clear : SDL.GPULoadOp.Load,
                 StoreOp = SDL.GPUStoreOp.Store,
                 ClearColor = new SDL.FColor
                 {
@@ -99,6 +101,11 @@ namespace panpan.Rendering
                 throw new Exception($"Failed to create GPU texture for Render Target: {SDL.GetError()}");
             }
             texture.SetGPUTexture(gpuTexture.Value);
+        }
+
+        public void SetDoesClear(bool doesClear)
+        {
+            this.doesClear = doesClear;
         }
     }
 }
