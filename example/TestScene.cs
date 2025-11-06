@@ -14,7 +14,7 @@ public class TestScene : Scene
     public override void Init()
     {
         // base.Init should usually be called last
-        for (var i = 0; i < 20; i++)
+        for (var i = 0; i < 40; i++)
         {
             walls.Add((TestWall)AddChild(new TestWall(-320/2 + i * 8, 0)));
         }
