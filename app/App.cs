@@ -264,13 +264,14 @@ namespace panpan
         private static void EndRenderPass()
         {
             SDL.EndGPURenderPass(renderPass);
-            //SDL.SubmitGPUCommandBuffer(commandBuffer);
-            nint fence = SDL.SubmitGPUCommandBufferAndAcquireFence(commandBuffer);
-            renderFences.Add(fence);
+            SDL.SubmitGPUCommandBuffer(commandBuffer);
+            //nint fence = SDL.SubmitGPUCommandBufferAndAcquireFence(commandBuffer);
+            //renderFences.Add(fence);
         }
 
-        private static void WaitAndClearFences()
+        private static void WaitAndClearFences() // Probably not needed?
         {
+            return; 
             if (renderFences.Count > 0)
             {
                 SDL.WaitForGPUFences(GetDevice(), true, renderFences.ToArray(), (uint)renderFences.Count);
