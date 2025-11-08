@@ -27,6 +27,7 @@ namespace panpan
         static nint renderPass;
         static nint swapchainTexture;
         static List<nint> renderFences = new List<nint>();
+        static ImGuiController? imguiController;
 
         // Managers
         static SceneManager sceneManager;
@@ -128,6 +129,8 @@ namespace panpan
             collisionManager = new CollisionManager(CollisionManager.ManagerType.SPACIAL_HASH, 8, new vec2(320, 180));
             sceneManager = new SceneManager(new TestScene());
             inputManager = new Input();
+            imguiController = new ImGuiController();
+            imguiController.Initialize(gpuDevice, window);
             return true;
         }
 
@@ -148,9 +151,11 @@ namespace panpan
                     {
                         tokenSource.Cancel();
                     }
+                    imguiController?.ProcessEvent(ref evt);
                     Input.HandleEvents(evt);
                 }
                 Input.Update();
+                imguiController?.NewFrame();
 
                 Update();
                 Render();
@@ -158,6 +163,7 @@ namespace panpan
             }
 
             // cleanup
+            imguiController?.Dispose();
             SDL.DestroyGPUDevice(gpuDevice);
             SDL.DestroyWindow(window);
 
@@ -182,10 +188,13 @@ namespace panpan
             sceneManager.ActiveScene.Render();
             EndRenderPass();
 
+            imguiController?.RenderUI();
+
             CreateDefaultRenderTarget(SDL.GPULoadOp.Clear);
             if (swapchainTexture != nint.Zero)
             {
                 Draw.RenderTarget(backBuffer, new vec2(-gameSize.x/2, gameSize.y/2));
+                imguiController?.RenderDrawData(commandBuffer, renderPass);
             }
             EndRenderPass();
             swapchainTexture = nint.Zero;
@@ -208,6 +217,8 @@ namespace panpan
                     Console.WriteLine("SDL Error WaitAndAcquireGPUSwapchainTexture: " + SDL.GetError());
                 }
             }
+
+            imguiController?.PrepareDrawData(commandBuffer);
 
             var colorTargetInfo = new SDL.GPUColorTargetInfo
             {
