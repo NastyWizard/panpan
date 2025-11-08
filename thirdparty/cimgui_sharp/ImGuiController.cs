@@ -5,7 +5,7 @@ using ImGuiNET.Backend.SDLGPU;
 
 namespace panpan.Rendering
 {
-    internal sealed class ImGuiController : IDisposable
+    public sealed class ImGuiController : IDisposable
     {
         [StructLayout(LayoutKind.Sequential)]
         private struct ImGuiImplSDLGPU3InitInfoNative
@@ -20,7 +20,7 @@ namespace panpan.Rendering
         private SWIGTYPE_p_ImGuiContext? context;
         private SWIGTYPE_p_ImDrawData? currentDrawData;
         private bool initialized;
-        private bool showDemoWindow = true;
+        private bool showDemoWindow = false;
 
         public event Action? OnRender;
 

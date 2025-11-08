@@ -6,6 +6,7 @@ using panpan.Assets;
 using panpan.Scene;
 using GlmSharp;
 using panpan.Collision;
+using panpan.Util;
 
 namespace panpan
 {
@@ -21,6 +22,7 @@ namespace panpan
 
         // Rendering data
         Platform platform;
+        static float fps;
         static nint gpuDevice;
         static nint window;
         static nint commandBuffer;
@@ -86,6 +88,11 @@ namespace panpan
             SDL.SetGPUAllowedFramesInFlight(gpuDevice, 3);
         }
 
+        public static float GetFPS()
+        {
+            return fps;
+        }
+
         public static nint GetDevice()
         {
             return gpuDevice;
@@ -111,6 +118,11 @@ namespace panpan
         public static nint GetRenderPass()
         {
             return renderPass;
+        }
+
+        public static ImGuiController? GetImGuiController()
+        {
+            return imguiController;
         }
 
         public static void SetBGColor(vec4 col)
@@ -142,9 +154,13 @@ namespace panpan
             var tokenSource = new CancellationTokenSource();
             var token = tokenSource.Token;
 
+            int maxFrameCount = 10;
+            int frameCount = maxFrameCount;
+
             Init();
             while (!token.IsCancellationRequested)
             {
+                float frameStartTime = Time.Elapsed();
                 while (SDL.PollEvent(out var evt))
                 {
                     if (evt.Type == (uint)SDL.EventType.WindowCloseRequested)
@@ -160,6 +176,13 @@ namespace panpan
                 Update();
                 Render();
 
+                frameCount++;
+
+                if (frameCount > maxFrameCount)
+                {
+                    frameCount = 0;
+                    fps = 1.0f / (Time.Elapsed() - frameStartTime);
+                }
             }
 
             // cleanup
