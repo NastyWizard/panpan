@@ -1,4 +1,5 @@
 
+using System;
 using GlmSharp;
 using panpan.Scene;
 using SDL3;
@@ -13,8 +14,7 @@ namespace panpan.Collision
             QUADTREE,
             INVALID
         }
-        private SpatialHash spatialHash;
-        private Quadtree quadtree;
+        private readonly SpatialHash spatialHash;
 
         private ManagerType type;
         private vec2 worldSize;
@@ -27,10 +27,12 @@ namespace panpan.Collision
             this.type = type;
             this.cellSize = cellSize;
             this.worldSize = worldSize;
-            if (type == ManagerType.SPACIAL_HASH)
+            if (type != ManagerType.SPACIAL_HASH)
             {
-                spatialHash = new SpatialHash(cellSize, worldSize);
+                throw new NotSupportedException($"{nameof(CollisionManager)} currently only supports {ManagerType.SPACIAL_HASH}.");
             }
+
+            spatialHash = new SpatialHash(cellSize, worldSize);
         }
 
         public void AddCollider(Collider col)
@@ -43,15 +45,6 @@ namespace panpan.Collision
             return spatialHash.IntersectsWith(self, other, pos);
         }
 
-        //----------------------------
-        //------------------ Quad Tree
-        //----------------------------
-        private class Quadtree
-        {
-
-        }
-
-        //----------------------------
         //--------------- Spatial Hash
         //----------------------------
         private class SpatialHash
@@ -82,9 +75,14 @@ namespace panpan.Collision
 
             public bool IntersectsWith(Collider self, Type other, vec2? pos = null)
             {
-                foreach (var key in colliderTypes[other].Keys)
+                if (!colliderTypes.TryGetValue(other, out var otherColliders))
                 {
-                    if (self.Intersects(colliderTypes[other][key], pos))
+                    return false;
+                }
+
+                foreach (var key in otherColliders.Keys)
+                {
+                    if (self.Intersects(otherColliders[key], pos))
                     {
                         return true;
                     }

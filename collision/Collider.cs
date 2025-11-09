@@ -9,9 +9,9 @@ namespace panpan.Collision
     public abstract class Collider: Component
     {
         protected vec4 debugColor = Color.Green;
-        public CollisionDelegate OnCollisionEnter;
-        public CollisionDelegate OnCollisionExit;
-        public CollisionDelegate OnCollisionUpdate;
+        public CollisionDelegate OnCollisionEnter = null!;
+        public CollisionDelegate OnCollisionExit  = null!;
+        public CollisionDelegate OnCollisionUpdate  = null!;
 
         public Collider() { }
 

@@ -31,37 +31,39 @@ namespace panpan.Rendering
             Draw.Rect(new vec2(rect.X, rect.Y), new vec2(rect.Width, rect.Height), color);
         }
 
-        public static void Line(vec2 p1, vec2 p2, vec4? color = null)
+        public static void Line(vec2 p1, vec2 p2, vec4? color = null, bool pixelPerfect = true)
         {
             color ??= Color.White;
-
-            p1.x = MathF.Round(p1.x);
-            p1.y = MathF.Round(p1.y);
-            p2.x = MathF.Round(p2.x);
-            p2.y = MathF.Round(p2.y);
-
-            var current = p1;
-
-            while (vec2.Distance(current.xy, p2.xy) >= 1f)
+            if (pixelPerfect)
             {
-                Draw.Dot(current.xy, color);
+                p1.x = MathF.Round(p1.x);
+                p1.y = MathF.Round(p1.y);
+                p2.x = MathF.Round(p2.x);
+                p2.y = MathF.Round(p2.y);
 
-                var dir = p2 - current;
-                current += dir.Normalized;
+                var current = p1;
+
+                while (vec2.Distance(current.xy, p2.xy) >= 1f)
+                {
+                    Draw.Dot(current.xy, color);
+
+                    var dir = p2 - current;
+                    current += dir.Normalized;
+                }
             }
-            return;
+            else
+            {
+                var dist = vec2.Distance(p1, p2);
 
-            // faster non-pixel perfect line
-            var dist = vec2.Distance(p1, p2);
+                renderer.Position = new vec3(p1.xy, 1);
+                renderer.Scale = vec3.Ones;
+                renderer.Width = 1f;
+                renderer.Height = (uint)dist;
+                renderer.Angle = MathF.Atan2(p2.y - p1.y, p2.x - p1.x) + PMath.DegToRad(90);
+                renderer.Origin = vec2.UnitY;
 
-            renderer.Position = new vec3(p1.xy, 1);
-            renderer.Scale = vec3.Ones;
-            renderer.Width = 1f;
-            renderer.Height = (uint)dist;
-            renderer.Angle = MathF.Atan2(p2.y - p1.y, p2.x - p1.x) + PMath.DegToRad(90);
-            renderer.Origin = vec2.UnitY;
-
-            renderer.Render();
+                renderer.Render();
+            }
         }
         public static void Dot(vec2 p1, vec4? color = null)
         {

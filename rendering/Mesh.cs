@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.InteropServices;
 using GlmSharp;
 using panpan;
@@ -28,8 +29,8 @@ namespace panpan.Rendering
         private nint indexBuffer;
         private nint vertexTransferBuffer;
         private nint indexTransferBuffer;
-        private Vertex[] vertices;
-        private uint[] indices;
+        private Vertex[] vertices = Array.Empty<Vertex>();
+        private uint[] indices = Array.Empty<uint>();
         private uint vertexSize;
         private uint indexSize;
         private bool uploaded = false;
@@ -110,14 +111,19 @@ namespace panpan.Rendering
             // SDL.UnmapGPUTransferBuffer(App.GetDevice(), indexTransferBuffer);
         }
 
-        private void TransferBuffer<Type>(in Type[] inData, uint size, nint transferBuffer)
+        private void TransferBuffer<T>(in T[] inData, uint size, nint transferBuffer) where T : unmanaged
         {
             unsafe
             {
-                Type* data = (Type*)SDL.MapGPUTransferBuffer(App.GetDevice(), transferBuffer, false);
-                fixed (Type* d = inData)
+                var mappedPtr = (T*)SDL.MapGPUTransferBuffer(App.GetDevice(), transferBuffer, false);
+                if (mappedPtr == null)
                 {
-                    Buffer.MemoryCopy(d, data, size, size);
+                    throw new InvalidOperationException("Failed to map GPU transfer buffer.");
+                }
+
+                fixed (T* d = inData)
+                {
+                    Buffer.MemoryCopy(d, mappedPtr, size, size);
                 }
             }
             SDL.UnmapGPUTransferBuffer(App.GetDevice(), transferBuffer);

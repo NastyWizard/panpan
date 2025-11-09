@@ -11,7 +11,7 @@ namespace panpan.Rendering
         private nint gpuSampler;
         private uint width;
         private uint height;
-        private byte[] pixelData;
+        private byte[]? pixelData;
         private bool uploaded = false;
         public nint GPUTexture => gpuTexture;
         public nint GPUSampler => gpuSampler;
@@ -71,7 +71,7 @@ namespace panpan.Rendering
             }
         }
 
-        private byte[]? DecodePNG(byte[] pngData, uint width, uint height)
+        private byte[] DecodePNG(byte[] pngData, uint width, uint height)
         {
             try
             {

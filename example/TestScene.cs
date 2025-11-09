@@ -12,16 +12,9 @@ namespace panpanExample
 {
     public class TestScene : Scene
     {
-
-        TestPlayer player;
-        List<TestWall> walls = new List<TestWall>();
-        PTimer wallTimer;
-        bool showDebugWindow = true;
-
-        Texture textureTest;
-        ImGuiTextureRef textureRef;
-
-        Editor? editor;
+        private TestPlayer player = null!;
+        private readonly List<TestWall> walls = new List<TestWall>();
+        private Editor? editor = null;
 
         public TestScene() : base("test") { }
 
@@ -42,9 +35,6 @@ namespace panpanExample
             // Camera is setup in base.Init so it must be adjusted after.
             Camera.SetBounds(320, 180);
             App.SetBGColor(panpan.Rendering.Color.Black);
-
-            textureTest = new Texture(panpan.Assets.Sprites.tile, 8, 8);
-            textureRef = ImGuiTextureRef.FromTexture(textureTest);
 #if DEBUG
             editor = new Editor();
 #endif

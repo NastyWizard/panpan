@@ -12,14 +12,12 @@ namespace panpanExample
 {
     public class TestPlayer : Entity
     {
-        SpriteRenderer renderer;
-        BoxCollider collider;
-        vec2 speed;
-        float grav = 0.2f;
+        private SpriteRenderer renderer = null!;
+        private BoxCollider collider = null!;
+        private vec2 speed = vec2.Zero;
+        private readonly float grav = 0.2f;
         public override void Init()
         {
-            speed = vec2.Zero;
-
             renderer = (SpriteRenderer)AddComponent(new SpriteRenderer(new Texture(Sprites.test, 16, 16)));
             renderer.Clip(new Rect(0, 0, 8, 8));
             //renderer.RegisterSetUniforms(SetUniforms);

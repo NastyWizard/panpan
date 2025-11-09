@@ -1,4 +1,5 @@
 
+using System;
 using GlmSharp;
 using SDL3;
 
@@ -53,15 +54,15 @@ namespace panpan
 
         public static void RegisterOnKeyHeld(InputDelegate action)
         {
-            keyHeldEvents.Add(action.Method.ReflectedType.FullName, action);
+            keyHeldEvents.Add(BuildActionKey(action), action);
         }
         public static void RegisterOnKeyDown(InputDelegate action)
         {
-            keyDownEvents.Add(action.Method.ReflectedType.FullName, action);
+            keyDownEvents.Add(BuildActionKey(action), action);
         }
         public static void DeregisterOnKeyDown(InputDelegate action)
         {
-            keyDownEvents.Remove(action.Method.ReflectedType.FullName);
+            keyDownEvents.Remove(BuildActionKey(action));
         }
 
         private static void KeyDown(SDL.Keycode? keycode)
@@ -85,6 +86,14 @@ namespace panpan
                 action.Invoke(keycode);
             }
         }
-        
+        private static string BuildActionKey(InputDelegate action)
+        {
+            var method = action.Method;
+            return method.ReflectedType?.FullName ??
+                   method.DeclaringType?.FullName ??
+                   method.Name ??
+                   Guid.NewGuid().ToString();
+        }
+
     }
 }

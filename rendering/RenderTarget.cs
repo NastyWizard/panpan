@@ -47,6 +47,11 @@ namespace panpan.Rendering
         /// </summary>
         public nint CreateRenderPass()
         {
+            if (gpuTexture is null)
+            {
+                throw new InvalidOperationException("Render target GPU texture has not been created.");
+            }
+
             var colorTargetInfo = new SDL.GPUColorTargetInfo
             {
                 Texture = gpuTexture.Value,
@@ -80,7 +85,7 @@ namespace panpan.Rendering
             this.Width = width;
             this.Height = height;
 
-            if (gpuTexture != null)
+            if (gpuTexture.HasValue)
             {
                 SDL.ReleaseGPUTexture(App.GetDevice(), gpuTexture.Value);
             }
@@ -95,12 +100,13 @@ namespace panpan.Rendering
             textureCreateInfo.LayerCountOrDepth = 1;
             textureCreateInfo.NumLevels = 1;
 
-            gpuTexture = SDL.CreateGPUTexture(App.GetDevice(), textureCreateInfo);
-            if (gpuTexture == nint.Zero)
+            var handle = SDL.CreateGPUTexture(App.GetDevice(), textureCreateInfo);
+            if (handle == nint.Zero)
             {
                 throw new Exception($"Failed to create GPU texture for Render Target: {SDL.GetError()}");
             }
-            texture.SetGPUTexture(gpuTexture.Value);
+            gpuTexture = handle;
+            texture.SetGPUTexture(handle);
         }
 
         public void SetDoesClear(bool doesClear)

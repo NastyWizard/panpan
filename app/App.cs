@@ -21,30 +21,30 @@ namespace panpan
     {
 
         // Rendering data
-        Platform platform;
+        private Platform platform;
         static float fps;
         static nint gpuDevice;
         static nint window;
         static nint commandBuffer;
         static nint renderPass;
         static nint swapchainTexture;
-        static List<nint> renderFences = new List<nint>();
+        static readonly List<nint> renderFences = new List<nint>();
         static ImGuiController? imguiController;
 
         // Managers
-        static SceneManager sceneManager;
-        static Input inputManager;
-        static CollisionManager collisionManager;
+        static SceneManager sceneManager = null!;
+        static CollisionManager collisionManager = null!;
+        static Input inputManager = null!;
 
         // Scene
-        Scene.Scene startScene;
+        private readonly Scene.Scene startScene;
 
         // Settings
         static vec4 bgColor;
 
         // Backbuffer
-        static RenderTarget backBuffer;
-        ivec2 gameSize;
+        static RenderTarget backBuffer = null!;
+        private readonly ivec2 gameSize;
 
         public App(string title, Scene.Scene startScene, int width = 320, int height = 180)
         {
@@ -127,7 +127,7 @@ namespace panpan
         public static void SetBGColor(vec4 col)
         {
             bgColor = col;
-            backBuffer.SetClearColor(bgColor);
+            backBuffer?.SetClearColor(bgColor);
         }
 
         /// <summary>
@@ -304,17 +304,18 @@ namespace panpan
 
         private static void WaitAndClearFences() // Probably not needed?
         {
-            return; 
-            if (renderFences.Count > 0)
+            if (renderFences.Count == 0)
             {
-                SDL.WaitForGPUFences(GetDevice(), true, renderFences.ToArray(), (uint)renderFences.Count);
-
-                foreach (var fence in renderFences)
-                {
-                    SDL.ReleaseGPUFence(GetDevice(), fence);
-                }
-                renderFences.Clear();
+                return;
             }
+
+            SDL.WaitForGPUFences(GetDevice(), true, renderFences.ToArray(), (uint)renderFences.Count);
+
+            foreach (var fence in renderFences)
+            {
+                SDL.ReleaseGPUFence(GetDevice(), fence);
+            }
+            renderFences.Clear();
         }
     }
 }

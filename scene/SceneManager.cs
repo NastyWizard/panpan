@@ -3,7 +3,7 @@ namespace panpan.Scene
 {
     public class SceneManager
     {
-        private Scene activeScene;
+        private Scene activeScene = null!;
         public Scene ActiveScene => activeScene;
         
         public SceneManager(Scene startScene)

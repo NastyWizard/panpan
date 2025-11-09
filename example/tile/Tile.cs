@@ -9,9 +9,7 @@ namespace panpanExample
 {
     public class Tile : Entity
     {
-        SpriteRenderer renderer;
-        BoxCollider collider;
-
+        private SpriteRenderer renderer = null!;
         public Tile(int x, int y)
         {
             Position.xy = new vec2(x, y);

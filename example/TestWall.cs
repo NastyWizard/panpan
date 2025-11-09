@@ -12,8 +12,8 @@ namespace panpanExample
 {
     public class TestWall : Entity
     {
-        SpriteRenderer renderer;
-        BoxCollider collider;
+        private SpriteRenderer renderer = null!;
+        private BoxCollider collider = null!;
 
         public TestWall(int x, int y)
         {
