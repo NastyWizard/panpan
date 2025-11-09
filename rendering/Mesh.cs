@@ -30,6 +30,7 @@ namespace panpan.Rendering
         private uint[] indices;
         private uint vertexSize;
         private uint indexSize;
+        private bool uploaded = false;
 
         public Mesh(in Vertex[] _vertices, in uint[] _indices)
         {
@@ -106,8 +107,16 @@ namespace panpan.Rendering
             }
             SDL.UnmapGPUTransferBuffer(App.GetDevice(), indexTransferBuffer);
         }
-        public void CopyPass(nint copyPass)
+        public void CopyPass()
         {
+            if (uploaded)
+            {
+                return;
+            }
+
+            var commandBuffer = SDL.AcquireGPUCommandBuffer(App.GetDevice());
+            var copyPass = SDL.BeginGPUCopyPass(commandBuffer);
+
             // Upload Verticies
             SDL.GPUTransferBufferLocation vertexLocation = new SDL.GPUTransferBufferLocation();
             vertexLocation.TransferBuffer = vertexTransferBuffer;
@@ -131,6 +140,10 @@ namespace panpan.Rendering
             indexRegion.Offset = 0;
 
             SDL.UploadToGPUBuffer(copyPass, indexLocation, indexRegion, true);
+
+            SDL.EndGPUCopyPass(copyPass);
+            SDL.SubmitGPUCommandBuffer(commandBuffer);
+            uploaded = true;
         }
     }
 }

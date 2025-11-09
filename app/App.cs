@@ -36,6 +36,9 @@ namespace panpan
         static Input inputManager;
         static CollisionManager collisionManager;
 
+        // Scene
+        Scene.Scene startScene;
+
         // Settings
         static vec4 bgColor;
 
@@ -43,10 +46,11 @@ namespace panpan
         static RenderTarget backBuffer;
         ivec2 gameSize;
 
-        public App(string title = "panpan", int width = 320, int height = 180)
+        public App(string title, Scene.Scene startScene, int width = 320, int height = 180)
         {
             bgColor = Color.SkyBlue;
             gameSize = new ivec2(width, height);
+            this.startScene = startScene;
 
             SDL.Init(SDL.InitFlags.Video);
 
@@ -120,11 +124,6 @@ namespace panpan
             return renderPass;
         }
 
-        public static ImGuiController? GetImGuiController()
-        {
-            return imguiController;
-        }
-
         public static void SetBGColor(vec4 col)
         {
             bgColor = col;
@@ -139,7 +138,7 @@ namespace panpan
         {
             backBuffer = new RenderTarget((uint)gameSize.x, (uint)gameSize.y, bgColor);
             collisionManager = new CollisionManager(CollisionManager.ManagerType.SPACIAL_HASH, 8, new vec2(320, 180));
-            sceneManager = new SceneManager(new TestScene());
+            sceneManager = new SceneManager(startScene);
             inputManager = new Input();
             imguiController = new ImGuiController();
             imguiController.Initialize(gpuDevice, window);

@@ -7,70 +7,53 @@ using panpan.Scene;
 using panpan.Rendering;
 using panpanExample;
 using panpan.Util;
-using panpan.Rendering;
 
-public class TestScene : Scene
+namespace panpanExample
 {
-    public TestScene() : base("test")
+    public class TestScene : Scene
     {
-    }
 
-    TestPlayer player;
-    List<TestWall> walls = new List<TestWall>();
-    PTimer wallTimer;
-    bool showDebugWindow = true;
+        TestPlayer player;
+        List<TestWall> walls = new List<TestWall>();
+        PTimer wallTimer;
+        bool showDebugWindow = true;
 
-    public override void Init()
-    {
-        // base.Init should usually be called last
-        for (var i = 0; i < 20; i++)
+        Texture textureTest;
+        ImGuiTextureRef textureRef;
+
+        Editor? editor;
+
+        public TestScene() : base("test") { }
+
+        public override void Init()
         {
-            walls.Add((TestWall)AddChild(new TestWall(-320 / 2 + i * 8, 0)));
-        }
-        walls.Add((TestWall)AddChild(new TestWall(-64, 8)));
-
-        player = (TestPlayer)AddChild(new TestPlayer());
-        player.Position.y = 1;
-
-        base.Init();
-
-        // Camera is setup in base.Init so it must be adjusted after.
-        Camera.SetBounds(320, 180);
-        App.SetBGColor(panpan.Rendering.Color.Black);
-    }
-
-    public override void Render()
-    {
-        base.Render();
-        DrawImGui();
-    }
-
-    private void DrawImGui()
-    {
-        if (!showDebugWindow)
-        {
-            return;
-        }
-
-        bool open = showDebugWindow;
-        bool visible = ImGui.Begin("Scene Debug", ref open);
-        showDebugWindow = open;
-
-        if (visible)
-        {
-            ImGui.Text($"FPS: {App.GetFPS():F2}");
-            ImGui.Text($"Player Pos: {player.Position.x:F2}, {player.Position.y:F2}");
-            ImGui.Text($"Camera Pos: {Camera.Position.x:F2}, {Camera.Position.y:F2}");
-            ImGui.Text($"Mouse Pos: {Input.MousePosition.x:F2}, {Input.MousePosition.y:F2}");
-            ImGui.Text($"Walls: {walls.Count}");
-
-            if (ImGui.Button("Reset Player"))
+            // base.Init should usually be called last
+            for (var i = 0; i < 20; i++)
             {
-                player.Position.x = 0;
-                player.Position.y = 1;
+                walls.Add((TestWall)AddChild(new TestWall(-320 / 2 + i * 8, 0)));
             }
+            walls.Add((TestWall)AddChild(new TestWall(-64, 8)));
+
+            player = (TestPlayer)AddChild(new TestPlayer());
+            player.Position.y = 1;
+
+            base.Init();
+
+            // Camera is setup in base.Init so it must be adjusted after.
+            Camera.SetBounds(320, 180);
+            App.SetBGColor(panpan.Rendering.Color.Black);
+
+            textureTest = new Texture(panpan.Assets.Sprites.tile, 8, 8);
+            textureRef = ImGuiTextureRef.FromTexture(textureTest);
+#if DEBUG
+            editor = new Editor();
+#endif
         }
 
-        ImGui.End();
+        public override void Render()
+        {
+            base.Render();
+            editor?.ShowEditor();
+        }
     }
 }

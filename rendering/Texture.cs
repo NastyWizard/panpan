@@ -12,6 +12,7 @@ namespace panpan.Rendering
         private uint width;
         private uint height;
         private byte[] pixelData;
+        private bool uploaded = false;
         public nint GPUTexture => gpuTexture;
         public nint GPUSampler => gpuSampler;
         public uint Width => width;
@@ -141,12 +142,15 @@ namespace panpan.Rendering
         }
 
 
-        public void CopyPass(nint copyPass)
+        public void CopyPass()
         {
-            if (pixelData == null)
+            if (uploaded || pixelData == null)
             {
                 return;
             }
+
+            var commandBuffer = SDL.AcquireGPUCommandBuffer(App.GetDevice());
+            var copyPass = SDL.BeginGPUCopyPass(commandBuffer);
 
             var textureDataTransferBuffer = SDL.CreateGPUTransferBuffer(App.GetDevice(), new SDL.GPUTransferBufferCreateInfo
             {
@@ -175,6 +179,11 @@ namespace panpan.Rendering
                 H = height,
                 D = 1
             }, false);
+
+            SDL.EndGPUCopyPass(copyPass);
+            SDL.SubmitGPUCommandBuffer(commandBuffer);
+
+            uploaded = true;
 
             return;
         }

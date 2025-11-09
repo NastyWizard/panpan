@@ -99,15 +99,8 @@ namespace panpan.Rendering
 
         private void CopyPass()
         {
-            var commandBuffer = SDL.AcquireGPUCommandBuffer(App.GetDevice());
-            var copyPass = SDL.BeginGPUCopyPass(commandBuffer);
-
-            mesh.CopyPass(copyPass);
-            if (texture != null)
-                texture.CopyPass(copyPass);
-
-            SDL.EndGPUCopyPass(copyPass);
-            SDL.SubmitGPUCommandBuffer(commandBuffer);
+            mesh.CopyPass();
+            texture?.CopyPass();
         }
 
         protected virtual mat4 ComputeModelMatrix()
