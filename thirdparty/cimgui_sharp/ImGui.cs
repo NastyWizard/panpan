@@ -34,6 +34,18 @@ namespace panpan.Rendering
         NoDocking = 1 << 21
     }
 
+    [Flags]
+    internal enum ImGuiComboFlags
+    {
+        None = 0
+    }
+
+    [Flags]
+    internal enum ImGuiSelectableFlags
+    {
+        None = 0
+    }
+
     internal static class ImGui
     {
         private static readonly SWIGTYPE_p_bool NullBool = new SWIGTYPE_p_bool(IntPtr.Zero, false);
@@ -70,6 +82,10 @@ namespace panpan.Rendering
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Text(string text) => cimgui_sdlgpu.igText(text);
 
+        public static void Separator() => cimgui_sdlgpu.igSeparator();
+
+        public static void SameLine() => cimgui_sdlgpu.igSameLine(0,10);
+
         public static unsafe bool Checkbox(string label, ref bool value)
         {
             byte* valuePtr = stackalloc byte[1];
@@ -97,6 +113,15 @@ namespace panpan.Rendering
             vecPtr[1] = height;
             var size = new SWIGTYPE_p_ImVec2((nint)vecPtr, false);
             return cimgui_sdlgpu.igButton(label, size);
+        }
+
+        public static bool RadioButton(string label, ref bool active)
+        {
+            if (cimgui_sdlgpu.igRadioButton_Bool(label, active))
+            {
+                active = !active;
+            }
+            return active;
         }
 
         public static unsafe void Image(ImGuiTextureRef textureRef, Vector2 size, Vector2? uv0 = null, Vector2? uv1 = null)
@@ -223,6 +248,82 @@ namespace panpan.Rendering
 
         public static unsafe bool ImageButton(string id, ImGuiTextureRef textureRef, float width, float height, Vector4? background = null, Vector4? tint = null) =>
             ImageButton(id, textureRef, new Vector2(width, height), null, null, background, tint);
+
+        public static bool BeginMainMenuBar()
+        {
+            return cimgui_sdlgpu.igBeginMainMenuBar();
+        }
+
+        public static void EndMainMenuBar()
+        {
+            cimgui_sdlgpu.igEndMainMenuBar();
+        }
+
+        public static bool BeginMenuBar()
+        {
+            return cimgui_sdlgpu.igBeginMenuBar();
+        }
+
+        public static void EndMenuBar()
+        {
+            cimgui_sdlgpu.igEndMenuBar();
+        }
+
+        public static bool BeginMenu(string label, bool enabled = true)
+        {
+            return cimgui_sdlgpu.igBeginMenu(label, enabled);
+        }
+
+        public static void EndMenu()
+        {
+            cimgui_sdlgpu.igEndMenu();
+        }
+
+        public static bool MenuItem(string label, string? shortcut = null, bool selected = false, bool enabled = true)
+        {
+            return cimgui_sdlgpu.igMenuItem_Bool(label, shortcut ?? string.Empty, selected, enabled);
+        }
+
+        public static bool BeginCombo(string label, string previewValue, ImGuiComboFlags flags = ImGuiComboFlags.None)
+        {
+            int rawFlags = (int)flags;
+            unsafe
+            {
+                int* ptr = &rawFlags;
+                var swigFlags = new SWIGTYPE_p_ImGuiComboFlags((nint)ptr, false);
+                return cimgui_sdlgpu.igBeginCombo(label, previewValue, swigFlags);
+            }
+        }
+
+        public static void EndCombo() => cimgui_sdlgpu.igEndCombo();
+
+        public static bool Selectable(string label, ref bool selected, ImGuiSelectableFlags flags = ImGuiSelectableFlags.None, Vector2? size = null)
+        {
+            int rawFlags = (int)flags;
+            unsafe
+            {
+                int* flagPtr = &rawFlags;
+                var swigFlags = new SWIGTYPE_p_ImGuiSelectableFlags((nint)flagPtr, false);
+
+                Vector2 sizeValue = size ?? Vector2.Zero;
+                float* sizePtr = stackalloc float[2];
+                sizePtr[0] = sizeValue.X;
+                sizePtr[1] = sizeValue.Y;
+                var sizeVec = new SWIGTYPE_p_ImVec2((nint)sizePtr, false);
+
+                bool changed = cimgui_sdlgpu.igSelectable_Bool(label, selected, swigFlags, sizeVec);
+                if (changed)
+                {
+                    selected = !selected;
+                }
+                return changed;
+            }
+        }
+
+        public static void ShowDemoWindow()
+        {
+            cimgui_sdlgpu.igShowDemoWindow(null);
+        }
     }
 
     internal sealed class ImGuiTextureRef : IDisposable

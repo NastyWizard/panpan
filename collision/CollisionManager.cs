@@ -20,6 +20,8 @@ namespace panpan.Collision
         private vec2 worldSize;
         private int cellSize;
 
+        public bool ShowColliderDebug;
+
         public CollisionManager(ManagerType type, int cellSize, vec2 worldSize)
         {
             this.type = type;

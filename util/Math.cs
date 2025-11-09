@@ -1,4 +1,6 @@
 
+using System.Runtime.InteropServices;
+
 namespace panpan.Util
 {
     public class PMath
@@ -17,6 +19,7 @@ namespace panpan.Util
 
     }
 
+    [StructLayout(LayoutKind.Sequential)]
     public struct Rect
     {
         public int X, Y, Width, Height;

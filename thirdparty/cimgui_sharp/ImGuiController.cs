@@ -20,16 +20,7 @@ namespace panpan.Rendering
         private SWIGTYPE_p_ImGuiContext? context;
         private SWIGTYPE_p_ImDrawData? currentDrawData;
         private bool initialized;
-        private bool showDemoWindow = false;
-
         public event Action? OnRender;
-
-        public bool ShowDemoWindow
-        {
-            get => showDemoWindow;
-            set => showDemoWindow = value;
-        }
-
         public void Initialize(nint device, nint window)
         {
             if (initialized)
@@ -107,11 +98,6 @@ namespace panpan.Rendering
             if (!initialized)
             {
                 return;
-            }
-
-            if (showDemoWindow)
-            {
-                cimgui_sdlgpu.igShowDemoWindow(null);
             }
 
             OnRender?.Invoke();

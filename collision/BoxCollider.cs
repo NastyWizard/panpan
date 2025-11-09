@@ -15,6 +15,15 @@ namespace panpan.Collision
             SetBounds(new Rect(0, 0, width, height));
         }
 
+        public override void Render()
+        {
+            base.Render();
+            if (App.GetCollisionManager().ShowColliderDebug)
+            {
+                DrawDebug();
+            }
+        }
+
         public override void UpdateBounds()
         {
             bounds.X = (int)Parent.Position.x + offset.x;

@@ -1,5 +1,7 @@
 using System.Runtime.InteropServices;
+using GlmSharp;
 using panpan;
+using panpan.Util;
 using SDL3;
 
 namespace panpan.Rendering
@@ -36,7 +38,6 @@ namespace panpan.Rendering
         {
             HandleVerticies(_vertices);
             HandleIndices(_indices);
-            //CopyPass();
         }
 
         ~Mesh()
@@ -46,7 +47,6 @@ namespace panpan.Rendering
             SDL.ReleaseGPUTransferBuffer(App.GetDevice(), vertexTransferBuffer);
             SDL.ReleaseGPUTransferBuffer(App.GetDevice(), indexTransferBuffer);
         }
-
 
         private void HandleVerticies(in Vertex[] _vertices)
         {
@@ -70,15 +70,16 @@ namespace panpan.Rendering
             transferInfo.Usage = SDL.GPUTransferBufferUsage.Upload;
             vertexTransferBuffer = SDL.CreateGPUTransferBuffer(App.GetDevice(), transferInfo);
 
-            unsafe
-            {
-                Vertex* data = (Vertex*)SDL.MapGPUTransferBuffer(App.GetDevice(), vertexTransferBuffer, false);
-                fixed (Vertex* inData = vertices)
-                {
-                    Buffer.MemoryCopy(inData, data, vertexSize, vertexSize);
-                }
-            }
-            SDL.UnmapGPUTransferBuffer(App.GetDevice(), vertexTransferBuffer);
+            TransferBuffer(vertices, vertexSize, vertexTransferBuffer);
+            // unsafe
+            // {
+            //     Vertex* data = (Vertex*)SDL.MapGPUTransferBuffer(App.GetDevice(), vertexTransferBuffer, false);
+            //     fixed (Vertex* inData = vertices)
+            //     {
+            //         Buffer.MemoryCopy(inData, data, vertexSize, vertexSize);
+            //     }
+            // }
+            // SDL.UnmapGPUTransferBuffer(App.GetDevice(), vertexTransferBuffer);
         }
 
         private void HandleIndices(in uint[] _indicies)
@@ -97,16 +98,31 @@ namespace panpan.Rendering
             transferInfo.Usage = SDL.GPUTransferBufferUsage.Upload;
             indexTransferBuffer = SDL.CreateGPUTransferBuffer(App.GetDevice(), transferInfo);
 
+            TransferBuffer(indices, indexSize, indexTransferBuffer);
+            // unsafe
+            // {
+            //     uint* data = (uint*)SDL.MapGPUTransferBuffer(App.GetDevice(), indexTransferBuffer, false);
+            //     fixed (uint* inData = indices)
+            //     {
+            //         Buffer.MemoryCopy(inData, data, indexSize, indexSize);
+            //     }
+            // }
+            // SDL.UnmapGPUTransferBuffer(App.GetDevice(), indexTransferBuffer);
+        }
+
+        private void TransferBuffer<Type>(in Type[] inData, uint size, nint transferBuffer)
+        {
             unsafe
             {
-                uint* data = (uint*)SDL.MapGPUTransferBuffer(App.GetDevice(), indexTransferBuffer, false);
-                fixed (uint* inData = indices)
+                Type* data = (Type*)SDL.MapGPUTransferBuffer(App.GetDevice(), transferBuffer, false);
+                fixed (Type* d = inData)
                 {
-                    Buffer.MemoryCopy(inData, data, indexSize, indexSize);
+                    Buffer.MemoryCopy(d, data, size, size);
                 }
             }
-            SDL.UnmapGPUTransferBuffer(App.GetDevice(), indexTransferBuffer);
+            SDL.UnmapGPUTransferBuffer(App.GetDevice(), transferBuffer);
         }
+
         public void CopyPass()
         {
             if (uploaded)
@@ -144,6 +160,21 @@ namespace panpan.Rendering
             SDL.EndGPUCopyPass(copyPass);
             SDL.SubmitGPUCommandBuffer(commandBuffer);
             uploaded = true;
+        }
+
+        public void Clip(Rect rect, float totalWidth, float totalHeight)
+        {
+            vec4 clipBox = new vec4(rect.X / totalWidth, rect.Y / totalHeight, rect.Width / totalWidth, rect.Height / totalHeight);
+
+            vertices[0].uv = new vec2(clipBox.x, clipBox.y);
+            vertices[1].uv = new vec2(clipBox.x + clipBox.z, clipBox.y);
+            vertices[2].uv = new vec2(clipBox.x, clipBox.y + clipBox.w);
+            vertices[3].uv = new vec2(clipBox.x + clipBox.z, clipBox.y + clipBox.w);
+            
+            // Re-upload modified vertex data
+            TransferBuffer(vertices, vertexSize, vertexTransferBuffer);
+            uploaded = false;
+            CopyPass();
         }
     }
 }

@@ -8,7 +8,7 @@ namespace panpan.Rendering
     public delegate void UniformDelegate();
     public class MeshRenderer : Scene.Component
     {
-        private Mesh mesh;
+        protected Mesh mesh;
         private mat4 modelMatrix;
         protected Material material;
         protected Texture? texture;
@@ -17,7 +17,7 @@ namespace panpan.Rendering
         public float Width, Height;
         public vec2 Origin;
 
-        private Transform transform;
+        protected Transform transform;
 
         public MeshRenderer(Mesh _mesh, Material _mat)
         {
