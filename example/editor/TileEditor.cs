@@ -19,11 +19,24 @@ namespace panpanExample
 
         public bool Visible = false;
 
+        private Texture? brushTex;
+
+        public void Init()
+        {
+            brushTex = new Texture(panpan.Assets.Sprites.tile, 8, 8);
+            brushTex.CopyPass();
+        }
+
         public void Show()
         {
             if (!Visible)
             {
                 return;
+            }
+
+            if (editing)
+            {
+                DrawBrush();
             }
 
             bool showing = false;
@@ -68,6 +81,11 @@ namespace panpanExample
                 if (ImGui.Selectable("test2", ref b)) { /* handle selection */ }
                 ImGui.EndCombo();
             }
+        }
+
+        private void DrawBrush()
+        {
+            Draw.Sprite(brushTex, Input.MousePosition);
         }
     }
 }

@@ -105,7 +105,8 @@ namespace panpan.Rendering
 
         protected virtual mat4 ComputeModelMatrix()
         {
-            var pos = transform.Position;
+            // Snap subpixels
+            var pos = new vec3(MathF.Round(transform.Position.x),MathF.Round(transform.Position.y),MathF.Round(transform.Position.z));
             var rot = transform.Angle;
             var scale = transform.Scale * new vec3(Width, Height, 1.0f);
 

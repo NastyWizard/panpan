@@ -26,8 +26,8 @@ namespace panpan.Collision
 
         public override void UpdateBounds()
         {
-            bounds.X = (int)Parent.Position.x + offset.x;
-            bounds.Y = (int)Parent.Position.y + offset.y;
+            bounds.X = (int)Math.Round(Parent.Position.x + offset.x);
+            bounds.Y = (int)Math.Round(Parent.Position.y + offset.y);
         }
 
         public override bool Intersects(Collider other, vec2? pos = null)
@@ -41,8 +41,8 @@ namespace panpan.Collision
                 
                 if (pos != null)
                 {
-                    bnds.X = (int)pos.Value.x + offset.x;
-                    bnds.Y = (int)pos.Value.y + offset.y;
+                    bnds.X = (int)Math.Round(pos.Value.x + offset.x);
+                    bnds.Y = (int)Math.Round(pos.Value.y + offset.y);
                 }
                 
                 if (bnds.Intersects(otherBox.bounds))

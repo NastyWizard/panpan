@@ -26,6 +26,9 @@ namespace panpan
         // Rendering data
         private Platform platform;
         static float fps;
+        static float fpsUpdateTime;
+        static int fpsFrameCount;
+        const float FPS_UPDATE_INTERVAL = 1.0f; // Update FPS every 1 second
         static nint gpuDevice;
         static nint window;
         static nint commandBuffer;
@@ -156,13 +159,14 @@ namespace panpan
             var tokenSource = new CancellationTokenSource();
             var token = tokenSource.Token;
 
-            int maxFrameCount = 10;
-            int frameCount = maxFrameCount;
-
             Init();
+            float currentTime = Time.Elapsed();
+            fpsUpdateTime = currentTime;
+            fpsFrameCount = 0;
+
             while (!token.IsCancellationRequested)
             {
-                float frameStartTime = Time.Elapsed();
+                currentTime = Time.Elapsed();
                 while (SDL.PollEvent(out var evt))
                 {
                     if (evt.Type == (uint)SDL.EventType.WindowCloseRequested)
@@ -178,12 +182,14 @@ namespace panpan
                 Update();
                 Render();
 
-                frameCount++;
-
-                if (frameCount > maxFrameCount)
+                // Update FPS counter using time-based averaging
+                fpsFrameCount++;
+                float elapsedSinceUpdate = currentTime - fpsUpdateTime;
+                if (elapsedSinceUpdate >= FPS_UPDATE_INTERVAL)
                 {
-                    frameCount = 0;
-                    fps = 1.0f / (Time.Elapsed() - frameStartTime);
+                    fps = fpsFrameCount / elapsedSinceUpdate;
+                    fpsFrameCount = 0;
+                    fpsUpdateTime = currentTime;
                 }
             }
 

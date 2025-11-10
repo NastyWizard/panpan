@@ -44,7 +44,7 @@ namespace panpan.Rendering
                 ColorTargetFormat = SDL.GetGPUSwapchainTextureFormat(device, window),
                 MSAASamples = SDL.GPUSampleCount.SampleCount1,
                 SwapchainComposition = SDL.GPUSwapchainComposition.SDR,
-                PresentMode = SDL.GPUPresentMode.VSync
+                PresentMode = SDL.GPUPresentMode.Immediate
             };
 
             var initInfoPtr = Marshal.AllocHGlobal(Marshal.SizeOf<ImGuiImplSDLGPU3InitInfoNative>());

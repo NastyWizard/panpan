@@ -20,6 +20,11 @@ namespace panpanExample
         bool debuggerVisible = false;
         #endregion Debugger
 
+        public void Init()
+        {
+            tileEditor.Init();
+        }
+
         public void ShowEditor()
         {
             ShowMenuBar();

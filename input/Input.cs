@@ -60,6 +60,12 @@ namespace panpan
         {
             keyDownEvents.Add(BuildActionKey(action), action);
         }
+        public static void RegisterOnKeyReleased(InputDelegate action)
+        {
+            keyUpEvents.Add(BuildActionKey(action), action);
+        }
+
+
         public static void DeregisterOnKeyDown(InputDelegate action)
         {
             keyDownEvents.Remove(BuildActionKey(action));
