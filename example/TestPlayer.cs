@@ -21,10 +21,10 @@ namespace panpanExample
             renderer = (SpriteRenderer)AddComponent(new SpriteRenderer(new Texture(Sprites.test, 16, 16)));
             renderer.Clip(new Rect(0, 0, 8, 8));
             //renderer.RegisterSetUniforms(SetUniforms);
-            //renderer.Origin = new vec2(8f/16f, -15f/16f);
+            renderer.Origin = new vec2(4f/8f, -7f/8f);
 
-            collider = (BoxCollider)AddComponent(new BoxCollider(16, 16));
-            collider.SetOffset(-8,0);
+            collider = (BoxCollider)AddComponent(new BoxCollider(8, 8));
+            collider.SetOffset(-4,0);
 
             Input.RegisterOnKeyHeld(OnKeyHeld);
             Input.RegisterOnKeyDown(OnKeyDown);

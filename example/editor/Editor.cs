@@ -12,15 +12,20 @@ namespace panpanExample
         TileEditor tileEditor = new TileEditor();
         #endregion Tile 
 
+        #region  Sprites/Animation
+        SpriteEditor spriteEditor = new SpriteEditor();
+        #endregion Sprites/Animation
+
         #region Debugger
         bool debuggerVisible = false;
-        #endregion
+        #endregion Debugger
 
         public void ShowEditor()
         {
             ShowMenuBar();
             ShowBasicDebugInfo();
-            ShowTileEditor();
+            tileEditor.Show();
+            spriteEditor.Show();
         }
 
         public void ShowMenuBar()
@@ -28,20 +33,13 @@ namespace panpanExample
             ImGui.BeginMainMenuBar();
             if (ImGui.BeginMenu("window"))
             {
-                ImGui.Checkbox("Tile Editor", ref tileMenuVisible);
+                ImGui.Checkbox("Tile Editor", ref tileEditor.Visible);
+                ImGui.Checkbox("Sprite Editor", ref spriteEditor.Visible);
                 ImGui.Checkbox("Debug", ref debuggerVisible);
                 ImGui.EndMenu();
             }
             ImGui.Text($"FPS: {App.GetFPS():F2}");
             ImGui.EndMainMenuBar();
-        }
-
-        public void ShowTileEditor()
-        {
-            if (tileMenuVisible)
-            {
-                tileEditor.Show();
-            }
         }
 
         public void ShowBasicDebugInfo()

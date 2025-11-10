@@ -15,6 +15,9 @@ namespace panpan
         Mac,
         Windows,
         Linux,
+        Nintendo,
+        Playstation,
+        UWP,
         Unkown
     }
     public class App

@@ -13,6 +13,8 @@ namespace panpan.Scene
         private string name;
         public string Name => name;
 
+        public List<Entity> Children => entities;
+
         public Scene(string name)
         {
             this.name = name;

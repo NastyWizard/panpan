@@ -17,8 +17,15 @@ namespace panpanExample
         bool editing = false;
         BrushType brushType = BrushType.BRUSH;
 
+        public bool Visible = false;
+
         public void Show()
         {
+            if (!Visible)
+            {
+                return;
+            }
+
             bool showing = false;
             if (ImGui.Begin("Tile Editor", ref showing))
             {
