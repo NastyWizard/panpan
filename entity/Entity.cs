@@ -46,5 +46,18 @@ namespace panpan.Scene
             return comp;
         }
 
+        public T? GetComponent<T>() where T : Component
+        {
+            foreach (Component comp in components)
+            {
+                if (comp is T match)
+                {
+                    return match;
+                }
+            }
+
+            return null;
+        }
+
     }
 }

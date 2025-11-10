@@ -40,8 +40,13 @@ namespace panpan.Rendering
             }
 
             clip = rect;
+            Width = rect.Width;
+            Height = rect.Height;
             mesh.Clip(rect, texture!.Width, texture.Height);
         }
         public void Clip(int x, int y, int width, int height) => Clip(new Rect(x, y, width, height));
+
+        public Texture? Texture => texture;
+        public Rect? ClipRect => clip;
     }
 }

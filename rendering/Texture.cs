@@ -17,6 +17,7 @@ namespace panpan.Rendering
         public nint GPUSampler => gpuSampler;
         public uint Width => width;
         public uint Height => height;
+        public bool HasPixelData => pixelData != null;
 
         public Texture(byte[]? pngData, uint width, uint height)
         {
@@ -209,6 +210,33 @@ namespace panpan.Rendering
                 SDL.ReleaseGPUTexture(App.GetDevice(), gpuTexture);
                 gpuTexture = nint.Zero;
             }
+        }
+
+        public bool TryGetPixel(int x, int y, out byte r, out byte g, out byte b, out byte a)
+        {
+            r = g = b = a = 0;
+            if (pixelData == null)
+            {
+                return false;
+            }
+            if (x < 0 || y < 0 || x >= (int)width || y >= (int)height)
+            {
+                return false;
+            }
+
+            long index = ((long)y * width + x) * 4L;
+
+            if (index + 3 >= pixelData.Length)
+            {
+                return false;
+            }
+
+            int idx = (int)index;
+            r = pixelData[idx];
+            g = pixelData[idx + 1];
+            b = pixelData[idx + 2];
+            a = pixelData[idx + 3];
+            return true;
         }
 
         ~Texture()
