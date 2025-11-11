@@ -6,13 +6,19 @@ using SDL3;
 namespace panpan
 {
     public delegate void InputDelegate(SDL.Keycode? e);
+    public delegate void MouseDelegate(byte button);
     public class Input
     {
         public static Dictionary<string, InputDelegate> keyDownEvents = new Dictionary<string, InputDelegate>();
         public static Dictionary<string, InputDelegate> keyUpEvents = new Dictionary<string, InputDelegate>();
         public static Dictionary<string, InputDelegate> keyHeldEvents = new Dictionary<string, InputDelegate>();
 
+        public static Dictionary<string, MouseDelegate> mouseDownEvents = new Dictionary<string, MouseDelegate>();
+        public static Dictionary<string, MouseDelegate> mouseUpEvents = new Dictionary<string, MouseDelegate>();
+        public static Dictionary<string, MouseDelegate> mouseHeldEvents = new Dictionary<string, MouseDelegate>();
+
         private static Dictionary<SDL.Keycode, bool> keysCurrentlyDown = new Dictionary<SDL.Keycode, bool>();
+        private static Dictionary<byte, bool> mouseCurrentlyDown = new Dictionary<byte, bool>();
 
         public static vec2 MousePosition;
 
@@ -32,6 +38,20 @@ namespace panpan
                     {
                         KeyUp(e.Key.Key);
                         keysCurrentlyDown.Remove(e.Key.Key);
+                    }
+                    break;
+                case SDL.EventType.MouseButtonDown:
+                    if (!mouseCurrentlyDown.ContainsKey(e.Button.Button))
+                    {
+                        MouseDown(e.Button.Button);
+                        mouseCurrentlyDown.Add(e.Button.Button, true);
+                    }
+                    break;
+                case SDL.EventType.MouseButtonUp:
+                    if (mouseCurrentlyDown.ContainsKey(e.Button.Button))
+                    {
+                        // MouseUp(e.Button.Button);
+                        mouseCurrentlyDown.Remove(e.Button.Button);
                     }
                     break;
             }
@@ -65,6 +85,11 @@ namespace panpan
             keyUpEvents.Add(BuildActionKey(action), action);
         }
 
+        public static void RegisterOnMouseDown(MouseDelegate action)
+        {
+            mouseDownEvents.Add(BuildActionKeyMouse(action), action);
+        }
+
 
         public static void DeregisterOnKeyDown(InputDelegate action)
         {
@@ -92,6 +117,13 @@ namespace panpan
                 action.Invoke(keycode);
             }
         }
+        private static void MouseDown(byte btn)
+        {
+            foreach (MouseDelegate action in mouseDownEvents.Values)
+            {
+                action.Invoke(btn);
+            }
+        }
         private static string BuildActionKey(InputDelegate action)
         {
             var method = action.Method;
@@ -100,6 +132,13 @@ namespace panpan
                    method.Name ??
                    Guid.NewGuid().ToString();
         }
-
+        private static string BuildActionKeyMouse(MouseDelegate action)
+        {
+            var method = action.Method;
+            return method.ReflectedType?.FullName ??
+                   method.DeclaringType?.FullName ??
+                   method.Name ??
+                   Guid.NewGuid().ToString();
+        }
     }
 }

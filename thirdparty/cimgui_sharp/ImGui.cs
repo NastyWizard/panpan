@@ -56,7 +56,8 @@ namespace panpan.Rendering
     [Flags]
     internal enum ImGuiHoveredFlags
     {
-        None = 0
+        None = 0,
+        AnyWindow = 4
     }
 
     internal enum ImGuiMouseButton
@@ -489,6 +490,14 @@ namespace panpan.Rendering
                 }
                 return changed;
             }
+        }
+
+        public static unsafe bool IsWindowHovered(ImGuiHoveredFlags flags = ImGuiHoveredFlags.None)
+        {
+            int* flagsPtr = stackalloc int[1];
+            flagsPtr[0] = (int)flags;
+            var swigFlags = new SWIGTYPE_p_ImGuiHoveredFlags((nint)flagsPtr, false);
+            return cimgui_sdlgpu.igIsWindowHovered(swigFlags);
         }
 
         public static void ShowDemoWindow()

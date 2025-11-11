@@ -61,7 +61,7 @@ namespace panpanExample
             Move(ref speed);
             // Need to clear speed after, as input happens before update
             if(!isMoving)
-                speed.x = 0;
+                speed.x *= .5f;
             speed.y -= grav;
 
             speed.y = MathF.Max(speed.y, -8.0f);
@@ -90,18 +90,18 @@ namespace panpanExample
 
         private void OnKeyHeld(SDL.Keycode? k)
         {
-            float moveSpd = 0.2f;
+            float moveSpd = 0.1f;
             if (k == SDL.Keycode.Left || k == SDL.Keycode.A)
             {
                 speed.x += -moveSpd;
-                speed.x = Math.Clamp(speed.x, -2.0f, 0.0f);
+                speed.x = MathF.Max(speed.x, -1.0f);
                 Scale.x = -1;
                 isMoving = true;
             }
             if (k == SDL.Keycode.Right || k == SDL.Keycode.D)
             {
                 speed.x += moveSpd;
-                speed.x = Math.Clamp(speed.x, 0.0f, 2.0f);
+                speed.x = MathF.Min(speed.x, 1.0f);
                 Scale.x = 1;
                 isMoving = true;
             }

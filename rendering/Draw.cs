@@ -9,7 +9,8 @@ namespace panpan.Rendering
     public class Draw
     {
         static BasicRenderer renderer = new BasicRenderer();
-        static SpriteRenderer spriteRenderer = new SpriteRenderer(null, null, Shapes.quad, new Material(Assets.Shaders.standard_frag_hlsl, Assets.Shaders.backbuffer_vert_hlsl));
+        static SpriteRenderer spriteRenderer = new SpriteRenderer(null, null, Shapes.quad, new Material(Assets.Shaders.standard_frag_hlsl, Assets.Shaders.standard_vert_hlsl));
+        static SpriteRenderer backRenderer = new SpriteRenderer(null, null, Shapes.quad, new Material(Assets.Shaders.standard_frag_hlsl, Assets.Shaders.backbuffer_vert_hlsl));
         static vec4 color;
 
         public static void Rect(vec2 bl, vec2 size, vec4? color = null)
@@ -95,9 +96,9 @@ namespace panpan.Rendering
         public static void RenderTarget(RenderTarget rt, vec2 pos, vec2? scale = null)
         {
             App.GetSceneManager().ActiveScene.Camera.PushUniformData();
-            spriteRenderer.SetTexture(rt.GetTexture());
-            spriteRenderer.SetTransform(new vec3(pos.x, pos.y, 0.0f));
-            spriteRenderer.Render();
+            backRenderer.SetTexture(rt.GetTexture());
+            backRenderer.SetTransform(new vec3(pos.x, pos.y, 0.0f));
+            backRenderer.Render();
         }
 
         private class BasicRenderer : MeshRenderer
