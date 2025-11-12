@@ -34,6 +34,7 @@ namespace panpan.Collision
         public virtual void DrawDebug() { }
         public virtual vec2 CenterPoint() { throw new Exception("Unimplemented CenterPoint"); }
         public virtual bool Intersects(Collider other, vec2? pos = null) { throw new Exception("Unimplemented Intersects"); }
+        public virtual bool IntersectsPosition(vec2 pos ) { throw new Exception("Unimplemented IntersectsPosition"); }
         public virtual void UpdateBounds() { throw new Exception("Unimplemented UpdateBounds"); }
     }
 }

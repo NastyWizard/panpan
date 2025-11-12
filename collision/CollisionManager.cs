@@ -45,6 +45,11 @@ namespace panpan.Collision
             return spatialHash.IntersectsWith(self, other, pos);
         }
 
+        public bool IntersectsPosition(vec2 pos, Type other)
+        {
+            return spatialHash.IntersectsPosition(pos, other);
+        }
+
         //--------------- Spatial Hash
         //----------------------------
         private class SpatialHash
@@ -83,6 +88,23 @@ namespace panpan.Collision
                 foreach (var key in otherColliders.Keys)
                 {
                     if (self.Intersects(otherColliders[key], pos))
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            public bool IntersectsPosition(vec2 pos, Type other)
+            {
+                if (!colliderTypes.TryGetValue(other, out var otherColliders))
+                {
+                    return false;
+                }
+
+                foreach (var key in otherColliders.Keys)
+                {
+                    if (otherColliders[key].IntersectsPosition(pos))
                     {
                         return true;
                     }

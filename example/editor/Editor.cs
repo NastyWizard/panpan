@@ -61,6 +61,7 @@ namespace panpanExample
             {
                 ImGui.Text($"FPS: {App.GetFPS():F2}");
                 ImGui.Text($"Mouse Pos: {Input.MousePosition.x:F2}, {Input.MousePosition.y:F2}");
+                ImGui.SliderFloat("Time Scale", ref App.GetSceneManager().ActiveScene.TimeScale,0.1f, 2.0f);
             }
 
             ImGui.Checkbox("Show colliders", ref App.GetCollisionManager().ShowColliderDebug);

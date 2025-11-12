@@ -51,6 +51,17 @@ namespace panpan.Rendering
 
         private void HandleVerticies(in Vertex[] _vertices)
         {
+            if (vertexBuffer != nint.Zero)
+            {
+                SDL.ReleaseGPUBuffer(App.GetDevice(), vertexBuffer);
+                vertexBuffer = nint.Zero;
+            }
+            if (vertexTransferBuffer != nint.Zero)
+            {
+                SDL.ReleaseGPUTransferBuffer(App.GetDevice(), vertexTransferBuffer);
+                vertexTransferBuffer = nint.Zero;
+            }
+
             vertices = _vertices;
 
             unsafe
@@ -85,6 +96,17 @@ namespace panpan.Rendering
 
         private void HandleIndices(in uint[] _indicies)
         {
+            if (indexBuffer != nint.Zero)
+            {
+                SDL.ReleaseGPUBuffer(App.GetDevice(), indexBuffer);
+                indexBuffer = nint.Zero;
+            }
+            if (indexTransferBuffer != nint.Zero)
+            {
+                SDL.ReleaseGPUTransferBuffer(App.GetDevice(), indexTransferBuffer);
+                indexTransferBuffer = nint.Zero;
+            }
+
             indices = _indicies;
             indexSize = (uint)(sizeof(uint) * _indicies.Length);
             // Index Buffer
@@ -179,6 +201,19 @@ namespace panpan.Rendering
             
             // Re-upload modified vertex data
             TransferBuffer(vertices, vertexSize, vertexTransferBuffer);
+            uploaded = false;
+            CopyPass();
+        }
+
+        public void SetData(Vertex[] newVertices, uint[] newIndices)
+        {
+            if (newVertices == null || newIndices == null || newVertices.Length == 0 || newIndices.Length == 0)
+            {
+                return;
+            }
+
+            HandleVerticies(newVertices);
+            HandleIndices(newIndices);
             uploaded = false;
             CopyPass();
         }

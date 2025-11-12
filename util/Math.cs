@@ -1,5 +1,6 @@
 
 using System.Runtime.InteropServices;
+using GlmSharp;
 
 namespace panpan.Util
 {
@@ -37,6 +38,12 @@ namespace panpan.Util
                     other.X + other.Width < X ||
                     other.Y > Y + Height ||
                     other.Y + other.Height < Y);
+        }
+
+        public bool IntersectsPosition(vec2 pos)
+        {
+            return pos.x >= X && pos.x <= X + Width &&
+                   pos.y >= Y && pos.y <= Y + Height;
         }
     }
 }

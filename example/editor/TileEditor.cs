@@ -3,6 +3,8 @@ using GlmSharp;
 using ImGuiNET.Backend.SDLGPU;
 using panpan;
 using panpan.Rendering;
+using panpan.Scene;
+using panpan.Util;
 
 namespace panpanExample
 {
@@ -34,10 +36,9 @@ namespace panpanExample
 
         private void OnMouseDown(byte btn)
         {
-            if (btn == 1 && editing && !ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow))
+            if (btn == 1 && editing && !ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow) && !App.GetCollisionManager().IntersectsPosition(Input.MousePosition, typeof(TestWall)))
             {
-                var tile = App.GetSceneManager().ActiveScene.AddChild(new TestWall(brushPos.x, brushPos.y));
-                tile.Init();
+                PlaceTile(brushPos.x, brushPos.y);
             }
         }
 
@@ -68,6 +69,12 @@ namespace panpanExample
                 ShowTileSelect();
             }
             ImGui.End();
+        }
+
+        private void PlaceTile(int x, int y)
+        {
+            var tile = App.GetSceneManager().ActiveScene.AddChild(new TestWall(x, y));
+            tile.Init();
         }
 
         private void ShowBrushSelect()
@@ -112,6 +119,7 @@ namespace panpanExample
                 brushPos.y = (int)MathF.Ceiling(brushPos.y / snapSize.y) * snapSize.y + 8;
             }
             Draw.Sprite(brushTex, brushPos);
+            Draw.Rect(new Rect(brushPos.x-1,brushPos.y-8, 9,9), Color.SkyBlue);
         }
     }
 }

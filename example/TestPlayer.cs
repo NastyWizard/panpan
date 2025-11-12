@@ -53,7 +53,7 @@ namespace panpanExample
             coyoteTime--;
             coyoteTime = Math.Max(coyoteTime, 0);
             // Grounded
-            if (App.GetCollisionManager().IntersectsWith(collider, typeof(TestWall), Position.xy - vec2.UnitY)) 
+            if (App.GetCollisionManager().IntersectsWith(collider, typeof(TestWall), Position.xy - vec2.UnitY))
             {
                 coyoteTime = coyoteTimeMax;
             }
@@ -61,8 +61,8 @@ namespace panpanExample
             Move(ref speed);
             // Need to clear speed after, as input happens before update
             if(!isMoving)
-                speed.x *= .5f;
-            speed.y -= grav;
+                speed.x *= .5f * Scene.TimeScale;
+            speed.y -= grav * Scene.TimeScale;
 
             speed.y = MathF.Max(speed.y, -8.0f);
 
@@ -130,9 +130,10 @@ namespace panpanExample
 
         private void Move(ref vec2 speed)
         {
-            ivec2 sign = new ivec2(MathF.Sign(speed.x), MathF.Sign(speed.y));
-            ivec2 move = new ivec2((int)MathF.Round(speed.x), (int)MathF.Round(speed.y));
-            vec2 r = speed - move;
+            var spd = Scene.TimeScale * speed;
+            ivec2 sign = new ivec2(MathF.Sign(spd.x), MathF.Sign(spd.y));
+            ivec2 move = new ivec2((int)MathF.Round(spd.x), (int)MathF.Round(spd.y));
+            vec2 r = spd - move;
 
             // Horizontal
             while (move.x != 0)
@@ -141,6 +142,18 @@ namespace panpanExample
                 {
                     Position.x += sign.x;
                     move.x -= sign.x;
+                    if (App.GetCollisionManager().IntersectsWith(collider, typeof(TestWall), Position.xy + new vec2(0.0f, 1.0f)))
+                    {
+                        speed.y = MathF.Min(0f, speed.y);
+                        spd.y = Scene.TimeScale * speed.y;
+                        sign.y = MathF.Sign(spd.y);
+                        move.y = (int)MathF.Round(spd.y);
+                    }
+                }
+                else if (!App.GetCollisionManager().IntersectsWith(collider, typeof(TestWall), Position.xy + new vec2(sign.x, 2.0f)) || !App.GetCollisionManager().IntersectsWith(collider, typeof(TestWall), Position.xy + new vec2(sign.x, 1.0f)))
+                {
+                    Position.y++;
+                    Position.y = MathF.Round(Position.y);
                 }
                 else
                 {
@@ -148,19 +161,33 @@ namespace panpanExample
                     break;
                 }
             }
-            
+
             // Apply remainder horizontally if non-zero
             if (r.x != 0 && speed.x != 0)
             {
                 if (!App.GetCollisionManager().IntersectsWith(collider, typeof(TestWall), Position.xy + new vec2(r.x, 0.0f)))
                 {
                     Position.x += r.x;
+                    if (App.GetCollisionManager().IntersectsWith(collider, typeof(TestWall), Position.xy + new vec2(0.0f, 1.0f)))
+                    {
+                        speed.y = MathF.Min(0f, speed.y);
+                        spd.y = Scene.TimeScale * speed.y;
+                        sign.y = MathF.Sign(spd.y);
+                        move.y = (int)MathF.Round(spd.y);
+                    }
+                }
+                else if (!App.GetCollisionManager().IntersectsWith(collider, typeof(TestWall), Position.xy + new vec2(r.x, 2.0f)) || !App.GetCollisionManager().IntersectsWith(collider, typeof(TestWall), Position.xy + new vec2(r.x, 1.0f)))
+                {
+                    Position.y++;
                 }
                 else
                 {
                     speed.x = 0;
                 }
             }
+
+            // --------------------------------------------------------------------------
+            // --------------------------------------------------------------------------
 
             // Vertical
             while (move.y != 0)
@@ -169,6 +196,14 @@ namespace panpanExample
                 {
                     Position.y += sign.y;
                     move.y -= sign.y;
+                }
+                else if (!App.GetCollisionManager().IntersectsWith(collider, typeof(TestWall), Position.xy + new vec2(2.0f, sign.y)) || !App.GetCollisionManager().IntersectsWith(collider, typeof(TestWall), Position.xy + new vec2(1.0f, sign.y)))
+                {
+                    Position.x++;
+                }
+                else if (!App.GetCollisionManager().IntersectsWith(collider, typeof(TestWall), Position.xy + new vec2(-2.0f, sign.y)) || !App.GetCollisionManager().IntersectsWith(collider, typeof(TestWall), Position.xy + new vec2(-1.0f, sign.y)))
+                {
+                    Position.x--;
                 }
                 else
                 {
@@ -183,6 +218,14 @@ namespace panpanExample
                 if (!App.GetCollisionManager().IntersectsWith(collider, typeof(TestWall), Position.xy + new vec2(0.0f, r.y)))
                 {
                     Position.y += r.y;
+                }
+                else if (!App.GetCollisionManager().IntersectsWith(collider, typeof(TestWall), Position.xy + new vec2(2.0f, r.y)) || !App.GetCollisionManager().IntersectsWith(collider, typeof(TestWall), Position.xy + new vec2(1.0f, r.y)))
+                {
+                    Position.x++;
+                }
+                else if (!App.GetCollisionManager().IntersectsWith(collider, typeof(TestWall), Position.xy + new vec2(-2.0f, r.y)) || !App.GetCollisionManager().IntersectsWith(collider, typeof(TestWall), Position.xy + new vec2(-1.0f, r.y)))
+                {
+                    Position.x--;
                 }
                 else
                 {

@@ -38,13 +38,13 @@ namespace panpan.Collision
                 var otherBox = (BoxCollider)other;
 
                 var bnds = bounds;
-                
+
                 if (pos != null)
                 {
                     bnds.X = (int)Math.Round(pos.Value.x + offset.x);
                     bnds.Y = (int)Math.Round(pos.Value.y + offset.y);
                 }
-                
+
                 if (bnds.Intersects(otherBox.bounds))
                 {
                     return true;
@@ -52,12 +52,16 @@ namespace panpan.Collision
             }
             return false;
         }
+        public override bool IntersectsPosition(vec2 pos) 
+        {
+            return bounds.IntersectsPosition(pos);
+        }
 
         public override void DrawDebug()
         {
             base.DrawDebug();
-            Draw.Rect(bounds, debugColor);
-            Draw.Dot(new vec2(bounds.X, bounds.Y), Rendering.Color.Red);
+            ColliderDebugBatch.SubmitRect(bounds, debugColor);
+            ColliderDebugBatch.SubmitPixel(new vec2(bounds.X, bounds.Y), Rendering.Color.Red);
         }
 
         public void SetOffset(int x, int y)

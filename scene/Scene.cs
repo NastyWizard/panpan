@@ -1,5 +1,6 @@
 
 using panpan.Rendering;
+using panpan.Collision;
 
 namespace panpan.Scene
 {
@@ -14,6 +15,8 @@ namespace panpan.Scene
         public string Name => name;
 
         public List<Entity> Children => entities;
+
+        public float TimeScale = 1.0f;
 
         public Scene(string name)
         {
@@ -42,10 +45,12 @@ namespace panpan.Scene
         public virtual void Render()
         {
             camera.PushUniformData();
+            ColliderDebugBatch.BeginFrame();
             foreach (Entity ent in entities)
             {
                 ent.Render();
             }
+            ColliderDebugBatch.Flush();
         }
 
         public Entity AddChild(Entity entity)
