@@ -26,8 +26,9 @@ namespace panpan.Collision
 
         public override void UpdateBounds()
         {
-            bounds.X = (int)Math.Round(Parent.Position.x + offset.x);
-            bounds.Y = (int)Math.Round(Parent.Position.y + offset.y);
+            // Use Floor(x + 0.5) for consistent rounding away from zero (matches MeshRenderer)
+            bounds.X = (int)MathF.Floor(Parent.Position.x + offset.x + 0.5f);
+            bounds.Y = (int)MathF.Floor(Parent.Position.y + offset.y + 0.5f);
         }
 
         public override bool Intersects(Collider other, vec2? pos = null)
@@ -41,8 +42,9 @@ namespace panpan.Collision
 
                 if (pos != null)
                 {
-                    bnds.X = (int)Math.Round(pos.Value.x + offset.x);
-                    bnds.Y = (int)Math.Round(pos.Value.y + offset.y);
+                    // Use Floor(x + 0.5) for consistent rounding away from zero (matches MeshRenderer)
+                    bnds.X = (int)MathF.Floor(pos.Value.x + offset.x + 0.5f);
+                    bnds.Y = (int)MathF.Floor(pos.Value.y + offset.y + 0.5f);
                 }
 
                 if (bnds.Intersects(otherBox.bounds))

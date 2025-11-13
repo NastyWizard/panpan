@@ -7,14 +7,9 @@ namespace panpanExample
     public class Editor
     {
 
-        #region Tile
-        bool tileMenuVisible = false;
         TileEditor tileEditor = new TileEditor();
-        #endregion Tile 
-
-        #region  Sprites/Animation
         SpriteEditor spriteEditor = new SpriteEditor();
-        #endregion Sprites/Animation
+        ObjectEditor objectEditor = new ObjectEditor();
 
         #region Debugger
         bool debuggerVisible = false;
@@ -23,6 +18,7 @@ namespace panpanExample
         public void Init()
         {
             tileEditor.Init();
+            objectEditor.Init();
         }
 
         public void ShowEditor()
@@ -31,6 +27,7 @@ namespace panpanExample
             ShowBasicDebugInfo();
             tileEditor.Show();
             spriteEditor.Show();
+            objectEditor.Show();
         }
 
         public void ShowMenuBar()
@@ -40,6 +37,7 @@ namespace panpanExample
             {
                 ImGui.Checkbox("Tile Editor", ref tileEditor.Visible);
                 ImGui.Checkbox("Sprite Editor", ref spriteEditor.Visible);
+                ImGui.Checkbox("Object Editor", ref objectEditor.Visible);
                 ImGui.Checkbox("Debug", ref debuggerVisible);
                 ImGui.EndMenu();
             }
@@ -61,10 +59,14 @@ namespace panpanExample
             {
                 ImGui.Text($"FPS: {App.GetFPS():F2}");
                 ImGui.Text($"Mouse Pos: {Input.MousePosition.x:F2}, {Input.MousePosition.y:F2}");
-                ImGui.SliderFloat("Time Scale", ref App.GetSceneManager().ActiveScene.TimeScale,0.1f, 2.0f);
+                ImGui.SliderFloat("Time Scale", ref App.GetSceneManager().ActiveScene.TimeScale, 0.1f, 2.0f);
+                if(ImGui.Button("Reset Time Scale"))
+                {
+                    App.GetSceneManager().ActiveScene.TimeScale = 1.0f;
+                }
+                ImGui.Checkbox("Show colliders", ref App.GetCollisionManager().ShowColliderDebug);
             }
 
-            ImGui.Checkbox("Show colliders", ref App.GetCollisionManager().ShowColliderDebug);
 
             ImGui.End();
         }
