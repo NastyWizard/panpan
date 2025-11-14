@@ -54,9 +54,12 @@ namespace panpanExample
             collider = (BoxCollider)AddComponent(new BoxCollider(8, 8));
             collider.SetOffset(-4, 0);
 
-            Input.RegisterOnKeyHeld(OnKeyHeld);
-            Input.RegisterOnKeyDown(OnKeyDown);
-            Input.RegisterOnKeyReleased(OnKeyReleased);
+            if (Scene != null) // in editor
+            {
+                Input.RegisterOnKeyHeld(OnKeyHeld);
+                Input.RegisterOnKeyDown(OnKeyDown);
+                Input.RegisterOnKeyReleased(OnKeyReleased);
+            }
 
             base.Init();
         }

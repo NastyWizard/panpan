@@ -31,18 +31,27 @@ namespace panpan.Rendering
             SetMesh(Shapes.ClipQuad(clip.Value, texture!.Width, texture.Height));
         }
 
-        public void Clip(Rect rect)
+        public void Clip(Rect? rect)
         {
+            if(rect == null)
+            {
+                clip = null;
+                Width = texture.Width;
+                Height = texture.Width;
+                SetMesh(Shapes.quad);
+                return;
+            }
+
             if (clip == null)
             {
-                MakeClip(rect);
+                MakeClip(rect.Value);
                 return;
             }
 
             clip = rect;
-            Width = rect.Width;
-            Height = rect.Height;
-            mesh.Clip(rect, texture!.Width, texture.Height);
+            Width = rect.Value.Width;
+            Height = rect.Value.Height;
+            mesh.Clip(rect.Value, texture!.Width, texture.Height);
         }
         public void Clip(int x, int y, int width, int height) => Clip(new Rect(x, y, width, height));
 

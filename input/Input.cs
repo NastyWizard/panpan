@@ -87,7 +87,7 @@ namespace panpan
 
         public static void RegisterOnMouseDown(MouseDelegate action)
         {
-            mouseDownEvents.Add(BuildActionKeyMouse(action), action);
+            mouseDownEvents.Add(BuildActionKey(action), action);
         }
 
 
@@ -124,21 +124,18 @@ namespace panpan
                 action.Invoke(btn);
             }
         }
-        private static string BuildActionKey(InputDelegate action)
+        private static string BuildActionKey(Delegate action)
         {
+            var target = action.Target;
             var method = action.Method;
-            return method.ReflectedType?.FullName ??
-                   method.DeclaringType?.FullName ??
-                   method.Name ??
-                   Guid.NewGuid().ToString();
-        }
-        private static string BuildActionKeyMouse(MouseDelegate action)
-        {
-            var method = action.Method;
-            return method.ReflectedType?.FullName ??
-                   method.DeclaringType?.FullName ??
-                   method.Name ??
-                   Guid.NewGuid().ToString();
+
+            int targetId = target != null 
+                ? System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(target) 
+                : 0;
+
+            int methodId = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(method);
+
+            return $"{targetId}:{methodId}";
         }
     }
 }

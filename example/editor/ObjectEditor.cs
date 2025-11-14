@@ -1,4 +1,5 @@
 
+using System.Reflection;
 using GlmSharp;
 using ImGuiNET.Backend.SDLGPU;
 using panpan;
@@ -24,21 +25,28 @@ namespace panpanExample
         private BrushType brushType = BrushType.BRUSH;
         private Texture? brushTex;
         private ivec2 brushPos;
+        private Entity brushEntity;
+        private Type brushObjectType;
+        private vec2 brushOffset = vec2.Zero;
+        private Rect? brushClipRect;
+
+        private IEnumerable<Type> availableObjectTypes;
 
         public bool Visible = false;
 
+
         public void Init()
         {
-            brushTex = new Texture(panpan.Assets.Sprites.capybara, 22, 18);
-            brushTex.CopyPass();
+            ChangeBrush(typeof(Capybara), 0, 0);
             Input.RegisterOnMouseDown(OnMouseDown);
+            availableObjectTypes = Utility.GetAllSubTypes(typeof(Entity));
         }
 
         private void OnMouseDown(byte btn)
         {
             if (btn == 1 && editing && !ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow) && !App.GetCollisionManager().IntersectsPosition(Input.MousePosition, typeof(TestWall)))
             {
-                PlaceTile(brushPos.x, brushPos.y);
+                PlaceObject(brushPos.x - (int)brushOffset.x, brushPos.y - (int)brushOffset.y);
             }
         }
 
@@ -63,7 +71,8 @@ namespace panpanExample
                 ImGui.Checkbox("Snap", ref snap);
                 ImGui.InputInt("Snap X", ref snapSize.x);
                 ImGui.InputInt("Snap Y", ref snapSize.y);
-
+                
+                ShowObjectSelect();
                 ShowBrushSelect();
                 ImGui.Separator();
                 ShowTileSelect();
@@ -71,12 +80,43 @@ namespace panpanExample
             ImGui.End();
         }
 
-        private void PlaceTile(int x, int y)
+        private void PlaceObject(int x, int y)
         {
-            var tile = App.GetSceneManager().ActiveScene.AddChild(new Capybara(x, y));
-            tile.Init();
+            Entity? obj = (Entity)Activator.CreateInstance(brushObjectType, x, y);
+            if (obj != null)
+            {
+                var tile = App.GetSceneManager().ActiveScene.AddChild(obj);
+                tile.Init();
+            }
         }
 
+
+        private void ShowObjectSelect()
+        {
+            if (brushObjectType == null)
+            {
+                brushObjectType = availableObjectTypes.ElementAt(0);
+            }
+
+            string label = brushObjectType.Name;
+
+            if (ImGui.BeginCombo("object", label))
+            {
+                var i = 0;
+                foreach (var type in availableObjectTypes)
+                {
+                    bool isSelected = ReferenceEquals(type, brushObjectType);
+                    if (ImGui.Selectable(type.Name + $" [{i++}]", ref isSelected))
+                    {
+                        if (!ReferenceEquals(brushObjectType, type))
+                        {
+                            ChangeBrush(type, 0, 0);
+                        }
+                    }
+                }
+                ImGui.EndCombo();
+            }
+        }
         private void ShowBrushSelect()
         {
             ImGui.Text("Brush type");
@@ -115,11 +155,23 @@ namespace panpanExample
             brushPos = (ivec2)Input.MousePosition;
             if (snap)
             {
-                brushPos.x = (int)MathF.Floor(brushPos.x / snapSize.x) * snapSize.x;
-                brushPos.y = (int)MathF.Ceiling(brushPos.y / snapSize.y) * snapSize.y + 8;
+                brushPos.x = (int)MathF.Floor(brushPos.x / snapSize.x) * snapSize.x + (int)brushOffset.x;
+                brushPos.y = (int)MathF.Ceiling(brushPos.y / snapSize.y) * snapSize.y + (int)brushOffset.y;
             }
-            Draw.Sprite(brushTex, brushPos);
-            Draw.Rect(new Rect(brushPos.x-1,brushPos.y-8, snapSize.x+1,snapSize.y+1), Color.SkyBlue);
+            Draw.Sprite(brushTex, brushPos, null, brushClipRect);
+        }
+
+        private void ChangeBrush(Type type, params object?[]? args)
+        {
+            brushObjectType = type;
+            
+            brushEntity = (Entity)Activator.CreateInstance(type, args);
+            brushEntity!.Init();
+
+            var renderer = brushEntity.GetComponent<SpriteRenderer>();
+            brushTex = renderer!.Texture;
+            brushClipRect = renderer.ClipRect;
+            brushOffset = -renderer!.Origin * new vec2(brushTex.Width, brushTex.Height);
         }
     }
 }
