@@ -84,11 +84,26 @@ namespace panpan.Rendering
         public static void Sprite(Texture texture, vec2 pos, vec2? scale = null, Rect? clipRect = null)
         {
             scale ??= vec2.Ones;
-            vec3 _scale = new vec3(scale.Value.x, scale.Value.y, 1.0f);
             App.GetSceneManager().ActiveScene.Camera.PushUniformData();
             spriteRenderer.SetTexture(texture);
-            spriteRenderer.SetTransform(new vec3(pos.x, pos.y, 0.0f), _scale);
-            spriteRenderer.Clip(clipRect);
+            
+            if (clipRect != null)
+            {
+                spriteRenderer.Clip(clipRect);
+                float scaledClipWidth = clipRect.Value.Width * scale.Value.x;
+                float scaledClipHeight = clipRect.Value.Height * scale.Value.y;
+                spriteRenderer.Width = scaledClipWidth;
+                spriteRenderer.Height = scaledClipHeight;
+                vec3 _scale = vec3.Ones;
+                spriteRenderer.SetTransform(new vec3(pos.x, pos.y, 0.0f), _scale);
+            }
+            else
+            {
+                // No clip, scale applies to full texture
+                vec3 _scale = new vec3(scale.Value.x, scale.Value.y, 1.0f);
+                spriteRenderer.SetTransform(new vec3(pos.x, pos.y, 0.0f), _scale);
+            }
+            
             spriteRenderer.Render();
         }
 

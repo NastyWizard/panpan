@@ -158,7 +158,8 @@ namespace panpanExample
                 brushPos.x = (int)MathF.Floor(brushPos.x / snapSize.x) * snapSize.x + (int)brushOffset.x;
                 brushPos.y = (int)MathF.Ceiling(brushPos.y / snapSize.y) * snapSize.y + (int)brushOffset.y;
             }
-            Draw.Sprite(brushTex, brushPos, null, brushClipRect);
+            vec2 scale = new vec2(brushEntity.Transform.Scale.x, brushEntity.Transform.Scale.y);
+            Draw.Sprite(brushTex, brushPos, scale, brushClipRect);
         }
 
         private void ChangeBrush(Type type, params object?[]? args)
@@ -171,7 +172,8 @@ namespace panpanExample
             var renderer = brushEntity.GetComponent<SpriteRenderer>();
             brushTex = renderer!.Texture;
             brushClipRect = renderer.ClipRect;
-            brushOffset = -renderer!.Origin * new vec2(brushTex.Width, brushTex.Height);
+            vec2 scale = new vec2(brushEntity.Transform.Scale.x, brushEntity.Transform.Scale.y);
+            brushOffset = -renderer!.Origin * new vec2(brushClipRect?.Width ?? (float)brushTex!.Width, brushClipRect?.Height ?? (float)brushTex!.Height) * scale;
         }
     }
 }
