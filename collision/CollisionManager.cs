@@ -2,6 +2,7 @@
 using System;
 using GlmSharp;
 using panpan.Scene;
+using panpan.Util;
 using SDL3;
 
 namespace panpan.Collision
@@ -54,8 +55,12 @@ namespace panpan.Collision
         //----------------------------
         private class SpatialHash
         {
-            private Dictionary<int, Collider> colliders;
-            private Dictionary<Type, Dictionary<int, Collider>> colliderTypes;
+            // Maps cell coordinates (x, y) to sets of colliders in that cell
+            private Dictionary<(int, int), HashSet<Collider>> cells;
+            // Maps collider to the cells it's currently in (for efficient removal/updates)
+            private Dictionary<Collider, HashSet<(int, int)>> colliderCells;
+            // Maps type to colliders of that type (for type-filtered queries)
+            private Dictionary<Type, HashSet<Collider>> colliderTypes;
             private int cellSize;
             private vec2 worldSize;
 
@@ -63,78 +68,182 @@ namespace panpan.Collision
             {
                 this.cellSize = cellSize;
                 this.worldSize = worldSize;
-                colliders = new Dictionary<int, Collider>();
-                colliderTypes = new Dictionary<Type, Dictionary<int, Collider>>();
+                cells = new Dictionary<(int, int), HashSet<Collider>>();
+                colliderCells = new Dictionary<Collider, HashSet<(int, int)>>();
+                colliderTypes = new Dictionary<Type, HashSet<Collider>>();
             }
+
             public void AddCollider(Collider col, Type parentType)
             {
                 col.Update();
-                colliders.Add(CalculateHash(col), col);
-                var key = parentType;
-                if (!colliderTypes.ContainsKey(key))
+                
+                RemoveCollider(col);
+                
+                Rect bounds = GetColliderBounds(col);
+                
+                // Calculate which cells this collider overlaps
+                int minCellX = (int)Math.Floor(bounds.X / (float)cellSize);
+                int maxCellX = (int)Math.Floor((bounds.X + bounds.Width) / (float)cellSize);
+                int minCellY = (int)Math.Floor(bounds.Y / (float)cellSize);
+                int maxCellY = (int)Math.Floor((bounds.Y + bounds.Height) / (float)cellSize);
+                
+                HashSet<(int, int)> colliderCellSet = new HashSet<(int, int)>();
+                
+                // Add collider to all overlapping cells
+                for (int x = minCellX; x <= maxCellX; x++)
                 {
-                    colliderTypes.Add(key, new Dictionary<int, Collider>());
+                    for (int y = minCellY; y <= maxCellY; y++)
+                    {
+                        var cellKey = (x, y);
+                        
+                        if (!cells.ContainsKey(cellKey))
+                        {
+                            cells[cellKey] = new HashSet<Collider>();
+                        }
+                        
+                        cells[cellKey].Add(col);
+                        colliderCellSet.Add(cellKey);
+                    }
                 }
-                colliderTypes[key].Add(CalculateHash(col), col);
+                
+                colliderCells[col] = colliderCellSet;
+                
+                // Track by type
+                if (!colliderTypes.ContainsKey(parentType))
+                {
+                    colliderTypes[parentType] = new HashSet<Collider>();
+                }
+                colliderTypes[parentType].Add(col);
+            }
+
+            public void RemoveCollider(Collider col)
+            {
+                if (!colliderCells.TryGetValue(col, out var cellSet))
+                {
+                    return;
+                }
+                
+                // Remove from all cells
+                foreach (var cellKey in cellSet)
+                {
+                    if (cells.TryGetValue(cellKey, out var cellColliders))
+                    {
+                        cellColliders.Remove(col);
+                        if (cellColliders.Count == 0)
+                        {
+                            cells.Remove(cellKey);
+                        }
+                    }
+                }
+                
+                colliderCells.Remove(col);
+                
+                // Remove from type tracking
+                foreach (var typeSet in colliderTypes.Values)
+                {
+                    typeSet.Remove(col);
+                }
             }
 
             public bool IntersectsWith(Collider self, Type other, vec2? pos = null)
             {
-                if (!colliderTypes.TryGetValue(other, out var otherColliders))
+                // Get the bounds of the query collider
+                Rect queryBounds = GetColliderBounds(self, pos);
+                
+                // Calculate which cells to check
+                int minCellX = (int)Math.Floor(queryBounds.X / (float)cellSize);
+                int maxCellX = (int)Math.Floor((queryBounds.X + queryBounds.Width) / (float)cellSize);
+                int minCellY = (int)Math.Floor(queryBounds.Y / (float)cellSize);
+                int maxCellY = (int)Math.Floor((queryBounds.Y + queryBounds.Height) / (float)cellSize);
+                
+                // Track which colliders we've already checked (to avoid duplicates)
+                HashSet<Collider> checkedColliders = new HashSet<Collider>();
+                
+                // Check only relevant cells
+                for (int x = minCellX; x <= maxCellX; x++)
                 {
-                    return false;
-                }
-
-                foreach (var key in otherColliders.Keys)
-                {
-                    if (self.Intersects(otherColliders[key], pos))
+                    for (int y = minCellY; y <= maxCellY; y++)
                     {
-                        return true;
+                        var cellKey = (x, y);
+                        if (!cells.TryGetValue(cellKey, out var cellColliders))
+                        {
+                            continue;
+                        }
+                        
+                        foreach (var otherCol in cellColliders)
+                        {
+                            // Check if the collider's parent type is the same as or derived from 'other'
+                            Type parentType = otherCol.Parent.GetType();
+                            if (other.IsAssignableFrom(parentType) && !checkedColliders.Contains(otherCol))
+                            {
+                                checkedColliders.Add(otherCol);
+                                if (self.Intersects(otherCol, pos))
+                                {
+                                    return true;
+                                }
+                            }
+                        }
                     }
                 }
+                
                 return false;
             }
 
             public bool IntersectsPosition(vec2 pos, Type other)
             {
-                if (!colliderTypes.TryGetValue(other, out var otherColliders))
+                // Calculate which cell the position is in
+                int cellX = (int)Math.Floor(pos.x / cellSize);
+                int cellY = (int)Math.Floor(pos.y / cellSize);
+                var cellKey = (cellX, cellY);
+                
+                // Check only colliders in that cell
+                if (!cells.TryGetValue(cellKey, out var cellColliders))
                 {
                     return false;
                 }
-
-                foreach (var key in otherColliders.Keys)
+                
+                foreach (var col in cellColliders)
                 {
-                    if (otherColliders[key].IntersectsPosition(pos))
+                    // Check if the collider's parent type is the same as or derived from 'other'
+                    Type parentType = col.Parent.GetType();
+                    if (other.IsAssignableFrom(parentType) && col.IntersectsPosition(pos))
                     {
                         return true;
                     }
                 }
+                
                 return false;
             }
 
-            private int CalculateHash(Collider col)
+            private Rect GetColliderBounds(Collider col, vec2? pos = null)
             {
-                vec2 c = col.CenterPoint();
-                int cellX = (int)Math.Floor(c.x / cellSize);
-                int cellY = (int)Math.Floor(c.y / cellSize);
-
-                // Encode negatives distinctly
-                uint ux = (uint)(cellX >= 0 ? cellX * 2 : (-cellX * 2 - 1));
-                uint uy = (uint)(cellY >= 0 ? cellY * 2 : (-cellY * 2 - 1));
-
-                // Large primes
-                const uint p1 = 73856093;
-                const uint p2 = 19349663;
-
-                // Mix and clamp to positive
-                uint h = (ux * p1) ^ (uy * p2);
-                return (int)(h & 0x7FFFFFFF);
+                if (col is BoxCollider boxCollider)
+                {
+                    if (pos != null)
+                    {
+                        // Calculate bounds at the query position
+                        var bounds = boxCollider.bounds;
+                        var parentPos = col.Parent.Position;
+                        
+                        int currentBaseX = (int)MathF.Floor(parentPos.x + 0.5f);
+                        int currentBaseY = (int)MathF.Floor(parentPos.y + 0.5f);
+                        int offsetX = bounds.X - currentBaseX;
+                        int offsetY = bounds.Y - currentBaseY;
+                        
+                        return new Rect(
+                            (int)MathF.Floor(pos.Value.x + offsetX + 0.5f),
+                            (int)MathF.Floor(pos.Value.y + offsetY + 0.5f),
+                            bounds.Width + 1,
+                            bounds.Height + 1
+                        );
+                    }
+                    return boxCollider.bounds;
+                }
+                
+                // Fallback: create a small bounds around center point
+                vec2 center = col.CenterPoint();
+                return new Rect((int)center.x - 1, (int)center.y - 1, 2, 2);
             }
-            private int CellCoord(float coord)
-            {
-                return (int)(coord / cellSize);
-            }
-
         }
     }
 }

@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using GlmSharp;
 using panpan.Rendering;
 using SDL3;
@@ -36,6 +37,11 @@ namespace panpan.Scene
             foreach (Component comp in components)
             {
                 comp.Render();
+            }
+
+            if (Util.Debug.showObjectsWithoutRenderer && GetComponent<SpriteRenderer>() == null)
+            {
+                Draw.Sprite(Util.Debug.cursorTex, Transform.Position.xy + new vec2(3,3));
             }
         }
 

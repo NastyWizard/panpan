@@ -22,7 +22,7 @@ namespace panpan.Scene
         {
             this.name = name;
             entities = new List<Entity>();
-            camera = new Camera(800, 600);
+            camera = new Camera(0,0,800, 600);
         }
 
         public virtual void Init()
@@ -50,6 +50,7 @@ namespace panpan.Scene
             {
                 ent.Render();
             }
+            camera.Render();
             ColliderDebugBatch.Flush();
         }
 

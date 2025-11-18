@@ -1,6 +1,7 @@
 
 using panpan;
 using panpan.Rendering;
+using panpan.Util;
 
 namespace panpanExample
 {
@@ -65,6 +66,7 @@ namespace panpanExample
                     App.GetSceneManager().ActiveScene.TimeScale = 1.0f;
                 }
                 ImGui.Checkbox("Show colliders", ref App.GetCollisionManager().ShowColliderDebug);
+                ImGui.Checkbox("Show invisible objects", ref panpan.Util.Debug.showObjectsWithoutRenderer);
             }
 
 

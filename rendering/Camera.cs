@@ -14,8 +14,10 @@ namespace panpan.Rendering
         public uint Width => width;
         public uint Height => height;
 
-        public Camera(uint width, uint height)
+        public Camera(int x, int y, uint width, uint height)
         {
+            Transform.Position.x = x;
+            Transform.Position.y = y;
             SetBounds(width, height);
         }
 

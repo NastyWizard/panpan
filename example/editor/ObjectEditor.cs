@@ -3,6 +3,7 @@ using System.Reflection;
 using GlmSharp;
 using ImGuiNET.Backend.SDLGPU;
 using panpan;
+using panpan.Assets;
 using panpan.Rendering;
 using panpan.Scene;
 using panpan.Util;
@@ -82,7 +83,20 @@ namespace panpanExample
 
         private void PlaceObject(int x, int y)
         {
-            Entity? obj = (Entity)Activator.CreateInstance(brushObjectType, x, y);
+
+            var paramArray = brushObjectType.GetConstructors().Single().GetParameters();
+            object?[] objectParams = new object[paramArray.Length];
+
+            var k = 0;
+            foreach (var param in paramArray)
+            {
+                objectParams[k] = Utility.CreateDefaultFromType(paramArray[k].ParameterType);
+                k++;
+            }
+            objectParams[0] = x;
+            objectParams[1] = y;
+
+            Entity? obj = (Entity)Activator.CreateInstance(brushObjectType, objectParams);
             if (obj != null)
             {
                 var tile = App.GetSceneManager().ActiveScene.AddChild(obj);
@@ -110,7 +124,17 @@ namespace panpanExample
                     {
                         if (!ReferenceEquals(brushObjectType, type))
                         {
-                            ChangeBrush(type, 0, 0);
+                            var paramArray = type.GetConstructors().Single().GetParameters();
+                            object?[] objectParams = new object[paramArray.Length];
+
+                            var k = 0;
+                            foreach (var param in paramArray)
+                            {
+                                objectParams[k] = Utility.CreateDefaultFromType(paramArray[k].ParameterType);
+                                k++;
+                            }
+                            
+                            ChangeBrush(type, objectParams);
                         }
                     }
                 }
@@ -170,10 +194,19 @@ namespace panpanExample
             brushEntity!.Init();
 
             var renderer = brushEntity.GetComponent<SpriteRenderer>();
-            brushTex = renderer!.Texture;
-            brushClipRect = renderer.ClipRect;
-            vec2 scale = new vec2(brushEntity.Transform.Scale.x, brushEntity.Transform.Scale.y);
-            brushOffset = -renderer!.Origin * new vec2(brushClipRect?.Width ?? (float)brushTex!.Width, brushClipRect?.Height ?? (float)brushTex!.Height) * scale;
+            if (renderer == null)
+            {
+                brushTex = Debug.cursorTex;
+                brushClipRect = new Rect(0, 0, 7, 7);
+                brushOffset = new vec2(3, 3);
+            }
+            else
+            {
+                brushTex = renderer!.Texture;
+                brushClipRect = renderer.ClipRect;
+                vec2 scale = new vec2(brushEntity.Transform.Scale.x, brushEntity.Transform.Scale.y);
+                brushOffset = -renderer!.Origin * new vec2(brushClipRect?.Width ?? (float)brushTex!.Width, brushClipRect?.Height ?? (float)brushTex!.Height) * scale;   
+            }
         }
     }
 }
