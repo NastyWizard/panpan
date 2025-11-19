@@ -1,4 +1,5 @@
 
+using System.Reflection;
 using GlmSharp;
 using ImGuiNET.Backend.SDLGPU;
 using panpan;
@@ -24,6 +25,8 @@ namespace panpanExample
         private BrushType brushType = BrushType.BRUSH;
         private Texture? brushTex;
         private ivec2 brushPos;
+        private int selectedTileType = 0;
+        private TileSet tileSet = TileSets.Dirt;
 
         public bool Visible = false;
 
@@ -36,9 +39,9 @@ namespace panpanExample
 
         private void OnMouseDown(byte btn)
         {
-            if (btn == 1 && editing && !ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow) && !App.GetCollisionManager().IntersectsPosition(Input.MousePosition, typeof(TestWall)))
+            if (btn == 1 && editing && !ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow) && !App.GetCollisionManager().IntersectsPosition(Input.MousePosition, typeof(Tile)))
             {
-                PlaceTile(brushPos.x, brushPos.y);
+                PlaceTile((uint)brushPos.x, (uint)brushPos.y);
             }
         }
 
@@ -71,10 +74,9 @@ namespace panpanExample
             ImGui.End();
         }
 
-        private void PlaceTile(int x, int y)
+        private void PlaceTile(uint x, uint y)
         {
-            var tile = App.GetSceneManager().ActiveScene.AddChild(new TestWall(x, y));
-            tile.Init();
+            var tile = App.GetSceneManager().ActiveScene.TileMap.AddTile(x/8,y/8,tileSet);
         }
 
         private void ShowBrushSelect()
@@ -102,10 +104,25 @@ namespace panpanExample
 
         private void ShowTileSelect()
         {
-            if (ImGui.BeginCombo("test", "test"))
+            var tsetType = typeof(TileSets);
+            FieldInfo[] fields = tsetType.GetFields(BindingFlags.Static | BindingFlags.Public);
+            List<FieldInfo> staticVariables = fields.Select(field => field).ToList();
+            if (ImGui.BeginCombo("Tile Set", staticVariables[selectedTileType].Name))
             {
                 bool b = false;
-                if (ImGui.Selectable("test2", ref b)) { /* handle selection */ }
+                var i = 0;
+                foreach(var field in staticVariables)
+                {
+                    if(field.FieldType == typeof(TileSet))
+                    {
+                        if (ImGui.Selectable(field.Name, ref b))
+                        {
+                            selectedTileType = i;
+                            tileSet = (TileSet)field.GetValue(null);
+                        }
+                    }
+                    i++;
+                }
                 ImGui.EndCombo();
             }
         }
@@ -118,7 +135,7 @@ namespace panpanExample
                 brushPos.x = (int)MathF.Floor(brushPos.x / snapSize.x) * snapSize.x;
                 brushPos.y = (int)MathF.Ceiling(brushPos.y / snapSize.y) * snapSize.y + 8;
             }
-            Draw.Sprite(brushTex, brushPos);
+            //Draw.Sprite(brushTex, brushPos);
             Draw.Rect(new Rect(brushPos.x-1,brushPos.y-8, 9,9), Color.SkyBlue);
         }
     }

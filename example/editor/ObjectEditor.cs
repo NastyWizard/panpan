@@ -45,7 +45,7 @@ namespace panpanExample
 
         private void OnMouseDown(byte btn)
         {
-            if (btn == 1 && editing && !ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow) && !App.GetCollisionManager().IntersectsPosition(Input.MousePosition, typeof(TestWall)))
+            if (btn == 1 && editing && !ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow) && !App.GetCollisionManager().IntersectsPosition(Input.MousePosition, typeof(Tile)))
             {
                 PlaceObject(brushPos.x - (int)brushOffset.x, brushPos.y - (int)brushOffset.y);
             }

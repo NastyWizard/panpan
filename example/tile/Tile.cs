@@ -9,15 +9,23 @@ namespace panpanExample
 {
     public class Tile : Entity
     {
-        private SpriteRenderer renderer = null!;
-        public Tile(int x, int y)
+        public SpriteRenderer renderer = null!;
+        public TileSet tileSet;
+        BoxCollider collider;
+        public Tile(int x, int y, TileSet? tileSet = null)
         {
+            tileSet ??= TileSets.Dirt;
+            this.tileSet = tileSet.Value;
             Position.xy = new vec2(x, y);
         }
 
         public override void Init()
         {
-            renderer = (SpriteRenderer)AddComponent(new SpriteRenderer(new Texture(Sprites.tile, 8, 8)));
+            renderer = (SpriteRenderer)AddComponent(new SpriteRenderer(TileSets.TilesetTexture));
+            renderer.Clip(tileSet.clips[15]);
+
+            collider = (BoxCollider)AddComponent(new BoxCollider(8, 8));
+            collider.SetOffset(0,-7);
             base.Init();
         }
 
