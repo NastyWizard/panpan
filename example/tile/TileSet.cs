@@ -14,8 +14,8 @@ namespace panpanExample
         {
             this.index = index;
             var tileSize = 8;
-            int x = (int)this.index * 4 * tileSize % 4;
-            int y = (int)Math.DivRem(this.index * 4 * tileSize, 4).Quotient;
+            int x = (int)(this.index % 4) * (4 * tileSize);
+            int y = 0; //(int)Math.DivRem(this.index * 4 * tileSize, 4).Quotient;
             clips[6] = new Rect(x   ,y,8,8);            // 0
             clips[7] = new Rect(x+8 ,y,8,8);            // 1
             clips[5] = new Rect(x+16,y,8,8);            // 2

@@ -106,7 +106,7 @@ namespace panpanExample
         {
             var tsetType = typeof(TileSets);
             FieldInfo[] fields = tsetType.GetFields(BindingFlags.Static | BindingFlags.Public);
-            List<FieldInfo> staticVariables = fields.Select(field => field).ToList();
+            List<FieldInfo> staticVariables = fields.Where(field => field.FieldType == typeof(TileSet)).ToList();
             if (ImGui.BeginCombo("Tile Set", staticVariables[selectedTileType].Name))
             {
                 bool b = false;
