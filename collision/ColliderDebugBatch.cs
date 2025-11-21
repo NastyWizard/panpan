@@ -33,12 +33,13 @@ namespace panpan.Collision
 
         public static void SubmitRect(Rect rect, vec4 color)
         {
-            rects.Add(new RectRequest { Rect = rect, Color = color });
+            var r = new Rect(rect.X,rect.Y-1,rect.Width,rect.Height);
+            rects.Add(new RectRequest { Rect = r, Color = color });
         }
 
         public static void SubmitPixel(vec2 position, vec4 color)
         {
-            pixels.Add(new PixelRequest { Position = position, Color = color });
+            pixels.Add(new PixelRequest { Position = position - vec2.UnitY, Color = color });
         }
 
         public static void Flush()

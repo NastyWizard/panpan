@@ -17,7 +17,11 @@
     <PackageReference Include="SDL3-CS.Native.Image" Version="3.2.4" />
     <PackageReference Include="SDL3-CS.Native.Mixer" Version="2.8.1.1" />
     <PackageReference Include="SDL3-CS.Native.TTF" Version="3.2.2" />
-    <Content Include="thirdparty/osx/**" Condition=" '$(OS)' != 'Windows_NT' ">
+    <PackageReference Include="StbImageSharp" Version="2.30.15" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="thirdparty/osx/**" Condition=" '$(OS)' == 'Darwin' ">
       <Link>%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -25,7 +29,11 @@
       <Link>%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <PackageReference Include="StbImageSharp" Version="2.30.15" />
+    <Content Include="thirdparty/linux/**" Condition=" '$(OS)' == 'Unix' ">
+      <Link>runtimes/linux-x64/native/%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/linux-x64/native/%(Filename)%(Extension)</TargetPath>
+    </Content>
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
