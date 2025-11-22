@@ -144,7 +144,8 @@ namespace panpan
         {
             backBuffer = new RenderTarget((uint)gameSize.x, (uint)gameSize.y, bgColor);
             collisionManager = new CollisionManager(CollisionManager.ManagerType.SPACIAL_HASH, 8, new vec2(320, 180));
-            sceneManager = new SceneManager(startScene);
+            sceneManager = new SceneManager();
+            sceneManager.SwapScene(startScene);
             inputManager = new Input();
             imguiController = new ImGuiController();
             imguiController.Initialize(gpuDevice, window);

@@ -25,6 +25,13 @@ namespace panpan.Scene
                 comp.Init();
             }
         }
+        public virtual void Destroy()
+        {
+            foreach (Component comp in components)
+            {
+                comp.Destroy();
+            }
+        }
         public virtual void Update()
         {
             foreach (Component comp in components)

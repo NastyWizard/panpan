@@ -23,9 +23,10 @@ namespace panpanExample
         {
             renderer = (SpriteRenderer)AddComponent(new SpriteRenderer(TileSets.TilesetTexture));
             renderer.Clip(tileSet.clips[15]);
+            renderer.Origin = new vec2(0,-8.0f/8.0f);
 
             collider = (BoxCollider)AddComponent(new BoxCollider(8, 8));
-            collider.SetOffset(0,-7);
+            collider.SetOffset(0,1);
             base.Init();
         }
 

@@ -10,7 +10,7 @@ namespace panpan.Rendering
     {
         static BasicRenderer renderer = new BasicRenderer();
         static SpriteRenderer spriteRenderer = new SpriteRenderer(null, null, Shapes.quad, new Material(Assets.Shaders.standard_frag_hlsl, Assets.Shaders.standard_vert_hlsl));
-        static SpriteRenderer backRenderer = new SpriteRenderer(null, null, Shapes.quad, new Material(Assets.Shaders.standard_frag_hlsl, Assets.Shaders.backbuffer_vert_hlsl));
+        static SpriteRenderer backRenderer = new SpriteRenderer(null, null, Shapes.quad, new Material(Assets.Shaders.backbuffer_frag_hlsl, Assets.Shaders.backbuffer_vert_hlsl));
         static vec4 color;
 
         public static void Rect(vec2 bl, vec2 size, vec4? color = null)

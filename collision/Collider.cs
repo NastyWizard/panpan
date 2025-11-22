@@ -22,6 +22,12 @@ namespace panpan.Collision
             base.Init();
         }
 
+        public override void Destroy()
+        {
+            App.GetCollisionManager().RemoveCollider(this);
+            base.Destroy();
+        }
+
         public override void Update()
         {
             UpdateBounds();

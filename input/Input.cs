@@ -21,6 +21,7 @@ namespace panpan
         private static Dictionary<byte, bool> mouseCurrentlyDown = new Dictionary<byte, bool>();
 
         public static vec2 MousePosition;
+        public static vec2 MousePositionWindow;
 
         public static void HandleEvents(SDL.Event e)
         {
@@ -50,7 +51,7 @@ namespace panpan
                 case SDL.EventType.MouseButtonUp:
                     if (mouseCurrentlyDown.ContainsKey(e.Button.Button))
                     {
-                        // MouseUp(e.Button.Button);
+                        MouseUp(e.Button.Button);
                         mouseCurrentlyDown.Remove(e.Button.Button);
                     }
                     break;
@@ -63,10 +64,16 @@ namespace panpan
             {
                 KeyHeld(key);
             }
+
+            foreach (var mb in mouseCurrentlyDown.Keys)
+            {
+                MouseHeld(mb);
+            }
             int w, h;
             SDL.GetWindowSize(App.GetWindow(), out w, out h);
-            SDL.GetMouseState(out MousePosition.x, out MousePosition.y);
-
+            SDL.GetMouseState(out MousePositionWindow.x, out MousePositionWindow.y);
+            
+            MousePosition = MousePositionWindow;
             vec4 clipPos = new vec4((2.0f * MousePosition.x) / w - 1.0f, (2.0f * MousePosition.y) / h - 1.0f, 0f, 1f);
             vec4 worldPos = App.GetSceneManager().ActiveScene.Camera.GetViewProjectionMatrix().Inverse * clipPos;
             MousePosition = new vec2(worldPos.x, -worldPos.y) + App.GetSceneManager().ActiveScene.Camera.Position.xy;
@@ -88,6 +95,14 @@ namespace panpan
         public static void RegisterOnMouseDown(MouseDelegate action)
         {
             mouseDownEvents.Add(BuildActionKey(action), action);
+        }
+        public static void RegisterOnMouseHeld(MouseDelegate action)
+        {
+            mouseHeldEvents.Add(BuildActionKey(action), action);
+        }
+        public static void RegisterOnMouseReleased(MouseDelegate action)
+        {
+            mouseUpEvents.Add(BuildActionKey(action), action);
         }
 
 
@@ -120,6 +135,20 @@ namespace panpan
         private static void MouseDown(byte btn)
         {
             foreach (MouseDelegate action in mouseDownEvents.Values)
+            {
+                action.Invoke(btn);
+            }
+        }
+        private static void MouseHeld(byte btn)
+        {
+            foreach (MouseDelegate action in mouseHeldEvents.Values)
+            {
+                action.Invoke(btn);
+            }
+        }
+        private static void MouseUp(byte btn)
+        {
+            foreach (MouseDelegate action in mouseUpEvents.Values)
             {
                 action.Invoke(btn);
             }

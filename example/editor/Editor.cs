@@ -67,6 +67,7 @@ namespace panpanExample
                 }
                 ImGui.Checkbox("Show colliders", ref App.GetCollisionManager().ShowColliderDebug);
                 ImGui.Checkbox("Show invisible objects", ref panpan.Util.Debug.showObjectsWithoutRenderer);
+                ImGui.Checkbox("Free camera", ref ((TestScene)App.GetSceneManager().ActiveScene).FreeCamera);
             }
 
 

@@ -20,6 +20,7 @@ namespace panpanExample
 
         private bool editing = false;
         private bool snap = true;
+        private bool canPlace = true;
         private ivec2 snapSize = new ivec2(8, 8);
 
         private BrushType brushType = BrushType.BRUSH;
@@ -34,15 +35,25 @@ namespace panpanExample
         {
             brushTex = new Texture(panpan.Assets.Sprites.tile, 8, 8);
             brushTex.CopyPass();
+            Input.RegisterOnMouseHeld(OnMouseHeld);
             Input.RegisterOnMouseDown(OnMouseDown);
         }
 
-        private void OnMouseDown(byte btn)
+        private void OnMouseHeld(byte btn)
         {
-            if (btn == 1 && editing && !ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow) && !App.GetCollisionManager().IntersectsPosition(Input.MousePosition, typeof(Tile)))
+            if (canPlace && btn == 1 && editing && !ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow) && !App.GetCollisionManager().IntersectsPosition(Input.MousePosition, typeof(Tile)))
             {
                 PlaceTile((uint)brushPos.x, (uint)brushPos.y);
             }
+            if(canPlace && btn == 3 && editing && !ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow) && App.GetCollisionManager().IntersectsPosition(Input.MousePosition, typeof(Tile)))
+            {
+                RemoveTile((uint)brushPos.x, (uint)brushPos.y);
+            }
+        }
+
+
+        private void OnMouseDown(byte btn)
+        {
         }
 
         public void Show()
@@ -54,6 +65,7 @@ namespace panpanExample
 
             if (editing)
             {
+                App.GetSceneManager().ActiveScene.TileMap.DrawBounds();
                 DrawBrush();
             }
 
@@ -77,6 +89,10 @@ namespace panpanExample
         private void PlaceTile(uint x, uint y)
         {
             var tile = App.GetSceneManager().ActiveScene.TileMap.AddTile(x/8,y/8,tileSet);
+        }
+        private void RemoveTile(uint x, uint y)
+        {
+            App.GetSceneManager().ActiveScene.TileMap.RemoveTile(x/8, y/8);
         }
 
         private void ShowBrushSelect()
@@ -133,10 +149,16 @@ namespace panpanExample
             if (snap)
             {
                 brushPos.x = (int)MathF.Floor(brushPos.x / snapSize.x) * snapSize.x;
-                brushPos.y = (int)MathF.Ceiling(brushPos.y / snapSize.y) * snapSize.y + 8;
+                brushPos.y = (int)MathF.Ceiling(brushPos.y / snapSize.y) * snapSize.y;
+
+                if(Input.MousePosition.y < 0)
+                    brushPos.y-=8;
+                if(Input.MousePosition.x < 0)
+                    brushPos.x-=8;
             }
-            //Draw.Sprite(brushTex, brushPos);
-            Draw.Rect(new Rect(brushPos.x-1,brushPos.y-8, 9,9), Color.SkyBlue);
+            var tmap = App.GetSceneManager().ActiveScene.TileMap;
+            canPlace = !(brushPos.x < 0 || brushPos.y < 0 || brushPos.x >= tmap.Width*tmap.TileSize || brushPos.y >= tmap.Height*tmap.TileSize);
+            Draw.Rect(new Rect(brushPos.x-1,brushPos.y, 9,9), !canPlace ? Color.Red : Color.SkyBlue);
         }
     }
 }

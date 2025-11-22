@@ -51,7 +51,7 @@ namespace panpanExample
             animator.AddAnimation("idle", [0]);
             animator.AddAnimation("walk", [1,2]);
 
-            collider = (BoxCollider)AddComponent(new BoxCollider(8, 8));
+            collider = (BoxCollider)AddComponent(new BoxCollider(8, 7));
             collider.SetOffset(-4, 0);
 
             if (Scene != null) // in editor

@@ -6,9 +6,8 @@ namespace panpan.Scene
         private Scene activeScene = null!;
         public Scene ActiveScene => activeScene;
         
-        public SceneManager(Scene startScene)
+        public SceneManager()
         {
-            SwapScene(startScene);
         }
 
         public void SwapScene(Scene scene)

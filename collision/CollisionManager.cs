@@ -40,6 +40,10 @@ namespace panpan.Collision
         {
             spatialHash.AddCollider(col, col.Parent.GetType());
         }
+        public void RemoveCollider(Collider col)
+        {
+            spatialHash.RemoveCollider(col);
+        }
 
         public bool IntersectsWith(Collider self, Type other, vec2? pos = null)
         {

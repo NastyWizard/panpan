@@ -26,13 +26,16 @@ namespace panpan.Scene
             this.name = name;
             entities = new List<Entity>();
             camera = new Camera(0,0,800, 600);
-            tileMap = new TileMap(0,0,320,180);
+            tileMap = new TileMap(0,0,320/8,180/8);
         }
 
         public virtual void Init()
         {
             camera.Init();
+            camera.Scene = this;
+            
             tileMap.Init();
+            tileMap.Scene = this;
             foreach (Entity ent in entities)
             {
                 ent.Init();
@@ -66,6 +69,21 @@ namespace panpan.Scene
             entities.Add(entity);
             entity.Scene = this;
             return entity;
+        }
+
+        public bool RemoveChild(Entity entity)
+        {
+            if (entity == null)
+                return false;
+            
+            bool removed = entities.Remove(entity);
+            
+            if (removed)
+            {
+                entity.Scene = null;
+                return true;
+            }
+            return false;
         }
 
     }
