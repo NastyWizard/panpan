@@ -14,6 +14,8 @@ namespace panpan.Rendering
         public uint Width => width;
         public uint Height => height;
 
+        public float Zoom = 1.0f;
+
         public Camera(int x, int y, uint width, uint height)
         {
             Transform.Position.x = x;
@@ -50,7 +52,12 @@ namespace panpan.Rendering
         {
             width = w;
             height = h;
-            projection = mat4.Ortho(-width / 2, width / 2, -height / 2, height / 2, 0.1f, 100.0f);
+            UpdateProjection();
+        }
+
+        public void UpdateProjection()
+        {
+            projection = mat4.Ortho(-(width * Zoom) / 2, (width * Zoom) / 2, -(height * Zoom) / 2, (height * Zoom) / 2, 0.1f, 100.0f);
         }
 
         public vec2 GetBounds()

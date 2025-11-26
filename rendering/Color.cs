@@ -17,6 +17,7 @@ namespace panpan.Rendering
         public static vec4 Blue = new vec4(0f,0f,1f,1f);
 
         public static vec4 SkyBlue = Hex("#639bff");
+        public static vec4 DarkBlue = Hex("#1a2435ff");
 
         public static vec4 Hex(string hex)
         {

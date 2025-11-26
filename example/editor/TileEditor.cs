@@ -34,11 +34,14 @@ namespace panpanExample
         private ivec2 brushPos;
         private int selectedTileType = 0;
         private TileSet tileSet = TileSets.Dirt;
+        private TileMap[,] tilemaps = ((TestScene)App.GetSceneManager().ActiveScene).TileMaps;
+        private TileMap? activeTileMap;
 
         public bool Visible = false;
 
         public void Init()
         {
+            activeTileMap = activeTileMap = tilemaps[0,0];
             brushTex = new Texture(panpan.Assets.Sprites.tile, 8, 8);
             brushTex.CopyPass();
             Input.RegisterOnMouseHeld(OnMouseHeld);
@@ -59,7 +62,7 @@ namespace panpanExample
                     if(btn == 3 && App.GetCollisionManager().IntersectsPosition(Input.MousePosition, typeof(Tile)))
                     {
                         RemoveTile((uint)brushPos.x, (uint)brushPos.y);
-                        App.GetSceneManager().ActiveScene.TileMap.UpdateAutoTiles();
+                        activeTileMap!.UpdateAutoTiles();
                     }
                 }
             }
@@ -143,7 +146,7 @@ namespace panpanExample
                             }
                         }
                     }
-                    App.GetSceneManager().ActiveScene.TileMap.UpdateAutoTiles();
+                    activeTileMap!.UpdateAutoTiles();
                 }
             }
             drawingRect = false;
@@ -159,7 +162,8 @@ namespace panpanExample
 
             if (editing)
             {
-                App.GetSceneManager().ActiveScene.TileMap.DrawBounds();
+                DrawInactiveTileGrid();
+                activeTileMap!.DrawBounds(Color.SkyBlue);
                 DrawBrush();
             }
 
@@ -184,11 +188,13 @@ namespace panpanExample
 
         private void PlaceTile(uint x, uint y, bool autoUpdate = true)
         {
-            var tile = App.GetSceneManager().ActiveScene.TileMap.GetTile((uint)(x/snapSize.x),(uint)(y/snapSize.y));
+            x = (uint)(x/snapSize.x) % 40;
+            y = (uint)(y/snapSize.y) % 22;
+            var tile = activeTileMap!.GetTile((uint)(x),(uint)(y));
 
             if(tile == null)
             {
-                App.GetSceneManager().ActiveScene.TileMap.AddTile(x/8,y/8,tileSet);
+                activeTileMap.AddTile(x,y,tileSet);
             }
             else if(canOverwrite)
             {
@@ -196,12 +202,14 @@ namespace panpanExample
             }
             if(autoUpdate)
             {
-                App.GetSceneManager().ActiveScene.TileMap.UpdateAutoTiles();
+                activeTileMap.UpdateAutoTiles();
             }
         }
         private void RemoveTile(uint x, uint y)
         {
-            App.GetSceneManager().ActiveScene.TileMap.RemoveTile(x/8, y/8);
+            x = (uint)(x/snapSize.x) % 40;
+            y = (uint)(y/snapSize.y) % 22;
+            activeTileMap!.RemoveTile(x, y);
         }
 
         private void ShowBrushSelect()
@@ -272,9 +280,16 @@ namespace panpanExample
                     brushPos.x-=8;
             }
 
+            canPlace = false;
 
-            var tmap = App.GetSceneManager().ActiveScene.TileMap;
-            canPlace = !(brushPos.x < 0 || brushPos.y < 0 || brushPos.x >= tmap.Width*tmap.TileSize || brushPos.y >= tmap.Height*tmap.TileSize);
+            int xx = brushPos.x/320;
+            int yy = brushPos.y/176;
+            if(xx >= 0 && xx < 16 && yy >= 0 && yy < 16)
+            {
+                activeTileMap = tilemaps[xx,yy];
+                canPlace = true;
+            }
+
             canPlace = canPlace && hoverTimer <= 0;
             Draw.Rect(new Rect(brushPos.x-1,brushPos.y, 9,9), !canPlace ? Color.Red : Color.SkyBlue);
 
@@ -285,6 +300,20 @@ namespace panpanExample
             else
             {
                 hoverTimer = 6;
+            }
+        }
+
+        private void DrawInactiveTileGrid()
+        {
+            for(var x = 0; x < 16; x++)
+            {
+                for(var y = 0; y < 16; y++)
+                {
+                    if(tilemaps[x,y].InView())
+                    {
+                        tilemaps[x,y].DrawBounds(Color.DarkBlue);
+                    }
+                }   
             }
         }
     }

@@ -30,7 +30,7 @@ namespace panpanExample
         {
             if(tiles[x, y] != null)
                 return tiles[x, y];
-            Tile tile = new Tile((int)x*8, (int)y*8, tileSet);
+            Tile tile = new Tile((int)x*8 + (int)Position.x, (int)y*8 + (int)Position.y, tileSet);
             tiles[x, y] = tile;
             tile.Init();
 
@@ -98,9 +98,38 @@ namespace panpanExample
             base.Render();
         }
 
-        public void DrawBounds()
+        public void DrawBounds(vec4 color)
         {
-            Draw.Rect(new Rect((int)Position.x-1, (int)Position.y, width*TileSize+1, height*TileSize+1), Color.SkyBlue);
+            Draw.Rect(new Rect((int)Position.x-1, (int)Position.y, width*TileSize+1, height*TileSize+1), color);
+        }
+
+        public bool InView()
+        {
+            if (Scene?.Camera == null)
+                return false;
+
+            var camera = Scene.Camera;
+            
+            var tilemapBounds = new Rect(
+                (int)Position.x - 1,
+                (int)Position.y,
+                width * TileSize + 1,
+                height * TileSize + 1
+            );
+
+            // Calculate camera view bounds
+            // Camera uses orthographic projection centered at Position
+            // View extends from -(Width*Zoom)/2 to +(Width*Zoom)/2 and -(Height*Zoom)/2 to +(Height*Zoom)/2
+            float effectiveWidth = camera.Width * camera.Zoom;
+            float effectiveHeight = camera.Height * camera.Zoom;
+            var cameraBounds = new Rect(
+                (int)(camera.Position.x - effectiveWidth / 2.0f),
+                (int)(camera.Position.y - effectiveHeight / 2.0f),
+                (int)effectiveWidth,
+                (int)effectiveHeight
+            );
+
+            return tilemapBounds.Intersects(cameraBounds);
         }
     }
 }

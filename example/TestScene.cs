@@ -23,6 +23,8 @@ namespace panpanExample
 
         public TestScene() : base("test") { }
 
+        public TileMap[,] TileMaps = new TileMap[16,16];
+
         public override void Init()
         {
 
@@ -30,12 +32,21 @@ namespace panpanExample
 
             base.Init();
 
-            // Add tiles after base init
+            for (var x = 0; x < 16; x++)
+            {
+                for(var y = 0; y < 16; y++)
+                {
+                    var tileMap = new TileMap(x * 320,y * 176, 320/8, 180/8);
+                    TileMaps[x,y] = tileMap;
+                    AddChild(tileMap);
+                }
+            }
+
             for (uint i = 0; i < 40; i++)
             {
-                TileMap.AddTile(i, 0, TileSets.Dirt);
+                TileMaps[0,0].AddTile(i, 0, TileSets.Dirt);
             }
-            TileMap.UpdateAutoTiles();
+            TileMaps[0,0].UpdateAutoTiles();
 
             Input.RegisterOnMouseHeld(OnMouseHeld);
             Input.RegisterOnMouseReleased(OnMouseUp);

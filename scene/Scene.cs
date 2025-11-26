@@ -16,8 +16,6 @@ namespace panpan.Scene
         public string Name => name;
 
         public List<Entity> Children => entities;
-        private TileMap tileMap;
-        public TileMap TileMap => tileMap;
 
         public float TimeScale = 1.0f;
 
@@ -26,7 +24,6 @@ namespace panpan.Scene
             this.name = name;
             entities = new List<Entity>();
             camera = new Camera(0,0,800, 600);
-            tileMap = new TileMap(0,0,320/8,180/8);
         }
 
         public virtual void Init()
@@ -34,8 +31,6 @@ namespace panpan.Scene
             camera.Init();
             camera.Scene = this;
             
-            tileMap.Init();
-            tileMap.Scene = this;
             foreach (Entity ent in entities)
             {
                 ent.Init();
@@ -45,7 +40,6 @@ namespace panpan.Scene
         public virtual void Update()
         {
             camera.Update();
-            tileMap.Update();
             foreach (Entity ent in entities)
             {
                 ent.Update();
@@ -55,7 +49,6 @@ namespace panpan.Scene
         {
             camera.PushUniformData();
             ColliderDebugBatch.BeginFrame();
-            tileMap.Render();
             foreach (Entity ent in entities)
             {
                 ent.Render();
