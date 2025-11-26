@@ -39,5 +39,10 @@ namespace panpanExample
             base.Render();
             //collider.DrawDebug();
         }
+
+        public void SetTileSet(TileSet tileSet)
+        {
+            this.tileSet = tileSet;
+        }
     }
 }

@@ -35,9 +35,13 @@ namespace panpanExample
             tile.Init();
 
             Scene.AddChild(tile);
-            UpdateAutoTiles();
 
             return tile;
+        }
+
+        public Tile GetTile(uint x, uint y)
+        {
+            return tiles[x,y];
         }
 
         public void RemoveTile(uint x, uint y)
@@ -52,7 +56,6 @@ namespace panpanExample
                 tile.Destroy();
                 tiles[x, y] = null;
             }
-            UpdateAutoTiles();
         }
 
         public void UpdateAutoTiles()

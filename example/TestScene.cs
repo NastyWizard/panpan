@@ -35,6 +35,7 @@ namespace panpanExample
             {
                 TileMap.AddTile(i, 0, TileSets.Dirt);
             }
+            TileMap.UpdateAutoTiles();
 
             Input.RegisterOnMouseHeld(OnMouseHeld);
             Input.RegisterOnMouseReleased(OnMouseUp);

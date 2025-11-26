@@ -499,6 +499,10 @@ namespace panpan.Rendering
             var swigFlags = new SWIGTYPE_p_ImGuiHoveredFlags((nint)flagsPtr, false);
             return cimgui_sdlgpu.igIsWindowHovered(swigFlags);
         }
+        public static bool IsAnyItemFocused()
+        {
+            return cimgui_sdlgpu.igIsAnyItemFocused();
+        }
 
         public static void ShowDemoWindow()
         {

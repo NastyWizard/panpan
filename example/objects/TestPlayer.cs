@@ -43,7 +43,7 @@ namespace panpanExample
         public override void Init()
         {
             renderer = (SpriteRenderer)AddComponent(new SpriteRenderer(new Texture(Sprites.player, 8*3, 8)));
-            renderer.Clip(new Rect(0, 0, 8, 8));
+            renderer.Clip(new Rect(0, 0, 8, 7));
             //renderer.RegisterSetUniforms(SetUniforms);
             renderer.Origin = new vec2(4f / 8f, -7f / 8f);
 
@@ -51,7 +51,7 @@ namespace panpanExample
             animator.AddAnimation("idle", [0]);
             animator.AddAnimation("walk", [1,2]);
 
-            collider = (BoxCollider)AddComponent(new BoxCollider(8, 7));
+            collider = (BoxCollider)AddComponent(new BoxCollider(8, 8));
             collider.SetOffset(-4, 0);
 
             if (Scene != null) // in editor
@@ -193,6 +193,12 @@ namespace panpanExample
                 {
                     Position.y++;
                     Position.y = MathF.Round(Position.y);
+                }// Try to climb down if blocked horizontally
+                else if (!App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), Position.xy + new vec2(sign.x, -1.0f)) && 
+                         !App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), Position.xy + new vec2(sign.x, -2.0f)))
+                {
+                    Position.y--;
+                    Position.y = MathF.Round(Position.y);
                 }
                 else
                 {
@@ -213,13 +219,13 @@ namespace panpanExample
                 else if (sign.y == 1)
                 {
                     // Try sliding right
-                    if (!App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), Position.xy + new vec2(1.0f, sign.y)) || 
+                    if (sign.x >= 0 && !App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), Position.xy + new vec2(1.0f, sign.y)) || 
                         !App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), Position.xy + new vec2(2.0f, sign.y)))
                     {
                         Position.x++;
                     }
                     // Try sliding left
-                    else if (!App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), Position.xy + new vec2(-1.0f, sign.y)) || 
+                    else if (sign.x <= 0 && !App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), Position.xy + new vec2(-1.0f, sign.y)) || 
                              !App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), Position.xy + new vec2(-2.0f, sign.y)))
                     {
                         Position.x--;
@@ -270,6 +276,13 @@ namespace panpanExample
                          !App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), checkPos + new vec2(0.0f, 2.0f)))
                 {
                     Position.y++;
+                    Position.y = MathF.Round(Position.y);
+                }
+                // Try to climb down if blocked horizontally
+                else if (!App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), checkPos + new vec2(0.0f, -1.0f)) && 
+                         !App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), checkPos + new vec2(0.0f, -2.0f)))
+                {
+                    Position.y--;
                     Position.y = MathF.Round(Position.y);
                 }
                 else
@@ -326,6 +339,56 @@ namespace panpanExample
                     speed.y = 0;
                 }
             }
+
+            // Check if we're stuck inside a wall then push out
+            if (App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), Position.xy))
+            {
+                // Try pushing out in each direction, starting with the direction we were trying to move
+                vec2[] pushDirections = new vec2[]
+                {
+                    new vec2(-sign.x, 0.0f),  // Opposite of horizontal movement
+                    new vec2(0.0f, -sign.y),  // Opposite of vertical movement
+                    new vec2(-1.0f, 0.0f),    // Left
+                    new vec2(1.0f, 0.0f),     // Right
+                    new vec2(0.0f, -1.0f),    // Down
+                    new vec2(0.0f, 1.0f),     // Up
+                };
+                
+                bool pushedOut = false;
+                foreach (var dir in pushDirections)
+                {
+                    vec2 testPos = Position.xy + dir;
+                    if (!App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), testPos))
+                    {
+                        Position.xy = testPos;
+                        pushedOut = true;
+                        System.Console.WriteLine($"Pushed out of wall: moved ({dir.x:F2}, {dir.y:F2})");
+                        break;
+                    }
+                }
+                
+                // If we still can't get out, try moving to a safe position
+                if (!pushedOut)
+                {
+                    // Try moving to the nearest integer position that's clear
+                    for (int offset = 1; offset <= 3; offset++)
+                    {
+                        foreach (var dir in pushDirections)
+                        {
+                            vec2 testPos = Position.xy + dir * offset;
+                            if (!App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), testPos))
+                            {
+                                Position.xy = testPos;
+                                System.Console.WriteLine($"Pushed out of wall (offset {offset}): moved ({dir.x * offset:F2}, {dir.y * offset:F2})");
+                                pushedOut = true;
+                                break;
+                            }
+                        }
+                        if (pushedOut) break;
+                    }
+                }
+            }
+
         }
     }
 }
