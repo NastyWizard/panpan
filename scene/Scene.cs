@@ -48,13 +48,13 @@ namespace panpan.Scene
         public virtual void Render()
         {
             camera.PushUniformData();
-            ColliderDebugBatch.BeginFrame();
+            DrawBatch.BeginFrame();
             foreach (Entity ent in entities)
             {
                 ent.Render();
             }
             camera.Render();
-            ColliderDebugBatch.Flush();
+            DrawBatch.Flush();
         }
 
         public Entity AddChild(Entity entity)

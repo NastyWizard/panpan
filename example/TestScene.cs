@@ -107,6 +107,8 @@ namespace panpanExample
         {
             base.Render();
             editor?.ShowEditor();
+            // Flush again after editor draws to ensure DrawBounds() calls are rendered
+            DrawBatch.Flush();
         }
     }
 }

@@ -62,8 +62,10 @@ namespace panpan.Collision
         public override void DrawDebug()
         {
             base.DrawDebug();
-            ColliderDebugBatch.SubmitRect(bounds, debugColor);
-            ColliderDebugBatch.SubmitPixel(new vec2(bounds.X, bounds.Y), Rendering.Color.Red);
+            // Apply collider-specific offset (Y-1 adjustment to match old behavior)
+            var adjustedBounds = new Rect(bounds.X, bounds.Y - 1, bounds.Width, bounds.Height);
+            Draw.Rect(adjustedBounds, debugColor);
+            Draw.Dot(new vec2(bounds.X, bounds.Y - 1), Rendering.Color.Red);
         }
 
         public void SetOffset(int x, int y)

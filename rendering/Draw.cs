@@ -16,20 +16,13 @@ namespace panpan.Rendering
         public static void Rect(vec2 bl, vec2 size, vec4? color = null)
         {
             color ??= Color.White;
-
-            var tr = bl + size;
-            var tl = bl + size * vec2.UnitY;
-            var br = bl + size * vec2.UnitX;
-
-            Draw.Line(tl, tr, color);
-            Draw.Line(tl, bl, color);
-            Draw.Line(bl, br, color);
-            Draw.Line(br, tr + vec2.UnitY, color);
-
+            var rect = new Rect((int)bl.x, (int)bl.y, (int)size.x, (int)size.y);
+            DrawBatch.SubmitRect(rect, color.Value);
         }
         public static void Rect(Rect rect, vec4? color = null)
         {
-            Draw.Rect(new vec2(rect.X, rect.Y), new vec2(rect.Width, rect.Height), color);
+            color ??= Color.White;
+            DrawBatch.SubmitRect(rect, color.Value);
         }
 
         public static void Line(vec2 p1, vec2 p2, vec4? color = null, bool pixelPerfect = true)
@@ -69,16 +62,7 @@ namespace panpan.Rendering
         public static void Dot(vec2 p1, vec4? color = null)
         {
             color ??= Color.White;
-            Draw.color = color.Value;
-
-            renderer.Position = new vec3(MathF.Round(p1.x), MathF.Round(p1.y), 1);
-            renderer.Scale = vec3.Ones;
-            renderer.Width = 1f;
-            renderer.Height = 1f;
-            renderer.Angle = 0;
-            renderer.Origin = vec2.Zero;
-
-            renderer.Render();
+            DrawBatch.SubmitPixel(p1, color.Value);
         }
 
         public static void Sprite(Texture texture, vec2 pos, vec2? scale = null, Rect? clipRect = null)

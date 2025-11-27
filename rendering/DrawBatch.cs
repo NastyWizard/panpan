@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Text;
 using GlmSharp;
-using panpan.Rendering;
+using panpan;
 using panpan.Scene;
 using panpan.Util;
 
-namespace panpan.Collision
+namespace panpan.Rendering
 {
-    internal static class ColliderDebugBatch
+    public static class DrawBatch
     {
         private struct RectRequest
         {
@@ -23,7 +23,7 @@ namespace panpan.Collision
 
         private static readonly List<RectRequest> rects = new List<RectRequest>();
         private static readonly List<PixelRequest> pixels = new List<PixelRequest>();
-        private static readonly ColliderDebugRenderer renderer = new ColliderDebugRenderer();
+        private static readonly DrawBatchRenderer renderer = new DrawBatchRenderer();
 
         public static void BeginFrame()
         {
@@ -33,25 +33,16 @@ namespace panpan.Collision
 
         public static void SubmitRect(Rect rect, vec4 color)
         {
-            var r = new Rect(rect.X,rect.Y-1,rect.Width,rect.Height);
-            rects.Add(new RectRequest { Rect = r, Color = color });
+            rects.Add(new RectRequest { Rect = rect, Color = color });
         }
 
         public static void SubmitPixel(vec2 position, vec4 color)
         {
-            pixels.Add(new PixelRequest { Position = position - vec2.UnitY, Color = color });
+            pixels.Add(new PixelRequest { Position = position, Color = color });
         }
 
         public static void Flush()
         {
-            CollisionManager collisionManager = App.GetCollisionManager();
-            if (collisionManager == null || !collisionManager.ShowColliderDebug)
-            {
-                rects.Clear();
-                pixels.Clear();
-                return;
-            }
-
             if (rects.Count == 0 && pixels.Count == 0)
             {
                 return;
@@ -94,30 +85,47 @@ namespace panpan.Collision
             int baseX = rect.X;
             int baseY = rect.Y;
 
-            for (int x = 0; x <= width; x++)
+            // Top edge (stretched horizontally)
+            if (width > 0)
             {
-                AddQuad(baseX + x, baseY, color, vertices, indices, ref indexOffset);
-                AddQuad(baseX + x, baseY + height, color, vertices, indices, ref indexOffset);
+                AddStretchedQuad(baseX, baseY, width, 1, color, vertices, indices, ref indexOffset);
             }
 
-            for (int y = 0; y <= height; y++)
+            // Bottom edge (stretched horizontally)
+            if (width > 0)
             {
-                AddQuad(baseX, baseY + y, color, vertices, indices, ref indexOffset);
-                AddQuad(baseX + width, baseY + y, color, vertices, indices, ref indexOffset);
+                AddStretchedQuad(baseX, baseY + height, width, 1, color, vertices, indices, ref indexOffset);
+            }
+
+            // Left edge (stretched vertically)
+            if (height > 0)
+            {
+                AddStretchedQuad(baseX, baseY, 1, height, color, vertices, indices, ref indexOffset);
+            }
+
+            // Right edge (stretched vertically)
+            if (height > 0)
+            {
+                AddStretchedQuad(baseX + width, baseY, 1, height+1, color, vertices, indices, ref indexOffset);
             }
         }
 
         private static void AddQuad(float x, float y, vec4 color, List<Vertex> vertices, List<uint> indices, ref uint indexOffset)
+        {
+            AddStretchedQuad(x, y, 1, 1, color, vertices, indices, ref indexOffset);
+        }
+
+        private static void AddStretchedQuad(float x, float y, float width, float height, vec4 color, List<Vertex> vertices, List<uint> indices, ref uint indexOffset)
         {
             float r = color.x;
             float g = color.y;
             float b = color.z;
             float a = color.w;
 
-            vertices.Add(new Vertex(x, y + 1f, 0f, r, g, b, a));
-            vertices.Add(new Vertex(x + 1f, y + 1f, 0f, r, g, b, a));
+            vertices.Add(new Vertex(x, y + height, 0f, r, g, b, a));
+            vertices.Add(new Vertex(x + width, y + height, 0f, r, g, b, a));
             vertices.Add(new Vertex(x, y, 0f, r, g, b, a));
-            vertices.Add(new Vertex(x + 1f, y, 0f, r, g, b, a));
+            vertices.Add(new Vertex(x + width, y, 0f, r, g, b, a));
 
             indices.Add(indexOffset + 0);
             indices.Add(indexOffset + 2);
@@ -128,7 +136,7 @@ namespace panpan.Collision
             indexOffset += 4;
         }
 
-        private sealed class ColliderDebugRenderer : MeshRenderer
+        private sealed class DrawBatchRenderer : MeshRenderer
         {
             private static readonly byte[] DebugVertBytes = Encoding.UTF8.GetBytes(@"
 struct VertexInput
@@ -178,7 +186,7 @@ float4 main(FragInput input) : SV_TARGET
 }
 ");
 
-            public ColliderDebugRenderer()
+            public DrawBatchRenderer()
                 : base(
                     new Mesh(
                         new[]

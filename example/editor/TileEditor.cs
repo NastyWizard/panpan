@@ -101,12 +101,26 @@ namespace panpanExample
                             var ws = w*sign;
                             if(drawingRect)
                             {
+                                int xx = (drawRect.X + ws)/320;
+                                int yy = drawRect.Y/176;
+                                SetActiveTileMap(xx, yy);
                                 PlaceTile((uint)(drawRect.X + ws), (uint)(drawRect.Y), false);
+
+                                xx = (drawRect.X + ws)/320;
+                                yy = (drawRect.Y + drawRect.Height)/176;
+                                SetActiveTileMap(xx, yy);
                                 PlaceTile((uint)(drawRect.X + ws), (uint)(drawRect.Y + drawRect.Height), false);
                             }
                             else if(removingRect)
                             {
+                                int xx = (drawRect.X + ws)/320;
+                                int yy = drawRect.Y/176;
+                                SetActiveTileMap(xx, yy);
                                 RemoveTile((uint)(drawRect.X + ws), (uint)(drawRect.Y));
+                                
+                                xx = (drawRect.X + ws)/320;
+                                yy = (drawRect.Y + drawRect.Height)/176;
+                                SetActiveTileMap(xx, yy);
                                 RemoveTile((uint)(drawRect.X + ws), (uint)(drawRect.Y + drawRect.Height));
                             }
                         }
@@ -118,12 +132,26 @@ namespace panpanExample
 
                             if(drawingRect)
                             {
+                                int xx = drawRect.X/320;
+                                int yy = drawRect.Y + hs/176;
+                                SetActiveTileMap(xx, yy);
                                 PlaceTile((uint)(drawRect.X),                   (uint)(drawRect.Y + hs), false);
+                                
+                                xx = (drawRect.X + drawRect.Width)/320;
+                                yy = (drawRect.Y + hs)/176;
+                                SetActiveTileMap(xx, yy);
                                 PlaceTile((uint)(drawRect.X + drawRect.Width),  (uint)(drawRect.Y + hs), false);
                             }
                             else if(removingRect)
                             {
+                                int xx = drawRect.X/320;
+                                int yy = drawRect.Y + hs/176;
+                                SetActiveTileMap(xx, yy);
                                 RemoveTile((uint)(drawRect.X),                   (uint)(drawRect.Y + hs));
+
+                                xx = (drawRect.X + drawRect.Width)/320;
+                                yy = (drawRect.Y + hs)/176;
+                                SetActiveTileMap(xx, yy);
                                 RemoveTile((uint)(drawRect.X + drawRect.Width),  (uint)(drawRect.Y + hs));
                             }
                         }
@@ -139,6 +167,10 @@ namespace panpanExample
                                 var signh = Math.Sign(drawRect.Height);
                                 var hs = h*signh;
 
+                                int xx = (drawRect.X + ws)/320;
+                                int yy = (drawRect.Y + hs)/176;
+                                SetActiveTileMap(xx, yy);
+                                
                                 if(drawingRect)
                                     PlaceTile((uint)(drawRect.X + ws), (uint)(drawRect.Y + hs), false);
                                 else if(removingRect)
@@ -284,11 +316,7 @@ namespace panpanExample
 
             int xx = brushPos.x/320;
             int yy = brushPos.y/176;
-            if(xx >= 0 && xx < 16 && yy >= 0 && yy < 16)
-            {
-                activeTileMap = tilemaps[xx,yy];
-                canPlace = true;
-            }
+            SetActiveTileMap(xx, yy);
 
             canPlace = canPlace && hoverTimer <= 0;
             Draw.Rect(new Rect(brushPos.x-1,brushPos.y, 9,9), !canPlace ? Color.Red : Color.SkyBlue);
@@ -314,6 +342,15 @@ namespace panpanExample
                         tilemaps[x,y].DrawBounds(Color.DarkBlue);
                     }
                 }   
+            }
+        }
+
+        private void SetActiveTileMap(int x, int y)
+        {
+            if(x >= 0 && x < 16 && y >= 0 && y < 16)
+            {
+                activeTileMap = tilemaps[x,y];
+                canPlace = true;
             }
         }
     }
