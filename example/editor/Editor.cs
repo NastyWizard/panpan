@@ -65,13 +65,14 @@ namespace panpanExample
                 {
                     App.GetSceneManager().ActiveScene.TimeScale = 1.0f;
                 }
-                if(ImGui.SliderFloat("Zoom", ref App.GetSceneManager().ActiveScene.Camera.Zoom, 0.1f, 2.0f))
+                if(ImGui.SliderFloat("Zoom", ref App.GetSceneManager().ActiveScene.Camera.Zoom, 0.5f, 8.0f))
                 {
                     App.GetSceneManager().ActiveScene.Camera.UpdateProjection();
                 }
                 if(ImGui.Button("Reset Zoom"))
                 {
                     App.GetSceneManager().ActiveScene.Camera.Zoom = 1.0f;
+                    App.GetSceneManager().ActiveScene.Camera.UpdateProjection();
                 }
                 ImGui.Checkbox("Show colliders", ref App.GetCollisionManager().ShowColliderDebug);
                 ImGui.Checkbox("Show invisible objects", ref panpan.Util.Debug.showObjectsWithoutRenderer);

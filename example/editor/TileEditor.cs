@@ -160,10 +160,10 @@ namespace panpanExample
                 return;
             }
 
+            DrawInactiveTileGrid();
+            activeTileMap!.DrawBounds(Color.SkyBlue);
             if (editing)
             {
-                DrawInactiveTileGrid();
-                activeTileMap!.DrawBounds(Color.SkyBlue);
                 DrawBrush();
             }
 

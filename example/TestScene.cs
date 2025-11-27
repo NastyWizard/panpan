@@ -70,7 +70,7 @@ namespace panpanExample
                 if(prevMousePos != null)
                 {
                     vec2 delta = prevMousePos.Value - Input.MousePositionWindow;
-                    targetCameraPos.xy += new vec2(delta.x,-delta.y) / 4;
+                    targetCameraPos.xy += Camera.Zoom * (new vec2(delta.x,-delta.y) / 4);
                 }
                 prevMousePos = Input.MousePositionWindow;
             }
@@ -99,6 +99,7 @@ namespace panpanExample
                 p.x = MathF.Floor(p.x);
                 p.y = MathF.Floor(p.y);
                 Camera.Position.xy = size * p + center;
+                targetCameraPos = Camera.Position;
             }
         }
 
