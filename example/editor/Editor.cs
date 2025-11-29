@@ -2,6 +2,7 @@
 using panpan;
 using panpan.Rendering;
 using panpan.Util;
+using SDL3;
 
 namespace panpanExample
 {
@@ -11,6 +12,7 @@ namespace panpanExample
         TileEditor tileEditor = new TileEditor();
         SpriteEditor spriteEditor = new SpriteEditor();
         ObjectEditor objectEditor = new ObjectEditor();
+        private bool visible = true;
 
         #region Debugger
         bool debuggerVisible = false;
@@ -20,15 +22,28 @@ namespace panpanExample
         {
             tileEditor.Init();
             objectEditor.Init();
+
+            Input.RegisterOnKeyDown(OnKeyDown);
         }
 
         public void ShowEditor()
         {
-            ShowMenuBar();
-            ShowBasicDebugInfo();
-            tileEditor.Show();
-            spriteEditor.Show();
-            objectEditor.Show();
+            if(visible)
+            {
+                ShowMenuBar();
+                ShowBasicDebugInfo();
+                tileEditor.Show();
+                spriteEditor.Show();
+                objectEditor.Show();
+            }
+        }
+
+        private void OnKeyDown(SDL.Keycode? key)
+        {
+            if(key == SDL.Keycode.Grave)
+            {
+                visible = !visible;
+            }
         }
 
         public void ShowMenuBar()

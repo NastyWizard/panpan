@@ -5,8 +5,6 @@ using GlmSharp;
 using panpan;
 using panpan.Scene;
 using panpan.Rendering;
-using panpanExample;
-using panpan.Util;
 
 namespace panpanExample
 {
@@ -98,7 +96,7 @@ namespace panpanExample
                 vec2 p = player.Position.xy / size;
                 p.x = MathF.Floor(p.x);
                 p.y = MathF.Floor(p.y);
-                Camera.Position.xy = size * p + center;
+                Camera.Position.xy = size * p + center - vec2.UnitY*2;
                 targetCameraPos = Camera.Position;
             }
         }

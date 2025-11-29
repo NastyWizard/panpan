@@ -63,7 +63,7 @@ namespace panpan.Collision
         {
             base.DrawDebug();
             // Apply collider-specific offset (Y-1 adjustment to match old behavior)
-            var adjustedBounds = new Rect(bounds.X, bounds.Y - 1, bounds.Width, bounds.Height);
+            var adjustedBounds = new Rect(bounds.X, bounds.Y, bounds.Width, bounds.Height);
             Draw.Rect(adjustedBounds, debugColor);
             Draw.Dot(new vec2(bounds.X, bounds.Y - 1), Rendering.Color.Red);
         }

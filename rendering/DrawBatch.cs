@@ -33,6 +33,7 @@ namespace panpan.Rendering
 
         public static void SubmitRect(Rect rect, vec4 color)
         {
+            rect.Y -= 1;
             rects.Add(new RectRequest { Rect = rect, Color = color });
         }
 
