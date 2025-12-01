@@ -11,50 +11,60 @@ namespace panpanExample
 {
     public class TileMap : Entity
     {
-        Tile[,] tiles;
+        private Tile[,] tileMap;
+        private List<Tile> tiles;
         private int width;
         private int height;
+        private int x;
+        private int y;
+        private bool loaded = false;
 
         public int Width => width;
         public int Height => height;
+        public int X => x;
+        public int Y => y;
         public int TileSize = 8;
         public TileMap(int x, int y, int w, int h)
         {
             width = w;
             height = h;
-            Position.xy = new vec2(x, y);
-            tiles = new Tile[w,h];
+            this.x = x;
+            this.y = y;
+            Position.xy = new vec2(x * 320, y * 176);
+            tileMap = new Tile[w,h];
+            tiles = new List<Tile>();
         }
 
         public Tile AddTile(uint x, uint y, TileSet tileSet)
         {
-            if(tiles[x, y] != null)
-                return tiles[x, y];
+            if(tileMap[x, y] != null)
+                return tileMap[x, y];
             Tile tile = new Tile((int)x*8 + (int)Position.x, (int)y*8 + (int)Position.y, tileSet);
-            tiles[x, y] = tile;
+            tileMap[x, y] = tile;
+            tiles.Add(tile);
             tile.Init();
 
-            Scene.AddChild(tile);
+            // Scene.AddChild(tile);
 
             return tile;
         }
 
         public Tile GetTile(uint x, uint y)
         {
-            return tiles[x,y];
+            return tileMap[x,y];
         }
 
         public void RemoveTile(uint x, uint y)
         {
             if(x >= width || y >= height)
                 return;
-            if(tiles[x, y] == null)
+            if(tileMap[x, y] == null)
                 return;
-            var tile = tiles[x, y];
-            if(Scene.RemoveChild(tile))
+            var tile = tileMap[x, y];
+            if(tiles.Remove(tile))
             {
                 tile.Destroy();
-                tiles[x, y] = null;
+                tileMap[x, y] = null;
             }
         }
 
@@ -64,16 +74,16 @@ namespace panpanExample
             {
                 for(int w = 0; w < width; w++)
                 {
-                    var tile = tiles[w,h];
+                    var tile = tileMap[w,h];
                     if(tile == null)
                     {
                         continue;
                     }
                     var tSet = tile.tileSet;
-                    bool left = w == 0 || tiles[w-1,h] != null && tiles[w-1,h].tileSet.index == tSet.index;
-                    bool right = w == width-1 || tiles[w+1,h] != null && tiles[w+1,h].tileSet.index == tSet.index;
-                    bool top = h == 0 || tiles[w,h-1] != null && tiles[w,h-1].tileSet.index == tSet.index;
-                    bool bottom = h == height-1 || tiles[w,h+1] != null && tiles[w,h+1].tileSet.index == tSet.index;
+                    bool left = w == 0 || tileMap[w-1,h] != null && tileMap[w-1,h].tileSet.index == tSet.index;
+                    bool right = w == width-1 || tileMap[w+1,h] != null && tileMap[w+1,h].tileSet.index == tSet.index;
+                    bool top = h == 0 || tileMap[w,h-1] != null && tileMap[w,h-1].tileSet.index == tSet.index;
+                    bool bottom = h == height-1 || tileMap[w,h+1] != null && tileMap[w,h+1].tileSet.index == tSet.index;
                     var autoTile = 0;
                     if(left) autoTile |= 1;
                     if(right) autoTile |= 2;
@@ -92,10 +102,23 @@ namespace panpanExample
         public override void Update()
         {
             base.Update();
+            foreach(var tile in tiles)
+            {
+                tile.Update();
+            }
+            if(!loaded && InView())
+            {
+                LoadFromData(TileMapData.mapData[x][y]);
+                loaded = true;
+            }
         }
         public override void Render()
         {
             base.Render();
+            foreach(var tile in tiles)
+            {
+                tile.Render();
+            }
         }
 
         public void DrawBounds(vec4 color)
@@ -130,6 +153,56 @@ namespace panpanExample
             );
 
             return tilemapBounds.Intersects(cameraBounds);
+        }
+
+        public string GetMapData()
+        {
+            string str = ""; 
+            for(uint y = 0; y < height; y++)
+            {
+                str += "[";
+                for(uint x = 0; x < width; x++)
+                {
+                    var tile = GetTile(x, y);
+                    if(tile == null)
+                    {
+                        str += "' ',";
+                    }
+                    else
+                    {
+                        str += $"'{tile.tileSet.index}',";
+                    }
+                }
+                str = str.Remove(str.Length-1);
+                str += "],";
+            }
+            str = str.Remove(str.Length-2);
+            return str;
+        }
+
+        public void LoadFromData(string[][] data)
+        {
+            var t = Time.Elapsed();
+            for(int y = height-1; y >= 0; y--)
+            {
+                for(uint x = 0; x < width; x++)
+                {
+                    switch(data[(int)x][y])
+                    {
+                        case "0":
+                            AddTile(x, (uint)y, TileSets.Dirt);
+                            break;
+                        case "1":
+                            AddTile(x, (uint)y, TileSets.Brick);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+            UpdateAutoTiles();
+            var et = Time.Elapsed();
+            Console.WriteLine($"Loaded {x}, {y}: {et - t}s");
         }
     }
 }

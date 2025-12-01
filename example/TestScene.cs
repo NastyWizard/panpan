@@ -5,12 +5,13 @@ using GlmSharp;
 using panpan;
 using panpan.Scene;
 using panpan.Rendering;
+using panpan.Util;
 
 namespace panpanExample
 {
     public class TestScene : Scene
     {
-        private TestPlayer player = null!;
+        public TestPlayer player = null!;
         private Editor? editor = null;
 
         private vec2? prevMousePos = null;
@@ -26,7 +27,7 @@ namespace panpanExample
         public override void Init()
         {
 
-            player = (TestPlayer)AddChild(new TestPlayer(32, 9));
+            player = (TestPlayer)AddChild(new TestPlayer(64 + 320*6, 33 + 176*6));
 
             base.Init();
 
@@ -34,17 +35,12 @@ namespace panpanExample
             {
                 for(var y = 0; y < 16; y++)
                 {
-                    var tileMap = new TileMap(x * 320,y * 176, 320/8, 180/8);
+                    var tileMap = new TileMap(x,y, 320/8, 180/8);
                     TileMaps[x,y] = tileMap;
                     AddChild(tileMap);
                 }
             }
-
-            for (uint i = 0; i < 40; i++)
-            {
-                TileMaps[0,0].AddTile(i, 0, TileSets.Dirt);
-            }
-            TileMaps[0,0].UpdateAutoTiles();
+            //LoadMapData();
 
             Input.RegisterOnMouseHeld(OnMouseHeld);
             Input.RegisterOnMouseReleased(OnMouseUp);
@@ -91,12 +87,12 @@ namespace panpanExample
             }
             else
             {
-                vec2 size = new vec2(320,180);
+                vec2 size = new vec2(320,176);
                 vec2 center = size/2;
                 vec2 p = player.Position.xy / size;
                 p.x = MathF.Floor(p.x);
                 p.y = MathF.Floor(p.y);
-                Camera.Position.xy = size * p + center - vec2.UnitY*2;
+                Camera.Position.xy = size * p + center;
                 targetCameraPos = Camera.Position;
             }
         }
@@ -107,6 +103,20 @@ namespace panpanExample
             editor?.ShowEditor();
             // Flush again after editor draws to ensure DrawBounds() calls are rendered
             DrawBatch.Flush();
+        }
+
+        private void LoadMapData()
+        {
+            var t = Time.Elapsed();
+            for (var x = 0; x < 16; x++)
+            {
+                for(var y = 0; y < 16; y++)
+                {
+                    TileMaps[x,y].LoadFromData(TileMapData.mapData[x][y]);
+                }
+            }
+            var et = Time.Elapsed();
+            Console.WriteLine($"Loaded: {et - t}s");
         }
     }
 }

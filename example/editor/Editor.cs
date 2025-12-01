@@ -75,6 +75,10 @@ namespace panpanExample
             {
                 ImGui.Text($"FPS: {App.GetFPS():F2}");
                 ImGui.Text($"Mouse Pos: {Input.MousePosition.x:F2}, {Input.MousePosition.y:F2}");
+                if(ImGui.Button("Reset Player"))
+                {
+                    ((TestScene)App.GetSceneManager().ActiveScene).player.Position.xy = new GlmSharp.vec2(64 + 320*6, 33 + 176*6);
+                }
                 ImGui.SliderFloat("Time Scale", ref App.GetSceneManager().ActiveScene.TimeScale, 0.1f, 2.0f);
                 if(ImGui.Button("Reset Time Scale"))
                 {

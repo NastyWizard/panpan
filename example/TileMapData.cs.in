@@ -1,0 +1,8 @@
+
+namespace panpanExample
+{
+    public class TileMapData
+    {
+        @TILEMAP_DATA@
+    }
+}

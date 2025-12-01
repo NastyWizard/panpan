@@ -1,5 +1,6 @@
 
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using GlmSharp;
 using ImGuiNET.Backend.SDLGPU;
 using panpan;
@@ -200,8 +201,9 @@ namespace panpanExample
             }
 
             bool showing = false;
-            if (ImGui.Begin("Tile Editor", ref showing))
+            if (ImGui.Begin($"Tile Editor", ref showing))
             {
+                ImGui.Text($"room: {activeTileMap.X}, {activeTileMap.Y}");
                 ImGui.Checkbox("Edit", ref editing);
                 ImGui.SameLine();
                 ImGui.Checkbox("Overwrite", ref canOverwrite);
@@ -214,8 +216,76 @@ namespace panpanExample
                 ShowBrushSelect();
                 ImGui.Separator();
                 ShowTileSelect();
+                if(ImGui.Button("save all"))
+                {
+                    SaveAll();
+                }
+
+                // if(ImGui.Button("save active"))
+                // {
+                //     activeTileMap.Save();
+                // }
             }
             ImGui.End();
+        }
+
+        private void SaveAll([CallerFilePath] string? filePath = "")
+        {
+            var t = Time.Elapsed();
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine("public static string[][][][] mapData = new string[][][][] {");
+            
+            for(var x = 0; x < 16; x++)
+            {
+                sb.AppendLine("  new string[][][] {");
+                for(var y = 0; y < 16; y++)
+                {
+                    var tilemap = tilemaps[x, y];
+                    sb.AppendLine("    new string[][] {");
+                    // LoadFromData expects data[column][row], so we need columns first, then rows
+                    for(uint col = 0; col < tilemap.Width; col++)
+                    {
+                        sb.Append("      new string[] { ");
+                        for(int row = 0; row < tilemap.Height; row++)
+                        {
+                            var tile = tilemap.GetTile(col, (uint)row);
+                            if(tile == null)
+                            {
+                                sb.Append("\" \"");
+                            }
+                            else
+                            {
+                                sb.Append($"\"{tile.tileSet.index}\"");
+                            }
+                            if(row < tilemap.Height - 1)
+                                sb.Append(", ");
+                        }
+                        sb.Append(" }");
+                        if(col < tilemap.Width - 1)
+                            sb.Append(",");
+                        sb.AppendLine();
+                    }
+                    sb.Append("    }");
+                    if(y < 15)
+                        sb.Append(",");
+                    sb.AppendLine();
+                }
+                sb.Append("  }");
+                if(x < 15)
+                    sb.Append(",");
+                sb.AppendLine();
+            }
+            sb.AppendLine("};");
+
+            filePath = Path.GetDirectoryName(Path.GetDirectoryName(filePath));
+
+            string outputPath = Path.Join(filePath, "TileMapData.cs");
+            string template = File.ReadAllText(Path.Join(filePath, "TileMapData.cs.in"));
+
+            template = template.Replace("@TILEMAP_DATA@", sb.ToString());
+            File.WriteAllText(outputPath, template);
+            var et = Time.Elapsed();
+            Console.WriteLine($"Saved: {et - t}s");
         }
 
         private void PlaceTile(uint x, uint y, bool autoUpdate = true)
