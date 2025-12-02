@@ -17,6 +17,9 @@ namespace panpanExample
         private vec2? prevMousePos = null;
         private vec3 targetCameraPos;
 
+        private RenderTarget gameTarget;
+        private RenderTarget lightTarget;
+
         // used for editor
         public bool FreeCamera = false;
 
@@ -51,6 +54,8 @@ namespace panpanExample
             Camera.Position.y = 180 / 2;
             targetCameraPos = Camera.Position;
             App.SetBGColor(panpan.Rendering.Color.Black);
+            gameTarget = new RenderTarget((uint)App.GetGameSize().x,(uint)App.GetGameSize().y);
+            lightTarget = new RenderTarget((uint)App.GetGameSize().x,(uint)App.GetGameSize().y);
 #if DEBUG
             editor = new Editor();
             editor?.Init();
@@ -99,10 +104,16 @@ namespace panpanExample
 
         public override void Render()
         {
+            App.EndRenderPass();
+            App.SetRenderTarget(gameTarget);
+            
             base.Render();
             editor?.ShowEditor();
             // Flush again after editor draws to ensure DrawBounds() calls are rendered
             DrawBatch.Flush();
+
+            App.ResetRenderTarget();
+            Draw.RenderTarget(gameTarget,vec2.Zero);
         }
 
         private void LoadMapData()

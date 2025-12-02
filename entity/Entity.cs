@@ -9,7 +9,7 @@ namespace panpan.Scene
 {
     public abstract class Entity
     {
-        public Scene Scene { get; internal set; } = null!;
+        public Scene? Scene { get; internal set; } = null;
 
         private readonly List<Component> components = new List<Component>();
 

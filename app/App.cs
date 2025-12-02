@@ -25,6 +25,7 @@ namespace panpan
 
         // Rendering data
         private Platform platform;
+        private static ivec2 gameSize;
         static float fps;
         static float fpsUpdateTime;
         static int fpsFrameCount;
@@ -50,7 +51,6 @@ namespace panpan
 
         // Backbuffer
         static RenderTarget backBuffer = null!;
-        private readonly ivec2 gameSize;
 
         public App(string title, Scene.Scene startScene, int width = 320, int height = 180)
         {
@@ -112,6 +112,12 @@ namespace panpan
         {
             return window;
         }
+
+        public static vec2 GetGameSize()
+        {
+            return gameSize;
+        }
+
         public static nint GetCommandBuffer()
         {
             return commandBuffer;
@@ -283,10 +289,10 @@ namespace panpan
         /// Resets to use the swapchain render target on a new render pass
         /// </summary>
         /// <param name="loadOp"></param>
-        public static void ResetRenderTarget(SDL.GPULoadOp loadOp = SDL.GPULoadOp.Load)
+        public static void ResetRenderTarget(bool clear = false)
         {
             EndRenderPass();
-            backBuffer.SetDoesClear(false);
+            backBuffer.SetDoesClear(clear);
             SetRenderTarget(backBuffer);
         }
 
@@ -304,7 +310,7 @@ namespace panpan
         /// <summary>
         /// Ends currently active render pass.
         /// </summary>
-        private static void EndRenderPass()
+        public static void EndRenderPass()
         {
             SDL.EndGPURenderPass(renderPass);
             SDL.SubmitGPUCommandBuffer(commandBuffer);
