@@ -10,7 +10,9 @@ namespace panpan.Rendering
     {
         static BasicRenderer renderer = new BasicRenderer();
         static SpriteRenderer spriteRenderer = new SpriteRenderer(null, null, Shapes.quad, new Material(Assets.Shaders.standard_frag_hlsl, Assets.Shaders.standard_vert_hlsl));
-        static SpriteRenderer backRenderer = new SpriteRenderer(null, null, Shapes.quad, new Material(Assets.Shaders.backbuffer_frag_hlsl, Assets.Shaders.backbuffer_vert_hlsl));
+        static Material defaultBackMat = new Material(Assets.Shaders.backbuffer_frag_hlsl, Assets.Shaders.backbuffer_vert_hlsl);
+        static SpriteRenderer backRenderer = new SpriteRenderer(null, null, Shapes.quad, defaultBackMat);
+        
         static vec4 color;
 
         public static void Rect(vec2 bl, vec2 size, vec4? color = null)
@@ -97,6 +99,24 @@ namespace panpan.Rendering
             backRenderer.SetTexture(rt.GetTexture());
             backRenderer.SetTransform(new vec3(pos.x, pos.y, 0.0f));
             backRenderer.Render();
+        }
+
+        public static void SetRTMaterial(Material mat)
+        {
+            backRenderer.SetMaterial(mat);
+        }
+        public static void ResetRTMaterial()
+        {
+            backRenderer.SetMaterial(defaultBackMat);
+        }
+
+        public static void SetRTAdditionalTextures(Texture[] textures)
+        {
+            backRenderer.SetAdditionalTextures(textures);
+        }
+        public static void ClearRTAdditionalTextures()
+        {
+            backRenderer.ClearAdditionalTextures();
         }
 
         private class BasicRenderer : MeshRenderer

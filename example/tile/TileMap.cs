@@ -24,6 +24,7 @@ namespace panpanExample
         public int X => x;
         public int Y => y;
         public int TileSize = 8;
+        public bool IsInView = false;
         public TileMap(int x, int y, int w, int h)
         {
             width = w;
@@ -106,7 +107,8 @@ namespace panpanExample
             {
                 tile.Update();
             }
-            if(!loaded && InView())
+            IsInView = InView();
+            if(!loaded && IsInView)
             {
                 LoadFromData(TileMapData.mapData[x][y]);
                 loaded = true;
@@ -114,11 +116,21 @@ namespace panpanExample
         }
         public override void Render()
         {
-            base.Render();
-            foreach(var tile in tiles)
+            if(IsInView)
             {
-                tile.Render();
+                base.Render();
+                foreach(var tile in tiles)
+                {
+                    tile.Render();
+                }
             }
+        }
+
+        public void DrawLights()
+        {
+            if(!IsInView)
+                return;
+            Draw.Sprite(GameTextures.lightTex64, Position.xy);
         }
 
         public void DrawBounds(vec4 color)
@@ -126,7 +138,7 @@ namespace panpanExample
             Draw.Rect(new Rect((int)Position.x-1, (int)Position.y, width*TileSize+1, height*TileSize+1), color);
         }
 
-        public bool InView()
+        private bool InView()
         {
             if (Scene?.Camera == null)
                 return false;

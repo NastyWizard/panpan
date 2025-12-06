@@ -12,6 +12,7 @@ namespace panpan.Rendering
         private mat4 modelMatrix;
         protected Material material;
         protected Texture? texture;
+        protected Texture[] additionalTextures = [];
         private UniformDelegate? uniformDelegate;
 
         public float Width, Height;
@@ -44,7 +45,12 @@ namespace panpan.Rendering
 
             if (texture != null)
             {
-                texture.BindTexture(App.GetRenderPass());
+                texture.BindTexture(App.GetRenderPass(), 0);
+            }
+
+            for (uint i = 0; i < additionalTextures.Length; i++)
+            {
+                additionalTextures[i].BindTexture(App.GetRenderPass(), i + 1);
             }
 
             uniformDelegate?.Invoke();
@@ -79,6 +85,21 @@ namespace panpan.Rendering
             texture = tex;
             Width = tex.Width;
             Height = tex.Height;
+        }
+
+        public void SetAdditionalTextures(Texture[] tex)
+        {
+            additionalTextures = tex;
+        }
+
+        public void ClearAdditionalTextures()
+        {
+            additionalTextures = [];
+        }
+
+        public void SetMaterial(Material mat)
+        {
+            material = mat;
         }
 
         public void SetMesh(Mesh mesh)

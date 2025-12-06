@@ -191,10 +191,15 @@ namespace panpan.Rendering
 
         public void BindTexture(nint renderPass)
         {
+            BindTexture(renderPass, 0);
+        }
+
+        public void BindTexture(nint renderPass, uint slot)
+        {
             SDL.GPUTextureSamplerBinding[] bindings = new SDL.GPUTextureSamplerBinding[1];
             bindings[0].Texture = GPUTexture;
             bindings[0].Sampler = GPUSampler;
-            SDL.BindGPUFragmentSamplers(renderPass, 0, bindings, 1);
+            SDL.BindGPUFragmentSamplers(renderPass, slot, bindings, 1);
         }
 
         public void Dispose()

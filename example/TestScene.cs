@@ -6,6 +6,7 @@ using panpan;
 using panpan.Scene;
 using panpan.Rendering;
 using panpan.Util;
+using panpan.Assets;
 
 namespace panpanExample
 {
@@ -19,6 +20,7 @@ namespace panpanExample
 
         private RenderTarget gameTarget;
         private RenderTarget lightTarget;
+        private Material lightingMat;
 
         // used for editor
         public bool FreeCamera = false;
@@ -29,10 +31,10 @@ namespace panpanExample
 
         public override void Init()
         {
+            GameTextures.Init();
+            lightingMat = new Material(Shaders.bbLighting_frag_hlsl, Shaders.backbuffer_vert_hlsl);
 
             player = (TestPlayer)AddChild(new TestPlayer(64 + 320*6, 33 + 176*6));
-
-            base.Init();
 
             for (var x = 0; x < 16; x++)
             {
@@ -43,6 +45,9 @@ namespace panpanExample
                     AddChild(tileMap);
                 }
             }
+
+            base.Init();
+
             //LoadMapData();
 
             Input.RegisterOnMouseHeld(OnMouseHeld);
@@ -55,6 +60,7 @@ namespace panpanExample
             targetCameraPos = Camera.Position;
             App.SetBGColor(panpan.Rendering.Color.Black);
             gameTarget = new RenderTarget((uint)App.GetGameSize().x,(uint)App.GetGameSize().y);
+            gameTarget.SetClearColor(panpan.Rendering.Color.Black);
             lightTarget = new RenderTarget((uint)App.GetGameSize().x,(uint)App.GetGameSize().y);
 #if DEBUG
             editor = new Editor();
@@ -104,16 +110,32 @@ namespace panpanExample
 
         public override void Render()
         {
+            // Base game render
             App.EndRenderPass();
             App.SetRenderTarget(gameTarget);
-            
             base.Render();
+            
             editor?.ShowEditor();
             // Flush again after editor draws to ensure DrawBounds() calls are rendered
             DrawBatch.Flush();
 
+            // Draw to lighting mask
+            App.EndRenderPass();
+            App.SetRenderTarget(lightTarget);
+            DrawLights();
+            
+            Draw.Sprite(GameTextures.lightTex64, Input.MousePosition + new vec2(-32,32));
+            Draw.Sprite(GameTextures.lightTex64, player.Position.xy + new vec2(-32,32));
+
+            // Render game with lighting
             App.ResetRenderTarget();
+            Draw.SetRTMaterial(lightingMat);
+            Draw.SetRTAdditionalTextures([lightTarget.GetTexture(), GameTextures.defaultPalette, GameTextures.palette_2]);
+
             Draw.RenderTarget(gameTarget,vec2.Zero);
+            
+            Draw.ClearRTAdditionalTextures();
+            Draw.ResetRTMaterial();
         }
 
         private void LoadMapData()
@@ -128,6 +150,18 @@ namespace panpanExample
             }
             var et = Time.Elapsed();
             Console.WriteLine($"Loaded: {et - t}s");
+        }
+
+        private void DrawLights()
+        {
+            
+            for (var x = 0; x < 16; x++)
+            {
+                for(var y = 0; y < 16; y++)
+                {
+                    TileMaps[x,y].DrawLights();
+                }
+            }
         }
     }
 }

@@ -407,7 +407,7 @@ namespace panpanExample
             {
                 for(var y = 0; y < 16; y++)
                 {
-                    if(tilemaps[x,y].InView())
+                    if(tilemaps[x,y].IsInView)
                     {
                         tilemaps[x,y].DrawBounds(Color.DarkBlue);
                     }

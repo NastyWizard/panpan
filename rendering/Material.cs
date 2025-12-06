@@ -116,6 +116,16 @@ namespace panpan.Rendering
             SDL.GPUColorTargetDescription[] colorTargetDescriptions = new SDL.GPUColorTargetDescription[1];
             colorTargetDescriptions[0] = new SDL.GPUColorTargetDescription();
             colorTargetDescriptions[0].Format = SDL.GetGPUSwapchainTextureFormat(App.GetDevice(), App.GetWindow());
+            colorTargetDescriptions[0].BlendState = new SDL.GPUColorTargetBlendState();
+            // Configure for basic transparent blend mode (alpha blending)
+            colorTargetDescriptions[0].BlendState.SrcColorBlendfactor = SDL.GPUBlendFactor.SrcAlpha;
+            colorTargetDescriptions[0].BlendState.DstColorBlendfactor = SDL.GPUBlendFactor.OneMinusSrcAlpha;
+            colorTargetDescriptions[0].BlendState.ColorBlendOp = SDL.GPUBlendOp.Add;
+            colorTargetDescriptions[0].BlendState.SrcAlphaBlendfactor = SDL.GPUBlendFactor.One;
+            colorTargetDescriptions[0].BlendState.DstAlphaBlendfactor = SDL.GPUBlendFactor.OneMinusSrcAlpha;
+            colorTargetDescriptions[0].BlendState.AlphaBlendOp = SDL.GPUBlendOp.Add;
+            colorTargetDescriptions[0].BlendState.EnableBlend = 1;
+            colorTargetDescriptions[0].BlendState.EnableColorWriteMask = 0; // Write to all channels
 
             pipelineInfo.TargetInfo.NumColorTargets = 1;
             pipelineInfo.TargetInfo.ColorTargetDescriptions = SDL.StructureArrayToPointer(colorTargetDescriptions);
