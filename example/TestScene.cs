@@ -58,9 +58,9 @@ namespace panpanExample
             Camera.Position.x = 320 / 2;
             Camera.Position.y = 180 / 2;
             targetCameraPos = Camera.Position;
-            App.SetBGColor(panpan.Rendering.Color.Black);
+            App.SetBGColor(panpan.Rendering.Color.SkyBlue);
             gameTarget = new RenderTarget((uint)App.GetGameSize().x,(uint)App.GetGameSize().y);
-            gameTarget.SetClearColor(panpan.Rendering.Color.Black);
+            gameTarget.SetClearColor(panpan.Rendering.Color.Hex("3c6a20"));
             lightTarget = new RenderTarget((uint)App.GetGameSize().x,(uint)App.GetGameSize().y);
 #if DEBUG
             editor = new Editor();
@@ -123,10 +123,6 @@ namespace panpanExample
             App.EndRenderPass();
             App.SetRenderTarget(lightTarget);
             DrawLights();
-            
-            Draw.Sprite(GameTextures.lightTex64, Input.MousePosition + new vec2(-32,32));
-            Draw.Sprite(GameTextures.lightTex64, player.Position.xy + new vec2(-32,32));
-
             // Render game with lighting
             App.ResetRenderTarget();
             Draw.SetRTMaterial(lightingMat);
@@ -162,6 +158,13 @@ namespace panpanExample
                     TileMaps[x,y].DrawLights();
                 }
             }
+            
+            //Draw.Sprite(GameTextures.lightTex64, Input.MousePosition + new vec2(-32,32));
+            Draw.Sprite(GameTextures.lightTex64, player.Position.xy + new vec2(-32,32));
+            float t = Time.Elapsed();
+            Draw.Sprite(GameTextures.lightTex64, player.Position.xy + new vec2(-32,32) + new vec2(MathF.Sin(t), MathF.Cos(t))*4);
+            Draw.Sprite(GameTextures.lightTex64, player.Position.xy + new vec2(-32,32) + new vec2(MathF.Sin(t*-1), MathF.Cos(t*1))*6);
+
         }
     }
 }

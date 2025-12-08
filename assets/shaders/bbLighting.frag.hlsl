@@ -70,24 +70,19 @@ float4 main(FragInput input) : SV_TARGET
     float4 col = mainTexture.Sample(mainSampler, uv);
     float4 lights = lightTexture.Sample(lightSampler, uv);
 
-    // if(lights.a <= 0.1)
-    // {
-    //     col = demoteColor(col,2);
-    // }
-    // else if(lights.a <= 0.5)
-    // {
-    //     col = demoteColor(col,1);
-    // }
-    float tier = 2 - floor(lights.a * 3);
+    float tier = 4 - floor(lights.a * 4);
     col = demoteColor(col,tier);
 
-    if(lights.a > 0.1)
+    if(lights.a < 0.1)
     {
-        col *= float4(0.5,1.0,0.5,1.0);
+        col = demoteColor(col,3);
     }
 
     col = swapCol(col);
 
+    // debug
+    //col = float4(tier/4,tier/4,tier/4,1.0);
+    
     if(col.a < 0.01)
         discard;
     return col;

@@ -7,6 +7,7 @@ using panpan;
 using panpan.Rendering;
 using panpan.Scene;
 using panpan.Util;
+using SDL3;
 
 namespace panpanExample
 {
@@ -48,11 +49,24 @@ namespace panpanExample
             Input.RegisterOnMouseHeld(OnMouseHeld);
             Input.RegisterOnMouseDown(OnMouseDown);
             Input.RegisterOnMouseReleased(OnMouseUp);
+            Input.RegisterOnKeyDown(OnKeyDown);
+        }
+
+        private void OnKeyDown(SDL.Keycode? key)
+        {
+            if(key == SDL.Keycode.T)
+            {
+                editing = !editing;
+            }
+            if(key == SDL.Keycode.L && activeTileMap != null)
+            {
+                activeTileMap.drawLights = !activeTileMap.drawLights;
+            }
         }
 
         private void OnMouseHeld(byte btn)
         {
-            if(canPlace && editing)
+            if(Visible && canPlace && editing)
             {
                 if(brushType == BrushType.BRUSH)
                 {
@@ -71,7 +85,7 @@ namespace panpanExample
 
         private void OnMouseDown(byte btn)
         {
-            if(canPlace && editing)
+            if(Visible && canPlace && editing)
             {
                 if(brushType == BrushType.RECT)
                 {
@@ -87,7 +101,7 @@ namespace panpanExample
 
         private void OnMouseUp(byte btn)
         {
-            if(canPlace && editing)
+            if(Visible && canPlace && editing)
             {
                 if(brushType == BrushType.RECT && (drawingRect || removingRect))
                 {
@@ -207,6 +221,7 @@ namespace panpanExample
                 ImGui.Checkbox("Edit", ref editing);
                 ImGui.SameLine();
                 ImGui.Checkbox("Overwrite", ref canOverwrite);
+                ImGui.Checkbox("Is lit", ref activeTileMap.drawLights);
 
                 ImGui.Separator();
                 ImGui.Checkbox("Snap", ref snap);

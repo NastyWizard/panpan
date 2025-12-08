@@ -25,6 +25,9 @@ namespace panpanExample
         public int Y => y;
         public int TileSize = 8;
         public bool IsInView = false;
+
+        public bool drawLights = true;
+        private FireFly[] fireFlies;
         public TileMap(int x, int y, int w, int h)
         {
             width = w;
@@ -34,6 +37,13 @@ namespace panpanExample
             Position.xy = new vec2(x * 320, y * 176);
             tileMap = new Tile[w,h];
             tiles = new List<Tile>();
+
+            fireFlies = new FireFly[16];
+            var r = new Random();
+            for(int i = 0; i < 16; i++)
+            {
+                fireFlies[i] = new FireFly((int)(r.NextInt64(0,320) + Position.x),(int)(r.NextInt64(0,176) + Position.y));
+            }
         }
 
         public Tile AddTile(uint x, uint y, TileSet tileSet)
@@ -128,9 +138,13 @@ namespace panpanExample
 
         public void DrawLights()
         {
-            if(!IsInView)
+            if(!IsInView || !drawLights)
                 return;
-            Draw.Sprite(GameTextures.lightTex64, Position.xy);
+            Draw.Sprite(GameTextures.fsLight, Position.xy + vec2.UnitY * 176);
+            for(int i = 0; i < 16; i++)
+            {
+                fireFlies[i].DrawLights();
+            }
         }
 
         public void DrawBounds(vec4 color)
