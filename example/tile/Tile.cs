@@ -4,6 +4,7 @@ using panpan.Scene;
 using panpan.Assets;
 using GlmSharp;
 using panpan.Collision;
+using panpan;
 
 namespace panpanExample
 {
@@ -11,7 +12,7 @@ namespace panpanExample
     {
         public SpriteRenderer renderer = null!;
         public TileSet tileSet;
-        BoxCollider collider;
+        public BoxCollider collider = null!;
         public Tile(int x, int y, TileSet? tileSet = null)
         {
             tileSet ??= TileSets.Dirt;
@@ -43,6 +44,24 @@ namespace panpanExample
         public void SetTileSet(TileSet tileSet)
         {
             this.tileSet = tileSet;
+        }
+
+        public void Reuse(int x, int y, TileSet ts)
+        {
+            tileSet = ts;
+            Position.xy = new vec2(x, y);
+            // Update renderer clip for new tileSet
+            if(renderer != null)
+            {
+                renderer.Clip(ts.clips[15]);
+            }
+            // Update collision bounds and spatial hash when position changes
+            if(collider != null)
+            {
+                collider.UpdateBounds();
+                // Re-add to spatial hash to update cell positions
+                App.GetCollisionManager().AddCollider(collider);
+            }
         }
     }
 }

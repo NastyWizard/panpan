@@ -36,6 +36,8 @@ namespace panpanExample
 
             player = (TestPlayer)AddChild(new TestPlayer(64 + 320*6, 33 + 176*6));
 
+            TilePool.FillPool(3000);
+
             for (var x = 0; x < 16; x++)
             {
                 for(var y = 0; y < 16; y++)

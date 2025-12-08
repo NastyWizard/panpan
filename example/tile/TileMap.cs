@@ -1,14 +1,54 @@
 
 using panpan.Rendering;
 using panpan.Scene;
-using panpan.Assets;
 using GlmSharp;
-using panpan.Collision;
-using panpan;
 using panpan.Util;
+using System.Diagnostics.Tracing;
+using System.Collections.Generic;
+using panpan;
 
 namespace panpanExample
 {
+    public class TilePool
+    {
+        private static Stack<Tile> pool = new Stack<Tile>();
+        
+        public static Tile RequestTile(int x, int y, TileSet ts)
+        {
+            Tile t;
+            if(pool.Count > 0)
+            {
+                t = pool.Pop();
+                t.Reuse(x, y, ts);
+            }
+            else
+            {
+                t = new Tile(x, y, ts);
+                t.Init();
+            }
+
+            return t;
+        }
+
+        public static void FillPool(int count)
+        {
+            Console.WriteLine($"Filling pool {count}");
+            for(int i = 0; i < count; i++)
+            {
+                var tile = new Tile(-100,-100);
+                tile.Init();
+                pool.Push(tile);
+            }
+        }
+
+        public static void ReturnTile(Tile t)
+        {
+            t.Position.x = -100;
+            t.Position.y = -100;
+            pool.Push(t);
+        }
+    }
+
     public class TileMap : Entity
     {
         private Tile[,] tileMap;
@@ -18,6 +58,7 @@ namespace panpanExample
         private int x;
         private int y;
         private bool loaded = false;
+        private bool wasInView = false;
 
         public int Width => width;
         public int Height => height;
@@ -50,10 +91,9 @@ namespace panpanExample
         {
             if(tileMap[x, y] != null)
                 return tileMap[x, y];
-            Tile tile = new Tile((int)x*8 + (int)Position.x, (int)y*8 + (int)Position.y, tileSet);
+            Tile tile = TilePool.RequestTile((int)x*8 + (int)Position.x, (int)y*8 + (int)Position.y, tileSet);
             tileMap[x, y] = tile;
             tiles.Add(tile);
-            tile.Init();
 
             // Scene.AddChild(tile);
 
@@ -74,13 +114,19 @@ namespace panpanExample
             var tile = tileMap[x, y];
             if(tiles.Remove(tile))
             {
-                tile.Destroy();
+                // Remove collider from collision manager before returning to pool
+                if(tile.collider != null)
+                {
+                    App.GetCollisionManager().RemoveCollider(tile.collider);
+                }
+                TilePool.ReturnTile(tile);
                 tileMap[x, y] = null;
             }
         }
 
         public void UpdateAutoTiles()
         {
+            var t = Time.Elapsed();
             for(int h = 0; h < height; h++)
             {
                 for(int w = 0; w < width; w++)
@@ -103,6 +149,8 @@ namespace panpanExample
                     tile.renderer.Clip(tSet.clips[autoTile]);
                 }
             }
+            var et = Time.Elapsed();
+            Console.WriteLine($"Updated Autotile {x}, {y}: {et - t}s");
         }
 
         public override void Init()
@@ -113,16 +161,31 @@ namespace panpanExample
         public override void Update()
         {
             base.Update();
-            foreach(var tile in tiles)
-            {
-                tile.Update();
-            }
             IsInView = InView();
+            
+            // Handle going out of view - return tiles to pool
+            if(wasInView && !IsInView && loaded)
+            {
+                ReturnAllTilesToPool();
+            }
+            
+            // Handle coming into view - load tiles
             if(!loaded && IsInView)
             {
                 LoadFromData(TileMapData.mapData[x][y]);
                 loaded = true;
             }
+            
+            // Only update tiles that are in view
+            if(IsInView)
+            {
+                foreach(var tile in tiles)
+                {
+                    tile.Update();
+                }
+            }
+            
+            wasInView = IsInView;
         }
         public override void Render()
         {
@@ -226,9 +289,31 @@ namespace panpanExample
                     }
                 }
             }
-            UpdateAutoTiles();
             var et = Time.Elapsed();
             Console.WriteLine($"Loaded {x}, {y}: {et - t}s");
+            UpdateAutoTiles();
+        }
+
+        private void ReturnAllTilesToPool()
+        {
+            for(uint y = 0; y < height; y++)
+            {
+                for(uint x = 0; x < width; x++)
+                {
+                    var tile = tileMap[x, y];
+                    if(tile != null)
+                    {
+                        if(tile.collider != null)
+                        {
+                            App.GetCollisionManager().RemoveCollider(tile.collider);
+                        }
+                        TilePool.ReturnTile(tile);
+                        tileMap[x, y] = null;
+                    }
+                }
+            }
+            tiles.Clear();
+            loaded = false;
         }
     }
 }
