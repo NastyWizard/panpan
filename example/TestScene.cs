@@ -29,9 +29,14 @@ namespace panpanExample
 
         public TileMap[,] TileMaps = new TileMap[16,16];
 
+        public bool DebugLights = false;
+
+        public Texture ActivePalette;
+
         public override void Init()
         {
             GameTextures.Init();
+            ActivePalette = GameTextures.palette_3;
             lightingMat = new Material(Shaders.bbLighting_frag_hlsl, Shaders.backbuffer_vert_hlsl);
 
             player = (TestPlayer)AddChild(new TestPlayer(64 + 320*6, 33 + 176*6));
@@ -128,10 +133,11 @@ namespace panpanExample
             // Render game with lighting
             App.ResetRenderTarget();
             Draw.SetRTMaterial(lightingMat);
-            Draw.SetRTAdditionalTextures([lightTarget.GetTexture(), GameTextures.defaultPalette, GameTextures.palette_2]);
+            Draw.SetRTUniformFloats([DebugLights ? 1.0f : 0.0f, 0.0f, 0.0f, 0.0f]);
+            Draw.SetRTAdditionalTextures([lightTarget.GetTexture(), GameTextures.defaultPalette, ActivePalette]);
 
             Draw.RenderTarget(gameTarget,vec2.Zero);
-            
+
             Draw.ClearRTAdditionalTextures();
             Draw.ResetRTMaterial();
         }

@@ -14,6 +14,8 @@ namespace panpanExample
         ObjectEditor objectEditor = new ObjectEditor();
         private bool visible = true;
 
+        private int selectedPaletteIndex = 2;
+
         #region Debugger
         bool debuggerVisible = false;
         #endregion Debugger
@@ -96,6 +98,22 @@ namespace panpanExample
                 ImGui.Checkbox("Show colliders", ref App.GetCollisionManager().ShowColliderDebug);
                 ImGui.Checkbox("Show invisible objects", ref panpan.Util.Debug.showObjectsWithoutRenderer);
                 ImGui.Checkbox("Free camera", ref ((TestScene)App.GetSceneManager().ActiveScene).FreeCamera);
+                ImGui.Checkbox("Debug lights", ref ((TestScene)App.GetSceneManager().ActiveScene).DebugLights);
+
+                Texture[] paletteOptions = [GameTextures.palette_1,GameTextures.palette_2,GameTextures.palette_3,GameTextures.palette_4];
+                if (ImGui.BeginCombo("Palette", $"{selectedPaletteIndex}"))
+                {
+                    for(var i = 0; i < paletteOptions.Length; i++)
+                    {
+                        bool isSelected = false;
+                        if (ImGui.Selectable($"{i}", ref isSelected))
+                        {
+                            selectedPaletteIndex = i;
+                            ((TestScene)App.GetSceneManager().ActiveScene).ActivePalette = paletteOptions[i];
+                        }
+                    }
+                    ImGui.EndCombo();
+                }
             }
 
 

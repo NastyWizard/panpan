@@ -13,6 +13,8 @@ namespace panpanExample
         public static Texture defaultPalette;
         public static Texture palette_1;
         public static Texture palette_2;
+        public static Texture palette_3;
+        public static Texture palette_4;
 
         public static void Init()
         {
@@ -36,8 +38,14 @@ namespace panpanExample
             palette_1 = new Texture(Sprites.palette_1,16,1);
             palette_1.CopyPass();
 
-            palette_2 = new Texture(Sprites.palette_3,16,1);
+            palette_2 = new Texture(Sprites.palette_2,16,1);
             palette_2.CopyPass();
+
+            palette_3 = new Texture(Sprites.palette_3,16,1);
+            palette_3.CopyPass();
+
+            palette_4 = new Texture(Sprites.palette_4,16,1);
+            palette_4.CopyPass();
         }
     }
 }

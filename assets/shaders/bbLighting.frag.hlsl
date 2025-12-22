@@ -4,6 +4,11 @@ struct FragInput
     float2 uv    : TEXCOORD0;
 };
 
+cbuffer GlobalUniforms : register(b0, space3)
+{
+    bool debugView;
+}
+
 Texture2D mainTexture : register(t0, space2);
 SamplerState mainSampler : register(s0, space2);
 
@@ -81,7 +86,11 @@ float4 main(FragInput input) : SV_TARGET
     col = swapCol(col);
 
     // debug
-    //col = float4(tier/4,tier/4,tier/4,1.0);
+    if(debugView)
+    {
+        float l = 1.0 - (tier/4);
+        col = float4(l,l,l,1.0);
+    }
     
     if(col.a < 0.01)
         discard;

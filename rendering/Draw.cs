@@ -110,6 +110,10 @@ namespace panpan.Rendering
             backRenderer.SetMaterial(defaultBackMat);
         }
 
+        public static void SetRTUniformFloats(float[] unfs)
+        {
+            backRenderer.SetUniformFloat(unfs);
+        }
         public static void SetRTAdditionalTextures(Texture[] textures)
         {
             backRenderer.SetAdditionalTextures(textures);

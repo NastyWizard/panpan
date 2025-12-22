@@ -44,6 +44,10 @@ namespace panpan.Collision
         {
             spatialHash.RemoveCollider(col);
         }
+        public void UpdateCollider(Collider col)
+        {
+            spatialHash.UpdateCollider(col);
+        }
 
         public bool IntersectsWith(Collider self, Type other, vec2? pos = null)
         {
@@ -147,6 +151,72 @@ namespace panpan.Collision
                 {
                     typeSet.Remove(col);
                 }
+            }
+
+            public void UpdateCollider(Collider col)
+            {
+                // Update bounds first
+                col.Update();
+                
+                // If collider isn't registered, just add it
+                if (!colliderCells.ContainsKey(col))
+                {
+                    AddCollider(col, col.Parent.GetType());
+                    return;
+                }
+                
+                // Get old cells
+                var oldCells = colliderCells[col];
+                
+                // Calculate new cells based on updated bounds
+                Rect bounds = GetColliderBounds(col);
+                int minCellX = (int)Math.Floor(bounds.X / (float)cellSize);
+                int maxCellX = (int)Math.Floor((bounds.X + bounds.Width) / (float)cellSize);
+                int minCellY = (int)Math.Floor(bounds.Y / (float)cellSize);
+                int maxCellY = (int)Math.Floor((bounds.Y + bounds.Height) / (float)cellSize);
+                
+                HashSet<(int, int)> newCells = new HashSet<(int, int)>();
+                
+                // Calculate new cells
+                for (int x = minCellX; x <= maxCellX; x++)
+                {
+                    for (int y = minCellY; y <= maxCellY; y++)
+                    {
+                        newCells.Add((x, y));
+                    }
+                }
+                
+                // Remove from cells that are no longer needed
+                foreach (var cellKey in oldCells)
+                {
+                    if (!newCells.Contains(cellKey))
+                    {
+                        if (cells.TryGetValue(cellKey, out var cellColliders))
+                        {
+                            cellColliders.Remove(col);
+                            if (cellColliders.Count == 0)
+                            {
+                                cells.Remove(cellKey);
+                            }
+                        }
+                    }
+                }
+                
+                // Add to new cells that weren't in old cells
+                foreach (var cellKey in newCells)
+                {
+                    if (!oldCells.Contains(cellKey))
+                    {
+                        if (!cells.ContainsKey(cellKey))
+                        {
+                            cells[cellKey] = new HashSet<Collider>();
+                        }
+                        cells[cellKey].Add(col);
+                    }
+                }
+                
+                // Update the collider's cell set
+                colliderCells[col] = newCells;
             }
 
             public bool IntersectsWith(Collider self, Type other, vec2? pos = null)

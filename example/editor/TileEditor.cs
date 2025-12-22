@@ -256,6 +256,10 @@ namespace panpanExample
                 for(var y = 0; y < 16; y++)
                 {
                     var tilemap = tilemaps[x, y];
+                    if(!tilemap.Loaded)
+                    {
+                        tilemap.LoadFromData(TileMapData.mapData[x][y]);
+                    }
                     sb.AppendLine("    new string[][] {");
                     // LoadFromData expects data[column][row], so we need columns first, then rows
                     for(uint col = 0; col < tilemap.Width; col++)
@@ -263,14 +267,14 @@ namespace panpanExample
                         sb.Append("      new string[] { ");
                         for(int row = 0; row < tilemap.Height; row++)
                         {
-                            var tile = tilemap.GetTile(col, (uint)row);
+                            var tile = tilemap.GetTileType(col, (uint)row);
                             if(tile == null)
                             {
                                 sb.Append("\" \"");
                             }
                             else
                             {
-                                sb.Append($"\"{tile.tileSet.index}\"");
+                                sb.Append($"\"{tile}\"");
                             }
                             if(row < tilemap.Height - 1)
                                 sb.Append(", ");

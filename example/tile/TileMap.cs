@@ -52,6 +52,7 @@ namespace panpanExample
     public class TileMap : Entity
     {
         private Tile[,] tileMap;
+        private string[,] dataMap;
         private List<Tile> tiles;
         private int width;
         private int height;
@@ -66,6 +67,7 @@ namespace panpanExample
         public int Y => y;
         public int TileSize = 8;
         public bool IsInView = false;
+        public bool Loaded => loaded;
 
         public bool drawLights = true;
         private FireFly[] fireFlies;
@@ -77,6 +79,7 @@ namespace panpanExample
             this.y = y;
             Position.xy = new vec2(x * 320, y * 176);
             tileMap = new Tile[w,h];
+            dataMap = new string[w,h];
             tiles = new List<Tile>();
 
             fireFlies = new FireFly[16];
@@ -93,9 +96,8 @@ namespace panpanExample
                 return tileMap[x, y];
             Tile tile = TilePool.RequestTile((int)x*8 + (int)Position.x, (int)y*8 + (int)Position.y, tileSet);
             tileMap[x, y] = tile;
+            dataMap[x, y] = tileSet.index.ToString();
             tiles.Add(tile);
-
-            // Scene.AddChild(tile);
 
             return tile;
         }
@@ -103,6 +105,10 @@ namespace panpanExample
         public Tile GetTile(uint x, uint y)
         {
             return tileMap[x,y];
+        }
+        public string GetTileType(uint x, uint y)
+        {
+            return dataMap[x,y];
         }
 
         public void RemoveTile(uint x, uint y)
@@ -121,6 +127,7 @@ namespace panpanExample
                 }
                 TilePool.ReturnTile(tile);
                 tileMap[x, y] = null;
+                dataMap[x, y] = " ";
             }
         }
 
@@ -146,7 +153,10 @@ namespace panpanExample
                     if(right) autoTile |= 2;
                     if(top) autoTile |= 4;
                     if(bottom) autoTile |= 8;
-                    tile.renderer.Clip(tSet.clips[autoTile]);
+
+                    if(tile.CurrentFrame != autoTile)
+                        tile.renderer.Clip(tSet.clips[autoTile]);
+                    tile.CurrentFrame = autoTile;
                 }
             }
             var et = Time.Elapsed();
@@ -173,7 +183,6 @@ namespace panpanExample
             if(!loaded && IsInView)
             {
                 LoadFromData(TileMapData.mapData[x][y]);
-                loaded = true;
             }
             
             // Only update tiles that are in view
@@ -252,15 +261,8 @@ namespace panpanExample
                 str += "[";
                 for(uint x = 0; x < width; x++)
                 {
-                    var tile = GetTile(x, y);
-                    if(tile == null)
-                    {
-                        str += "' ',";
-                    }
-                    else
-                    {
-                        str += $"'{tile.tileSet.index}',";
-                    }
+                    var ti = dataMap[x, y];
+                    str += $"'{ti}',";
                 }
                 str = str.Remove(str.Length-1);
                 str += "],";
@@ -276,7 +278,9 @@ namespace panpanExample
             {
                 for(uint x = 0; x < width; x++)
                 {
-                    switch(data[(int)x][y])
+                    var d = data[(int)x][y];
+                    dataMap[x, y] = d;
+                    switch(d)
                     {
                         case "0":
                             AddTile(x, (uint)y, TileSets.Dirt);
@@ -292,6 +296,7 @@ namespace panpanExample
             var et = Time.Elapsed();
             Console.WriteLine($"Loaded {x}, {y}: {et - t}s");
             UpdateAutoTiles();
+            loaded = true;
         }
 
         private void ReturnAllTilesToPool()

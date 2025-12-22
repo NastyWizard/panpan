@@ -13,9 +13,10 @@ namespace panpanExample
         public SpriteRenderer renderer = null!;
         public TileSet tileSet;
         public BoxCollider collider = null!;
+        public int CurrentFrame = -1;
         public Tile(int x, int y, TileSet? tileSet = null)
         {
-            tileSet ??= TileSets.Dirt;
+            tileSet ??= new Random().Next(0,1) == 1 ? TileSets.Dirt : TileSets.Brick;
             this.tileSet = tileSet.Value;
             Position.xy = new vec2(x, y);
         }
@@ -23,7 +24,8 @@ namespace panpanExample
         public override void Init()
         {
             renderer = (SpriteRenderer)AddComponent(new SpriteRenderer(TileSets.TilesetTexture));
-            renderer.Clip(tileSet.clips[15]);
+            CurrentFrame = 15;
+            renderer.Clip(tileSet.clips[CurrentFrame]);
             renderer.Origin = new vec2(0,-8.0f/8.0f);
 
             collider = (BoxCollider)AddComponent(new BoxCollider(8, 8));
@@ -48,19 +50,16 @@ namespace panpanExample
 
         public void Reuse(int x, int y, TileSet ts)
         {
+            if(ts.index != tileSet.index)
+            {
+                CurrentFrame = 15;
+                renderer.Clip(ts.clips[CurrentFrame]);
+            }
             tileSet = ts;
             Position.xy = new vec2(x, y);
-            // Update renderer clip for new tileSet
-            if(renderer != null)
-            {
-                renderer.Clip(ts.clips[15]);
-            }
-            // Update collision bounds and spatial hash when position changes
             if(collider != null)
             {
-                collider.UpdateBounds();
-                // Re-add to spatial hash to update cell positions
-                App.GetCollisionManager().AddCollider(collider);
+                App.GetCollisionManager().UpdateCollider(collider);
             }
         }
     }
