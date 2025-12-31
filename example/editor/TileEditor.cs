@@ -36,7 +36,7 @@ namespace panpanExample
         private ivec2 brushPos;
         private int selectedTileType = 0;
         private TileSet tileSet = TileSets.Dirt;
-        private TileMap[,] tilemaps = ((TestScene)App.GetSceneManager().ActiveScene).TileMaps;
+        private TileMap[,] tilemaps = ((GameScene)App.GetSceneManager().ActiveScene).TileMaps;
         private TileMap? activeTileMap;
 
         public bool Visible = false;

@@ -6,7 +6,7 @@ using panpan.Util;
 
 namespace panpanExample
 {
-    public class FireFly : GameObject
+    public class FireFly : Light
     {
         private vec2 startPos;
         private vec2 targetPos; 
@@ -26,7 +26,7 @@ namespace panpanExample
             FindNewTargetPos();
         }
 
-        public void DrawLights()
+        public override void DrawLights()
         {
             float targetAngle = MathF.Atan2(targetPos.y - Position.y, targetPos.x - Position.x) * 180.0f / 3.141f;
             float diff = targetAngle - angle;

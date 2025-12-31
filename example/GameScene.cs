@@ -10,9 +10,9 @@ using panpan.Assets;
 
 namespace panpanExample
 {
-    public class TestScene : Scene
+    public class GameScene : Scene
     {
-        public TestPlayer player = null!;
+        public Player player = null!;
         private Editor? editor = null;
 
         private vec2? prevMousePos = null;
@@ -25,9 +25,10 @@ namespace panpanExample
         // used for editor
         public bool FreeCamera = false;
 
-        public TestScene() : base("test") { }
+        public GameScene() : base("test") { }
 
         public TileMap[,] TileMaps = new TileMap[16,16];
+        public TileMap? ActiveTileMap;
 
         public bool DebugLights = false;
 
@@ -39,7 +40,7 @@ namespace panpanExample
             ActivePalette = GameTextures.palette_3;
             lightingMat = new Material(Shaders.bbLighting_frag_hlsl, Shaders.backbuffer_vert_hlsl);
 
-            player = (TestPlayer)AddChild(new TestPlayer(64 + 320*6, 33 + 176*6));
+            player = (Player)AddChild(new Player(64 + 320*6, 33 + 176*6));
 
             TilePool.FillPool(3000);
 
@@ -54,6 +55,8 @@ namespace panpanExample
             }
 
             base.Init();
+
+            ActiveTileMap = TileMaps[(int)player.Position.x / 320, (int)player.Position.y / 176];
 
             //LoadMapData();
 
@@ -113,6 +116,7 @@ namespace panpanExample
                 Camera.Position.xy = size * p + center;
                 targetCameraPos = Camera.Position;
             }
+            ActiveTileMap = TileMaps[(int)player.Position.x / 320, (int)player.Position.y / 176];
         }
 
         public override void Render()
@@ -158,15 +162,21 @@ namespace panpanExample
 
         private void DrawLights()
         {
-            
-            for (var x = 0; x < 16; x++)
+            if(FreeCamera)
             {
-                for(var y = 0; y < 16; y++)
+                for (var x = 0; x < 16; x++)
                 {
-                    TileMaps[x,y].DrawLights();
+                    for(var y = 0; y < 16; y++)
+                    {
+                        TileMaps[x,y].DrawLights();
+                    }
                 }
             }
-            
+            else
+            {
+                ActiveTileMap?.DrawLights();
+            }
+
             //Draw.Sprite(GameTextures.lightTex64, Input.MousePosition + new vec2(-32,32));
             Draw.Sprite(GameTextures.lightTex64, player.Position.xy + new vec2(-32,32));
             float t = Time.Elapsed();

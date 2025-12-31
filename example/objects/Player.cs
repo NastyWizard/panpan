@@ -10,7 +10,7 @@ using panpan.Collision;
 
 namespace panpanExample
 {
-    public class TestPlayer : Entity
+    public class Player : Entity
     {
         private SpriteRenderer renderer = null!;
         private Animator animator = null;
@@ -34,7 +34,7 @@ namespace panpanExample
 
         #endregion state
 
-        public TestPlayer(int x, int y)
+        public Player(int x, int y)
         {
             Position.x = x;
             Position.y = y;
@@ -106,6 +106,7 @@ namespace panpanExample
             }
 
             base.Update();
+            App.GetCollisionManager().UpdateCollider(collider);
         }
 
         public void SetUniforms()

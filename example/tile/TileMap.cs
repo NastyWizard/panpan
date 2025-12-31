@@ -54,6 +54,7 @@ namespace panpanExample
         private Tile[,] tileMap;
         private string[,] dataMap;
         private List<Tile> tiles;
+        private List<Light> lights;
         private int width;
         private int height;
         private int x;
@@ -68,9 +69,8 @@ namespace panpanExample
         public int TileSize = 8;
         public bool IsInView = false;
         public bool Loaded => loaded;
-
         public bool drawLights = true;
-        private FireFly[] fireFlies;
+
         public TileMap(int x, int y, int w, int h)
         {
             width = w;
@@ -82,11 +82,11 @@ namespace panpanExample
             dataMap = new string[w,h];
             tiles = new List<Tile>();
 
-            fireFlies = new FireFly[16];
+            lights = new List<Light>();
             var r = new Random();
             for(int i = 0; i < 16; i++)
             {
-                fireFlies[i] = new FireFly((int)(r.NextInt64(0,320) + Position.x),(int)(r.NextInt64(0,176) + Position.y));
+                lights.Add(new FireFly((int)(r.NextInt64(0,320) + Position.x),(int)(r.NextInt64(0,176) + Position.y)));
             }
         }
 
@@ -185,7 +185,7 @@ namespace panpanExample
                 LoadFromData(TileMapData.mapData[x][y]);
             }
             
-            // Only update tiles that are in view
+            // Only update tiles if we are in view
             if(IsInView)
             {
                 foreach(var tile in tiles)
@@ -213,9 +213,9 @@ namespace panpanExample
             if(!IsInView || !drawLights)
                 return;
             Draw.Sprite(GameTextures.fsLight, Position.xy + vec2.UnitY * 176);
-            for(int i = 0; i < 16; i++)
+            for(int i = 0; i < lights.Count; i++)
             {
-                fireFlies[i].DrawLights();
+                lights[i].DrawLights();
             }
         }
 
@@ -240,7 +240,6 @@ namespace panpanExample
 
             // Calculate camera view bounds
             // Camera uses orthographic projection centered at Position
-            // View extends from -(Width*Zoom)/2 to +(Width*Zoom)/2 and -(Height*Zoom)/2 to +(Height*Zoom)/2
             float effectiveWidth = camera.Width * camera.Zoom;
             float effectiveHeight = camera.Height * camera.Zoom;
             var cameraBounds = new Rect(

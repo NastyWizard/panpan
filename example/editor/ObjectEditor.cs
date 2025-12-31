@@ -40,7 +40,7 @@ namespace panpanExample
         {
             ChangeBrush(typeof(Capybara), 0, 0);
             Input.RegisterOnMouseDown(OnMouseDown);
-            availableObjectTypes = Utility.GetAllSubTypes(typeof(Entity));
+            availableObjectTypes = Utility.GetAllSubTypes(typeof(GameObject));
         }
 
         private void OnMouseDown(byte btn)
