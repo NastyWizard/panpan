@@ -7,6 +7,7 @@ using panpan.Scene;
 using panpan.Rendering;
 using panpan.Util;
 using panpan.Assets;
+using SDL3;
 
 namespace panpanExample
 {
@@ -64,7 +65,7 @@ namespace panpanExample
             Input.RegisterOnMouseReleased(OnMouseUp);
 
             // Camera is setup in base.Init so it must be adjusted after.
-            Camera.SetBounds(320, 180);
+            Camera.SetBounds((uint)App.GetDisplayBounds().Width/8, (uint)App.GetDisplayBounds().Height/8);
             Camera.Position.x = 320 / 2;
             Camera.Position.y = 180 / 2;
             targetCameraPos = Camera.Position;
@@ -76,6 +77,7 @@ namespace panpanExample
             editor = new Editor();
             editor?.Init();
 #endif
+            App.ToggleFullscreen();
         }
 
         private void OnMouseHeld(byte btn)

@@ -35,8 +35,10 @@ namespace panpan
         static nint commandBuffer;
         static nint renderPass;
         static nint swapchainTexture;
+        static bool isFullScreen = false;
         static readonly List<nint> renderFences = new List<nint>();
         static ImGuiController? imguiController;
+
 
         // Managers
         static SceneManager sceneManager = null!;
@@ -51,6 +53,8 @@ namespace panpan
 
         // Backbuffer
         static RenderTarget backBuffer = null!;
+
+        public static bool IsFullScreen => isFullScreen;
 
         public App(string title, Scene.Scene startScene, int width = 320, int height = 180)
         {
@@ -118,6 +122,13 @@ namespace panpan
             return gameSize;
         }
 
+        public static Rect GetDisplayBounds()
+        {
+            SDL.Rect r;
+            SDL.GetDisplayBounds(SDL.GetPrimaryDisplay(), out r);
+            return new Rect(r.X,r.Y,r.W,r.H);
+        }
+
         public static nint GetCommandBuffer()
         {
             return commandBuffer;
@@ -140,6 +151,11 @@ namespace panpan
         {
             bgColor = col;
             backBuffer?.SetClearColor(bgColor);
+        }
+
+        public static void ToggleFullscreen()
+        {
+            SDL.SetWindowFullscreen(window, !isFullScreen);
         }
 
         /// <summary>
