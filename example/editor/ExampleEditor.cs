@@ -6,12 +6,12 @@ using SDL3;
 
 namespace panpanExample
 {
-    public class Editor
+    public class ExampleEditor
     {
 
-        TileEditor tileEditor = new TileEditor();
-        SpriteEditor spriteEditor = new SpriteEditor();
-        ObjectEditor objectEditor = new ObjectEditor();
+        ExampleTileEditor tileEditor = new ExampleTileEditor();
+        ExampleSpriteEditor spriteEditor = new ExampleSpriteEditor();
+        ExampleObjectEditor objectEditor = new ExampleObjectEditor();
         private bool visible = true;
 
         private int selectedPaletteIndex = 2;
@@ -79,7 +79,7 @@ namespace panpanExample
                 ImGui.Text($"Mouse Pos: {Input.MousePosition.x:F2}, {Input.MousePosition.y:F2}");
                 if(ImGui.Button("Reset Player"))
                 {
-                    ((GameScene)App.GetSceneManager().ActiveScene).player.Position.xy = new GlmSharp.vec2(64 + 320*6, 33 + 176*6);
+                    ((ExampleGameScene)App.GetSceneManager().ActiveScene).player.Position.xy = new GlmSharp.vec2(64 + 320*6, 33 + 176*6);
                 }
                 ImGui.SliderFloat("Time Scale", ref App.GetSceneManager().ActiveScene.TimeScale, 0.1f, 2.0f);
                 if(ImGui.Button("Reset Time Scale"))
@@ -97,10 +97,10 @@ namespace panpanExample
                 }
                 ImGui.Checkbox("Show colliders", ref App.GetCollisionManager().ShowColliderDebug);
                 ImGui.Checkbox("Show invisible objects", ref panpan.Util.Debug.showObjectsWithoutRenderer);
-                ImGui.Checkbox("Free camera", ref ((GameScene)App.GetSceneManager().ActiveScene).FreeCamera);
-                ImGui.Checkbox("Debug lights", ref ((GameScene)App.GetSceneManager().ActiveScene).DebugLights);
+                ImGui.Checkbox("Free camera", ref ((ExampleGameScene)App.GetSceneManager().ActiveScene).FreeCamera);
+                ImGui.Checkbox("Debug lights", ref ((ExampleGameScene)App.GetSceneManager().ActiveScene).DebugLights);
 
-                Texture[] paletteOptions = [GameTextures.palette_1,GameTextures.palette_2,GameTextures.palette_3,GameTextures.palette_4];
+                Texture[] paletteOptions = [ExampleGameTextures.palette_1,ExampleGameTextures.palette_2,ExampleGameTextures.palette_3,ExampleGameTextures.palette_4];
                 if (ImGui.BeginCombo("Palette", $"{selectedPaletteIndex}"))
                 {
                     for(var i = 0; i < paletteOptions.Length; i++)
@@ -109,7 +109,7 @@ namespace panpanExample
                         if (ImGui.Selectable($"{i}", ref isSelected))
                         {
                             selectedPaletteIndex = i;
-                            ((GameScene)App.GetSceneManager().ActiveScene).ActivePalette = paletteOptions[i];
+                            ((ExampleGameScene)App.GetSceneManager().ActiveScene).ActivePalette = paletteOptions[i];
                         }
                     }
                     ImGui.EndCombo();

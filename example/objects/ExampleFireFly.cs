@@ -6,7 +6,7 @@ using panpan.Util;
 
 namespace panpanExample
 {
-    public class FireFly : Light
+    public class ExampleFireFly : ExampleLight
     {
         private vec2 startPos;
         private vec2 targetPos; 
@@ -15,7 +15,7 @@ namespace panpanExample
         private float angle;
         private float speed;
         private float turnSpeed; 
-        public FireFly(int x, int y): base(x, y)
+        public ExampleFireFly(int x, int y): base(x, y)
         {
             speed = 0.2f;
             turnSpeed = 1.0f;
@@ -53,8 +53,8 @@ namespace panpanExample
                 FindNewTargetPos();
             }
             vec2 p = new vec2(MathF.Floor(Position.x), MathF.Floor(Position.y)) + new vec2(-16,16);
-            Draw.Sprite(GameTextures.lightTex32_weak, p);
-            Draw.Sprite(GameTextures.lightTex64_weak, p + secondLightOffset);
+            Draw.Sprite(ExampleGameTextures.lightTex32_weak, p);
+            Draw.Sprite(ExampleGameTextures.lightTex64_weak, p + secondLightOffset);
         }
 
         private void FindNewTargetPos()

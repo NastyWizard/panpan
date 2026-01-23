@@ -3,11 +3,11 @@ using panpan.Scene;
 
 namespace panpanExample
 {
-    public class GameObject : Entity
+    public class ExampleGameObject : Entity
     {
-        public TileMap? activeRoom;
+        public ExampleTileMap? activeRoom;
 
-        public GameObject(int x, int y)
+        public ExampleGameObject(int x, int y)
         {
             Position.x = x;
             Position.y = y;

@@ -1,7 +1,5 @@
 
 using panpan.Rendering;
-using panpan.Collision;
-using panpanExample;
 
 namespace panpan.Scene
 {

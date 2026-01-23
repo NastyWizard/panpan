@@ -10,7 +10,7 @@ using panpan.Util;
 
 namespace panpanExample
 {
-    public class ObjectEditor
+    public class ExampleObjectEditor
     {
         enum BrushType
         {
@@ -38,14 +38,14 @@ namespace panpanExample
 
         public void Init()
         {
-            ChangeBrush(typeof(Capybara), 0, 0);
+            ChangeBrush(typeof(ExampleCapybara), 0, 0);
             Input.RegisterOnMouseDown(OnMouseDown);
-            availableObjectTypes = Utility.GetAllSubTypes(typeof(GameObject));
+            availableObjectTypes = Utility.GetAllSubTypes(typeof(ExampleGameObject));
         }
 
         private void OnMouseDown(byte btn)
         {
-            if (btn == 1 && editing && !ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow) && !App.GetCollisionManager().IntersectsPosition(Input.MousePosition, typeof(Tile)))
+            if (btn == 1 && editing && !ImGui.IsWindowHovered(ImGuiHoveredFlags.AnyWindow) && !App.GetCollisionManager().IntersectsPosition(Input.MousePosition, typeof(ExampleTile)))
             {
                 PlaceObject(brushPos.x - (int)brushOffset.x, brushPos.y - (int)brushOffset.y);
             }

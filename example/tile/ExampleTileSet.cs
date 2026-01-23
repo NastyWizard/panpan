@@ -5,12 +5,12 @@ using panpan.Util;
 
 namespace panpanExample
 {
-    public struct TileSet
+    public struct ExampleTileSet
     {
         public uint index;
         public Rect[] clips = new Rect[16];
 
-        public TileSet(uint index)
+        public ExampleTileSet(uint index)
         {
             this.index = index;
             var tileSize = 8;
@@ -38,11 +38,11 @@ namespace panpanExample
         }
     }
 
-    public class TileSets
+    public class ExampleTileSets
     {
         public static Texture TilesetTexture = new Texture(Sprites.tiles, 128, 128);
-        public static TileSet Dirt = new TileSet(0);
-        public static TileSet Brick = new TileSet(1);
+        public static ExampleTileSet Dirt = new ExampleTileSet(0);
+        public static ExampleTileSet Brick = new ExampleTileSet(1);
 
     }
 }

@@ -10,12 +10,12 @@ using panpan.Collision;
 
 namespace panpanExample
 {
-    public class Capybara : Entity
+    public class ExampleCapybara : Entity
     {
         private SpriteRenderer renderer = null!;
         private BoxCollider collider = null!;
 
-        public Capybara(int x, int y)
+        public ExampleCapybara(int x, int y)
         {
             Position.x = x;
             Position.y = y;

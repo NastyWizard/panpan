@@ -4,7 +4,7 @@ using panpan.Rendering;
 
 namespace panpanExample
 {
-    public class GameTextures
+    public class ExampleGameTextures
     {
         public static Texture lightTex64;
         public static Texture lightTex64_weak;

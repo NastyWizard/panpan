@@ -10,7 +10,7 @@ using panpan.Collision;
 
 namespace panpanExample
 {
-    public class Player : Entity
+    public class ExamplePlayer : Entity
     {
         private SpriteRenderer renderer = null!;
         private Animator animator = null;
@@ -34,7 +34,7 @@ namespace panpanExample
 
         #endregion state
 
-        public Player(int x, int y)
+        public ExamplePlayer(int x, int y)
         {
             Position.x = x;
             Position.y = y;
@@ -66,7 +66,7 @@ namespace panpanExample
 
         public override void Update()
         {
-            var grounded = App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), Position.xy - vec2.UnitY);
+            var grounded = App.GetCollisionManager().IntersectsWith(collider, typeof(ExampleTile), Position.xy - vec2.UnitY);
 
             if (coyoteTime > 0 && jumpQue > 0)
             {
@@ -174,12 +174,12 @@ namespace panpanExample
             // Horizontal movement
             while (move.x != 0)
             {
-                if (!App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), Position.xy + new vec2(sign.x, 0.0f)))
+                if (!App.GetCollisionManager().IntersectsWith(collider, typeof(ExampleTile), Position.xy + new vec2(sign.x, 0.0f)))
                 {
                     Position.x += sign.x;
                     move.x -= sign.x;
                     // Check for ceiling after horizontal movement
-                    if (App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), Position.xy + new vec2(0.0f, 1.0f)))
+                    if (App.GetCollisionManager().IntersectsWith(collider, typeof(ExampleTile), Position.xy + new vec2(0.0f, 1.0f)))
                     {
                         speed.y = MathF.Min(0f, speed.y);
                         spd.y = Scene.TimeScale * speed.y;
@@ -189,14 +189,14 @@ namespace panpanExample
                     }
                 }
                 // Try to climb up if blocked horizontally
-                else if (!App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), Position.xy + new vec2(sign.x, 1.0f)) && 
-                         !App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), Position.xy + new vec2(sign.x, 2.0f)))
+                else if (!App.GetCollisionManager().IntersectsWith(collider, typeof(ExampleTile), Position.xy + new vec2(sign.x, 1.0f)) && 
+                         !App.GetCollisionManager().IntersectsWith(collider, typeof(ExampleTile), Position.xy + new vec2(sign.x, 2.0f)))
                 {
                     Position.y++;
                     Position.y = MathF.Round(Position.y);
                 }// Try to climb down if blocked horizontally
-                else if (!App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), Position.xy + new vec2(sign.x, -1.0f)) && 
-                         !App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), Position.xy + new vec2(sign.x, -2.0f)))
+                else if (!App.GetCollisionManager().IntersectsWith(collider, typeof(ExampleTile), Position.xy + new vec2(sign.x, -1.0f)) && 
+                         !App.GetCollisionManager().IntersectsWith(collider, typeof(ExampleTile), Position.xy + new vec2(sign.x, -2.0f)))
                 {
                     Position.y--;
                     Position.y = MathF.Round(Position.y);
@@ -211,7 +211,7 @@ namespace panpanExample
             // Vertical movement
             while (move.y != 0)
             {
-                if (!App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), Position.xy + new vec2(0.0f, sign.y)))
+                if (!App.GetCollisionManager().IntersectsWith(collider, typeof(ExampleTile), Position.xy + new vec2(0.0f, sign.y)))
                 {
                     Position.y += sign.y;
                     move.y -= sign.y;
@@ -220,14 +220,14 @@ namespace panpanExample
                 else if (sign.y == 1)
                 {
                     // Try sliding right
-                    if (sign.x >= 0 && !App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), Position.xy + new vec2(1.0f, sign.y)) || 
-                        !App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), Position.xy + new vec2(2.0f, sign.y)))
+                    if (sign.x >= 0 && !App.GetCollisionManager().IntersectsWith(collider, typeof(ExampleTile), Position.xy + new vec2(1.0f, sign.y)) || 
+                        !App.GetCollisionManager().IntersectsWith(collider, typeof(ExampleTile), Position.xy + new vec2(2.0f, sign.y)))
                     {
                         Position.x++;
                     }
                     // Try sliding left
-                    else if (sign.x <= 0 && !App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), Position.xy + new vec2(-1.0f, sign.y)) || 
-                             !App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), Position.xy + new vec2(-2.0f, sign.y)))
+                    else if (sign.x <= 0 && !App.GetCollisionManager().IntersectsWith(collider, typeof(ExampleTile), Position.xy + new vec2(-1.0f, sign.y)) || 
+                             !App.GetCollisionManager().IntersectsWith(collider, typeof(ExampleTile), Position.xy + new vec2(-2.0f, sign.y)))
                     {
                         Position.x--;
                     }
@@ -263,25 +263,25 @@ namespace panpanExample
                     checkPos.x = newX;
                 }
                 
-                if (!App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), checkPos))
+                if (!App.GetCollisionManager().IntersectsWith(collider, typeof(ExampleTile), checkPos))
                 {
                     Position.x = newX;
                     // Check for ceiling after horizontal remainder movement
-                    if (App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), Position.xy + new vec2(0.0f, 1.0f)))
+                    if (App.GetCollisionManager().IntersectsWith(collider, typeof(ExampleTile), Position.xy + new vec2(0.0f, 1.0f)))
                     {
                         speed.y = MathF.Min(0f, speed.y);
                     }
                 }
                 // Try to climb up if blocked horizontally
-                else if (!App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), checkPos + new vec2(0.0f, 1.0f)) && 
-                         !App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), checkPos + new vec2(0.0f, 2.0f)))
+                else if (!App.GetCollisionManager().IntersectsWith(collider, typeof(ExampleTile), checkPos + new vec2(0.0f, 1.0f)) && 
+                         !App.GetCollisionManager().IntersectsWith(collider, typeof(ExampleTile), checkPos + new vec2(0.0f, 2.0f)))
                 {
                     Position.y++;
                     Position.y = MathF.Round(Position.y);
                 }
                 // Try to climb down if blocked horizontally
-                else if (!App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), checkPos + new vec2(0.0f, -1.0f)) && 
-                         !App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), checkPos + new vec2(0.0f, -2.0f)))
+                else if (!App.GetCollisionManager().IntersectsWith(collider, typeof(ExampleTile), checkPos + new vec2(0.0f, -1.0f)) && 
+                         !App.GetCollisionManager().IntersectsWith(collider, typeof(ExampleTile), checkPos + new vec2(0.0f, -2.0f)))
                 {
                     Position.y--;
                     Position.y = MathF.Round(Position.y);
@@ -311,7 +311,7 @@ namespace panpanExample
                     checkPos.y = newY;
                 }
                 
-                if (!App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), checkPos))
+                if (!App.GetCollisionManager().IntersectsWith(collider, typeof(ExampleTile), checkPos))
                 {
                     Position.y = newY;
                 }
@@ -319,14 +319,14 @@ namespace panpanExample
                 else if (sign.y == 1)
                 {
                     // Try sliding right
-                    if (!App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), checkPos + new vec2(1.0f, 0.0f)) ||
-                        !App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), checkPos + new vec2(2.0f, 0.0f)))
+                    if (!App.GetCollisionManager().IntersectsWith(collider, typeof(ExampleTile), checkPos + new vec2(1.0f, 0.0f)) ||
+                        !App.GetCollisionManager().IntersectsWith(collider, typeof(ExampleTile), checkPos + new vec2(2.0f, 0.0f)))
                     {
                         Position.x++;
                     }
                     // Try sliding left
-                    else if (!App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), checkPos + new vec2(-1.0f, 0.0f)) || 
-                             !App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), checkPos + new vec2(-2.0f, 0.0f)))
+                    else if (!App.GetCollisionManager().IntersectsWith(collider, typeof(ExampleTile), checkPos + new vec2(-1.0f, 0.0f)) || 
+                             !App.GetCollisionManager().IntersectsWith(collider, typeof(ExampleTile), checkPos + new vec2(-2.0f, 0.0f)))
                     {
                         Position.x--;
                     }
@@ -342,7 +342,7 @@ namespace panpanExample
             }
 
             // Check if we're stuck inside a wall then push out
-            if (App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), Position.xy))
+            if (App.GetCollisionManager().IntersectsWith(collider, typeof(ExampleTile), Position.xy))
             {
                 // Try pushing out in each direction, starting with the direction we were trying to move
                 vec2[] pushDirections = new vec2[]
@@ -359,7 +359,7 @@ namespace panpanExample
                 foreach (var dir in pushDirections)
                 {
                     vec2 testPos = Position.xy + dir;
-                    if (!App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), testPos))
+                    if (!App.GetCollisionManager().IntersectsWith(collider, typeof(ExampleTile), testPos))
                     {
                         Position.xy = testPos;
                         pushedOut = true;
@@ -377,7 +377,7 @@ namespace panpanExample
                         foreach (var dir in pushDirections)
                         {
                             vec2 testPos = Position.xy + dir * offset;
-                            if (!App.GetCollisionManager().IntersectsWith(collider, typeof(Tile), testPos))
+                            if (!App.GetCollisionManager().IntersectsWith(collider, typeof(ExampleTile), testPos))
                             {
                                 Position.xy = testPos;
                                 System.Console.WriteLine($"Pushed out of wall (offset {offset}): moved ({dir.x * offset:F2}, {dir.y * offset:F2})");

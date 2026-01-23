@@ -11,7 +11,7 @@ using SDL3;
 
 namespace panpanExample
 {
-    public class TileEditor
+    public class ExampleTileEditor
     {
         enum BrushType
         {
@@ -35,9 +35,9 @@ namespace panpanExample
         private Texture? brushTex;
         private ivec2 brushPos;
         private int selectedTileType = 0;
-        private TileSet tileSet = TileSets.Dirt;
-        private TileMap[,] tilemaps = ((GameScene)App.GetSceneManager().ActiveScene).TileMaps;
-        private TileMap? activeTileMap;
+        private ExampleTileSet tileSet = ExampleTileSets.Dirt;
+        private ExampleTileMap[,] tilemaps = ((ExampleGameScene)App.GetSceneManager().ActiveScene).TileMaps;
+        private ExampleTileMap? activeTileMap;
 
         public bool Visible = false;
 
@@ -70,11 +70,11 @@ namespace panpanExample
             {
                 if(brushType == BrushType.BRUSH)
                 {
-                    if (btn == 1 && !App.GetCollisionManager().IntersectsPosition(Input.MousePosition, typeof(Tile)))
+                    if (btn == 1 && !App.GetCollisionManager().IntersectsPosition(Input.MousePosition, typeof(ExampleTile)))
                     {
                         PlaceTile((uint)brushPos.x, (uint)brushPos.y);
                     }
-                    if(btn == 3 && App.GetCollisionManager().IntersectsPosition(Input.MousePosition, typeof(Tile)))
+                    if(btn == 3 && App.GetCollisionManager().IntersectsPosition(Input.MousePosition, typeof(ExampleTile)))
                     {
                         RemoveTile((uint)brushPos.x, (uint)brushPos.y);
                         activeTileMap!.UpdateAutoTiles();
@@ -258,7 +258,7 @@ namespace panpanExample
                     var tilemap = tilemaps[x, y];
                     if(!tilemap.Loaded)
                     {
-                        tilemap.LoadFromData(TileMapData.mapData[x][y]);
+                        tilemap.LoadFromData(ExampleTileMapData.mapData[x][y]);
                     }
                     sb.AppendLine("    new string[][] {");
                     // LoadFromData expects data[column][row], so we need columns first, then rows
@@ -298,8 +298,8 @@ namespace panpanExample
 
             filePath = Path.GetDirectoryName(Path.GetDirectoryName(filePath));
 
-            string outputPath = Path.Join(filePath, "TileMapData.cs");
-            string template = File.ReadAllText(Path.Join(filePath, "TileMapData.cs.in"));
+            string outputPath = Path.Join(filePath, "ExampleTileMapData.cs");
+            string template = File.ReadAllText(Path.Join(filePath, "ExampleTileMapData.cs.in"));
 
             template = template.Replace("@TILEMAP_DATA@", sb.ToString());
             File.WriteAllText(outputPath, template);
@@ -364,21 +364,21 @@ namespace panpanExample
 
         private void ShowTileSelect()
         {
-            var tsetType = typeof(TileSets);
+            var tsetType = typeof(ExampleTileSets);
             FieldInfo[] fields = tsetType.GetFields(BindingFlags.Static | BindingFlags.Public);
-            List<FieldInfo> staticVariables = fields.Where(field => field.FieldType == typeof(TileSet)).ToList();
+            List<FieldInfo> staticVariables = fields.Where(field => field.FieldType == typeof(ExampleTileSet)).ToList();
             if (ImGui.BeginCombo("Tile Set", staticVariables[selectedTileType].Name))
             {
                 bool b = false;
                 var i = 0;
                 foreach(var field in staticVariables)
                 {
-                    if(field.FieldType == typeof(TileSet))
+                    if(field.FieldType == typeof(ExampleTileSet))
                     {
                         if (ImGui.Selectable(field.Name, ref b))
                         {
                             selectedTileType = i;
-                            tileSet = (TileSet)field.GetValue(null);
+                            tileSet = (ExampleTileSet)field.GetValue(null);
                         }
                     }
                     i++;

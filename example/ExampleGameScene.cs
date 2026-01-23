@@ -11,10 +11,10 @@ using SDL3;
 
 namespace panpanExample
 {
-    public class GameScene : Scene
+    public class ExampleGameScene : Scene
     {
-        public Player player = null!;
-        private Editor? editor = null;
+        public ExamplePlayer player = null!;
+        private ExampleEditor? editor = null;
 
         private vec2? prevMousePos = null;
         private vec3 targetCameraPos;
@@ -26,10 +26,10 @@ namespace panpanExample
         // used for editor
         public bool FreeCamera = false;
 
-        public GameScene() : base("test") { }
+        public ExampleGameScene() : base("test") { }
 
-        public TileMap[,] TileMaps = new TileMap[16,16];
-        public TileMap? ActiveTileMap;
+        public ExampleTileMap[,] TileMaps = new ExampleTileMap[16,16];
+        public ExampleTileMap? ActiveTileMap;
 
         public bool DebugLights = false;
 
@@ -37,19 +37,19 @@ namespace panpanExample
 
         public override void Init()
         {
-            GameTextures.Init();
-            ActivePalette = GameTextures.palette_3;
+            ExampleGameTextures.Init();
+            ActivePalette = ExampleGameTextures.palette_3;
             lightingMat = new Material(Shaders.bbLighting_frag_hlsl, Shaders.backbuffer_vert_hlsl);
 
-            player = (Player)AddChild(new Player(64 + 320*6, 33 + 176*6));
+            player = (ExamplePlayer)AddChild(new ExamplePlayer(64 + 320*6, 33 + 176*6));
 
-            TilePool.FillPool(3000);
+            ExampleTilePool.FillPool(3000);
 
             for (var x = 0; x < 16; x++)
             {
                 for(var y = 0; y < 16; y++)
                 {
-                    var tileMap = new TileMap(x,y, 320/8, 180/8);
+                    var tileMap = new ExampleTileMap(x,y, 320/8, 180/8);
                     TileMaps[x,y] = tileMap;
                     AddChild(tileMap);
                 }
@@ -74,7 +74,7 @@ namespace panpanExample
             gameTarget.SetClearColor(panpan.Rendering.Color.Hex("3c6a20"));
             lightTarget = new RenderTarget((uint)App.GetGameSize().x,(uint)App.GetGameSize().y);
 #if DEBUG
-            editor = new Editor();
+            editor = new ExampleEditor();
             editor?.Init();
 #endif
             App.ToggleFullscreen();
@@ -140,7 +140,7 @@ namespace panpanExample
             App.ResetRenderTarget();
             Draw.SetRTMaterial(lightingMat);
             Draw.SetRTUniformFloats([DebugLights ? 1.0f : 0.0f, 0.0f, 0.0f, 0.0f]);
-            Draw.SetRTAdditionalTextures([lightTarget.GetTexture(), GameTextures.defaultPalette, ActivePalette]);
+            Draw.SetRTAdditionalTextures([lightTarget.GetTexture(), ExampleGameTextures.defaultPalette, ActivePalette]);
 
             Draw.RenderTarget(gameTarget,vec2.Zero);
 
@@ -155,7 +155,7 @@ namespace panpanExample
             {
                 for(var y = 0; y < 16; y++)
                 {
-                    TileMaps[x,y].LoadFromData(TileMapData.mapData[x][y]);
+                    TileMaps[x,y].LoadFromData(ExampleTileMapData.mapData[x][y]);
                 }
             }
             var et = Time.Elapsed();
@@ -179,11 +179,11 @@ namespace panpanExample
                 ActiveTileMap?.DrawLights();
             }
 
-            //Draw.Sprite(GameTextures.lightTex64, Input.MousePosition + new vec2(-32,32));
-            Draw.Sprite(GameTextures.lightTex64, player.Position.xy + new vec2(-32,32));
+            //Draw.Sprite(ExampleGameTextures.lightTex64, Input.MousePosition + new vec2(-32,32));
+            Draw.Sprite(ExampleGameTextures.lightTex64, player.Position.xy + new vec2(-32,32));
             float t = Time.Elapsed();
-            Draw.Sprite(GameTextures.lightTex64, player.Position.xy + new vec2(-32,32) + new vec2(MathF.Sin(t), MathF.Cos(t))*4);
-            Draw.Sprite(GameTextures.lightTex64, player.Position.xy + new vec2(-32,32) + new vec2(MathF.Sin(t*-1), MathF.Cos(t*1))*6);
+            Draw.Sprite(ExampleGameTextures.lightTex64, player.Position.xy + new vec2(-32,32) + new vec2(MathF.Sin(t), MathF.Cos(t))*4);
+            Draw.Sprite(ExampleGameTextures.lightTex64, player.Position.xy + new vec2(-32,32) + new vec2(MathF.Sin(t*-1), MathF.Cos(t*1))*6);
 
         }
     }

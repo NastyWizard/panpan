@@ -9,13 +9,13 @@ using panpan;
 
 namespace panpanExample
 {
-    public class TilePool
+    public class ExampleTilePool
     {
-        private static Stack<Tile> pool = new Stack<Tile>();
+        private static Stack<ExampleTile> pool = new Stack<ExampleTile>();
         
-        public static Tile RequestTile(int x, int y, TileSet ts)
+        public static ExampleTile RequestTile(int x, int y, ExampleTileSet ts)
         {
-            Tile t;
+            ExampleTile t;
             if(pool.Count > 0)
             {
                 t = pool.Pop();
@@ -23,7 +23,7 @@ namespace panpanExample
             }
             else
             {
-                t = new Tile(x, y, ts);
+                t = new ExampleTile(x, y, ts);
                 t.Init();
             }
 
@@ -35,13 +35,13 @@ namespace panpanExample
             Console.WriteLine($"Filling pool {count}");
             for(int i = 0; i < count; i++)
             {
-                var tile = new Tile(-100,-100);
+                var tile = new ExampleTile(-100,-100);
                 tile.Init();
                 pool.Push(tile);
             }
         }
 
-        public static void ReturnTile(Tile t)
+        public static void ReturnTile(ExampleTile t)
         {
             t.Position.x = -100;
             t.Position.y = -100;
@@ -49,12 +49,12 @@ namespace panpanExample
         }
     }
 
-    public class TileMap : Entity
+    public class ExampleTileMap : Entity
     {
-        private Tile[,] tileMap;
+        private ExampleTile[,] tileMap;
         private string[,] dataMap;
-        private List<Tile> tiles;
-        private List<Light> lights;
+        private List<ExampleTile> tiles;
+        private List<ExampleLight> lights;
         private int width;
         private int height;
         private int x;
@@ -71,30 +71,30 @@ namespace panpanExample
         public bool Loaded => loaded;
         public bool drawLights = true;
 
-        public TileMap(int x, int y, int w, int h)
+        public ExampleTileMap(int x, int y, int w, int h)
         {
             width = w;
             height = h;
             this.x = x;
             this.y = y;
             Position.xy = new vec2(x * 320, y * 176);
-            tileMap = new Tile[w,h];
+            tileMap = new ExampleTile[w,h];
             dataMap = new string[w,h];
-            tiles = new List<Tile>();
+            tiles = new List<ExampleTile>();
 
-            lights = new List<Light>();
+            lights = new List<ExampleLight>();
             var r = new Random();
             for(int i = 0; i < 16; i++)
             {
-                lights.Add(new FireFly((int)(r.NextInt64(0,320) + Position.x),(int)(r.NextInt64(0,176) + Position.y)));
+                lights.Add(new ExampleFireFly((int)(r.NextInt64(0,320) + Position.x),(int)(r.NextInt64(0,176) + Position.y)));
             }
         }
 
-        public Tile AddTile(uint x, uint y, TileSet tileSet)
+        public ExampleTile AddTile(uint x, uint y, ExampleTileSet tileSet)
         {
             if(tileMap[x, y] != null)
                 return tileMap[x, y];
-            Tile tile = TilePool.RequestTile((int)x*8 + (int)Position.x, (int)y*8 + (int)Position.y, tileSet);
+            ExampleTile tile = ExampleTilePool.RequestTile((int)x*8 + (int)Position.x, (int)y*8 + (int)Position.y, tileSet);
             tileMap[x, y] = tile;
             dataMap[x, y] = tileSet.index.ToString();
             tiles.Add(tile);
@@ -102,7 +102,7 @@ namespace panpanExample
             return tile;
         }
 
-        public Tile GetTile(uint x, uint y)
+        public ExampleTile GetTile(uint x, uint y)
         {
             return tileMap[x,y];
         }
@@ -125,7 +125,7 @@ namespace panpanExample
                 {
                     App.GetCollisionManager().RemoveCollider(tile.collider);
                 }
-                TilePool.ReturnTile(tile);
+                ExampleTilePool.ReturnTile(tile);
                 tileMap[x, y] = null;
                 dataMap[x, y] = " ";
             }
@@ -182,7 +182,7 @@ namespace panpanExample
             // Handle coming into view - load tiles
             if(!loaded && IsInView)
             {
-                LoadFromData(TileMapData.mapData[x][y]);
+                LoadFromData(ExampleTileMapData.mapData[x][y]);
             }
             
             // Only update tiles if we are in view
@@ -212,7 +212,7 @@ namespace panpanExample
         {
             if(!IsInView || !drawLights)
                 return;
-            Draw.Sprite(GameTextures.fsLight, Position.xy + vec2.UnitY * 176);
+            Draw.Sprite(ExampleGameTextures.fsLight, Position.xy + vec2.UnitY * 176);
             for(int i = 0; i < lights.Count; i++)
             {
                 lights[i].DrawLights();
@@ -282,10 +282,10 @@ namespace panpanExample
                     switch(d)
                     {
                         case "0":
-                            AddTile(x, (uint)y, TileSets.Dirt);
+                            AddTile(x, (uint)y, ExampleTileSets.Dirt);
                             break;
                         case "1":
-                            AddTile(x, (uint)y, TileSets.Brick);
+                            AddTile(x, (uint)y, ExampleTileSets.Brick);
                             break;
                         default:
                             break;
@@ -311,7 +311,7 @@ namespace panpanExample
                         {
                             App.GetCollisionManager().RemoveCollider(tile.collider);
                         }
-                        TilePool.ReturnTile(tile);
+                        ExampleTilePool.ReturnTile(tile);
                         tileMap[x, y] = null;
                     }
                 }

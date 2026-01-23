@@ -8,22 +8,22 @@ using panpan;
 
 namespace panpanExample
 {
-    public class Tile : Entity
+    public class ExampleTile : Entity
     {
         public SpriteRenderer renderer = null!;
-        public TileSet tileSet;
+        public ExampleTileSet tileSet;
         public BoxCollider collider = null!;
         public int CurrentFrame = -1;
-        public Tile(int x, int y, TileSet? tileSet = null)
+        public ExampleTile(int x, int y, ExampleTileSet? tileSet = null)
         {
-            tileSet ??= new Random().Next(0,1) == 1 ? TileSets.Dirt : TileSets.Brick;
+            tileSet ??= new Random().Next(0,1) == 1 ? ExampleTileSets.Dirt : ExampleTileSets.Brick;
             this.tileSet = tileSet.Value;
             Position.xy = new vec2(x, y);
         }
 
         public override void Init()
         {
-            renderer = (SpriteRenderer)AddComponent(new SpriteRenderer(TileSets.TilesetTexture));
+            renderer = (SpriteRenderer)AddComponent(new SpriteRenderer(ExampleTileSets.TilesetTexture));
             CurrentFrame = 15;
             renderer.Clip(tileSet.clips[CurrentFrame]);
             renderer.Origin = new vec2(0,-8.0f/8.0f);
@@ -43,12 +43,12 @@ namespace panpanExample
             //collider.DrawDebug();
         }
 
-        public void SetTileSet(TileSet tileSet)
+        public void SetTileSet(ExampleTileSet tileSet)
         {
             this.tileSet = tileSet;
         }
 
-        public void Reuse(int x, int y, TileSet ts)
+        public void Reuse(int x, int y, ExampleTileSet ts)
         {
             if(ts.index != tileSet.index)
             {

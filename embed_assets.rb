@@ -4,10 +4,15 @@ require 'fileutils'
 
 # Configuration: folder paths
 
+ASSETS_PATH = "assets";
+if(File.exist?("../../assets")) then
+  ASSETS_PATH = "../../assets"
+end
+
 folders = {
-  "SHADER_ASSETS" => "assets/shaders",
-  "SPRITE_ASSETS" => "assets/sprites",
-  "AUDIO_ASSETS"  => "assets/audio"
+  "SHADER_ASSETS" => ASSETS_PATH + "/shaders",
+  "SPRITE_ASSETS" => ASSETS_PATH + "/sprites",
+  "AUDIO_ASSETS"  => ASSETS_PATH + "/audio"
 }
 
 # Path to your template C# file
@@ -68,6 +73,8 @@ def sanitize_variable_name(filename)
     asset_code = generate_assets_code(folder_path)
     template.gsub!("@#{placeholder}@", asset_code)
   end
-  
+  if(!File.exist?(File.dirname(OUTPUT_PATH))) then
+    Dir.mkdir(File.dirname(OUTPUT_PATH))
+  end
   File.write(OUTPUT_PATH, template)
   puts "✅ Successfully wrote embedded assets to #{OUTPUT_PATH}"

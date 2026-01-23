@@ -284,9 +284,9 @@ namespace panpan
             {
                 colorTargetInfo.ClearColor = new SDL.FColor
                 {
-                    R = 1.0f,
-                    G = 0.0f,
-                    B = 1.0f,
+                    R = bgColor.r,
+                    G = bgColor.g,
+                    B = bgColor.b,
                     A = 1.0f
                 };
             }

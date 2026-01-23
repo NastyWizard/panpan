@@ -1,7 +1,7 @@
 
 namespace panpanExample
 {
-    public class TileMapData
+    public class ExampleTileMapData
     {
         public static string[][][][] mapData = new string[][][][] {
   new string[][][] {

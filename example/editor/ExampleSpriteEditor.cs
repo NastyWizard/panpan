@@ -9,7 +9,7 @@ using panpan.Util;
 
 namespace panpanExample
 {
-    public class SpriteEditor
+    public class ExampleSpriteEditor
     {
         private Entity? currentSelectedObject = null;
         private Entity? lastSelectedObject = null;
