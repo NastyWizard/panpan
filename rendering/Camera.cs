@@ -3,6 +3,7 @@ using panpan;
 using GlmSharp;
 using panpan.Scene;
 using SDL3;
+using panpan.Util;
 
 namespace panpan.Rendering
 {
@@ -13,6 +14,7 @@ namespace panpan.Rendering
         private uint width, height;
         public uint Width => width;
         public uint Height => height;
+        public Rect Bounds;
 
         public float Zoom = 1.0f;
 
@@ -35,6 +37,7 @@ namespace panpan.Rendering
             base.Update();
             mat4 view = mat4.LookAt(Position, Position - vec3.UnitZ, vec3.UnitY);
             viewProjection = (projection * view).Transposed;
+            UpdateBounds();
         }
 
         public void PushUniformData()
@@ -55,14 +58,29 @@ namespace panpan.Rendering
             UpdateProjection();
         }
 
+        private void UpdateBounds()
+        {
+            Bounds = new Rect((int)(Transform.Position.x - (width*Zoom)/2),(int)(Transform.Position.y - (height*Zoom)/2), (int)(width * Zoom), (int)(height * Zoom));
+        }
+
         public void UpdateProjection()
         {
-            projection = mat4.Ortho(-(width * Zoom) / 2, (width * Zoom) / 2, -(height * Zoom) / 2, (height * Zoom) / 2, 0.1f, 100.0f);
+            projection = mat4.Ortho(-(width * Zoom) / 2, (width * Zoom) / 2, -(height * Zoom) / 2, (height * Zoom) / 2, 0.1f, 1000.0f);
+            UpdateBounds();
         }
 
         public vec2 GetBounds()
         {
             return new vec2(width, height);
+        }
+
+        public bool IsPointInView(vec2 pos)
+        {
+            return Bounds.IntersectsPosition(pos);
+        }
+        public bool IsRectInView(Rect rect)
+        {
+            return Bounds.Intersects(rect);
         }
 
         public mat4 GetViewProjectionMatrix() { return viewProjection; }
