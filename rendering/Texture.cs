@@ -12,6 +12,15 @@ namespace panpan.Rendering
         private uint width;
         private uint height;
         private byte[]? pixelData;
+        private SDL.GPUTextureFormat gpuTextureFormat;
+        private uint BytesPerPixel =>
+        gpuTextureFormat switch
+        {
+            SDL.GPUTextureFormat.R8Unorm => 1,
+            SDL.GPUTextureFormat.R8Int => 1,
+            SDL.GPUTextureFormat.R8G8B8A8Unorm => 4,
+            _ => throw new NotSupportedException("Unsupported format")
+        };
         private bool uploaded = false;
         public nint GPUTexture => gpuTexture;
         public nint GPUSampler => gpuSampler;
@@ -19,15 +28,23 @@ namespace panpan.Rendering
         public uint Height => height;
         public bool HasPixelData => pixelData != null;
 
-        public Texture(byte[]? pngData, uint width, uint height)
+        public Texture(byte[]? pngData, uint width, uint height, SDL.GPUTextureFormat gpuTextureFormat = SDL.GPUTextureFormat.R8G8B8A8Unorm, bool isRaw = false)
         {
             this.width = width;
             this.height = height;
+            this.gpuTextureFormat = gpuTextureFormat;
 
             if (pngData != null)
             {
                 CreateTexture();
-                pixelData = DecodePNG(pngData, width, height);
+                if(!isRaw)
+                {
+                    pixelData = DecodePNG(pngData, width, height);
+                }
+                else
+                {
+                    pixelData = pngData;
+                }
             }
             CreateSampler();
         }
@@ -41,7 +58,7 @@ namespace panpan.Rendering
             // Create texture info
             SDL.GPUTextureCreateInfo textureCreateInfo = new SDL.GPUTextureCreateInfo();
             textureCreateInfo.Type = SDL.GPUTextureType.Texturetype2D;
-            textureCreateInfo.Format = SDL.GPUTextureFormat.R8G8B8A8Unorm; // Use 8-bit per channel format for PNG data
+            textureCreateInfo.Format = gpuTextureFormat;
             textureCreateInfo.Usage = SDL.GPUTextureUsageFlags.Sampler;
             textureCreateInfo.Width = width;
             textureCreateInfo.Height = height;
@@ -156,7 +173,7 @@ namespace panpan.Rendering
             var textureDataTransferBuffer = SDL.CreateGPUTransferBuffer(App.GetDevice(), new SDL.GPUTransferBufferCreateInfo
             {
                 Usage = SDL.GPUTransferBufferUsage.Upload,
-                Size = width * height * 4
+                Size = width * height * BytesPerPixel
             });
 
             unsafe
@@ -164,7 +181,8 @@ namespace panpan.Rendering
                 byte* textureTransferBufferPointer = (byte*)SDL.MapGPUTransferBuffer(App.GetDevice(), textureDataTransferBuffer, false);
                 fixed (byte* inData = pixelData)
                 {
-                    Buffer.MemoryCopy(inData, textureTransferBufferPointer, width * height * 4, width * height * 4);
+                    ulong size = width * height * BytesPerPixel;
+                    Buffer.MemoryCopy(inData, textureTransferBufferPointer, size, size);
                 }
             }
             SDL.UnmapGPUTransferBuffer(App.GetDevice(), textureDataTransferBuffer);

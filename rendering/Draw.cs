@@ -3,6 +3,7 @@ using GlmSharp;
 using panpan.Util;
 using panpan.Assets;
 using System.Drawing;
+using panpan.Rendering.Text;
 
 namespace panpan.Rendering
 {
@@ -12,8 +13,15 @@ namespace panpan.Rendering
         static SpriteRenderer spriteRenderer = new SpriteRenderer(null, null, Shapes.quad, new Material(Assets.Shaders.standard_frag_hlsl, Assets.Shaders.standard_vert_hlsl));
         static Material defaultBackMat = new Material(Assets.Shaders.backbuffer_frag_hlsl, Assets.Shaders.backbuffer_vert_hlsl);
         static SpriteRenderer backRenderer = new SpriteRenderer(null, null, Shapes.quad, defaultBackMat);
+        static TextRenderer textRenderer = new TextRenderer();
         
         static vec4 color;
+
+        public static void Text(String str, Font font, vec2 pos)
+        {
+            textRenderer.SetFont(font);
+            textRenderer.DrawText(str, pos);
+        }
 
         public static void Rect(vec2 bl, vec2 size, vec4? color = null)
         {

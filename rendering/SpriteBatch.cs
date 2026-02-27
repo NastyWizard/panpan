@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Text;
 using GlmSharp;
 using panpan.Assets;
@@ -5,7 +6,7 @@ using panpan.Util;
 
 namespace panpan.Rendering
 {
-    public class SpriteBatch
+    public class SpriteBatch : Component
     {
         private struct SpriteRequest
         {
@@ -18,12 +19,33 @@ namespace panpan.Rendering
         private Texture texture;
         private vec2 textureSize;
 
-        public SpriteBatch(Texture texture)
+        public SpriteBatch(Texture? texture, Material? mat = null)
         {
-            this.texture = texture;
-            textureSize = new vec2(texture.Width, texture.Height);
-            renderer = new DrawBatchRenderer(texture);
+            if(texture != null)
+            {
+                this.texture = texture;
+                textureSize = new vec2(this.texture.Width, this.texture.Height);
+            }
+
+            if(mat == null)
+            {
+                mat = new Material(Shaders.standard_frag_hlsl, Shaders.standard_vert_hlsl);
+            }
+
+            renderer = new DrawBatchRenderer(texture, mat);
             sprites = new List<SpriteRequest>();
+        }
+
+        public void SetTexture(Texture tex)
+        {
+            this.texture = tex;
+            textureSize = new vec2(this.texture.Width, this.texture.Height);
+            renderer.SetTexture(tex);
+        }
+
+        public void SetOrigin (vec2 o)
+        {
+            renderer.Origin = o;
         }
 
         public void BeginFrame()
@@ -36,7 +58,7 @@ namespace panpan.Rendering
             sprites.Add(new SpriteRequest { Position = pos, Crop = crop });
         }
 
-        public void Flush()
+        public void Render()
         {
             if (sprites.Count == 0)
             {
@@ -102,10 +124,10 @@ namespace panpan.Rendering
         private sealed class DrawBatchRenderer : MeshRenderer
         {
 
-            public DrawBatchRenderer(Texture texture)
+            public DrawBatchRenderer(Texture? texture, Material mat)
                 : base(
                     new Mesh(
-                        new[]
+                        new Vertex[]
                         {
                             new Vertex(0f, 1f, 0f, 1f, 1f, 1f, 1f),
                             new Vertex(1f, 1f, 0f, 1f, 1f, 1f, 1f),
@@ -113,7 +135,7 @@ namespace panpan.Rendering
                             new Vertex(1f, 0f, 0f, 1f, 1f, 1f, 1f),
                         },
                         new uint[] { 0, 2, 1, 1, 2, 3 }),
-                    new Material(Shaders.standard_frag_hlsl, Shaders.standard_vert_hlsl))
+                    mat)
             {
                 Width = 1f;
                 Height = 1f;

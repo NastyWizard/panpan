@@ -7,6 +7,10 @@ using panpan.Scene;
 using GlmSharp;
 using panpan.Collision;
 using panpan.Util;
+using FreeTypeSharp;
+using static FreeTypeSharp.FT;
+using static FreeTypeSharp.FT_LOAD;
+using static FreeTypeSharp.FT_Render_Mode_;
 
 namespace panpan
 {
@@ -39,6 +43,9 @@ namespace panpan
         static readonly List<nint> renderFences = new List<nint>();
         static ImGuiController? imguiController;
 
+        // Freetype
+
+        static public unsafe FT_LibraryRec_* FreetypeLib;
 
         // Managers
         static SceneManager sceneManager = null!;
@@ -58,9 +65,19 @@ namespace panpan
 
         public App(string title, Scene.Scene startScene, int width = 320, int height = 180)
         {
+            // General
             bgColor = Color.SkyBlue;
             gameSize = new ivec2(width, height);
             this.startScene = startScene;
+
+            // Freetype
+            unsafe
+            {
+                FT_LibraryRec_* lib = null;
+                FT_Init_FreeType(&lib);
+                FreetypeLib = lib;
+            }
+            // SDL GPU
 
             SDL.Init(SDL.InitFlags.Video);
 
@@ -217,6 +234,12 @@ namespace panpan
             }
 
             // cleanup
+
+            unsafe
+            {
+                FT.FT_Done_FreeType(FreetypeLib);
+            }
+
             imguiController?.Dispose();
             SDL.DestroyGPUDevice(gpuDevice);
             SDL.DestroyWindow(window);

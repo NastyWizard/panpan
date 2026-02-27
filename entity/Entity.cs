@@ -48,7 +48,7 @@ namespace panpan.Scene
 
             //if (Util.Debug.showObjectsWithoutRenderer && GetComponent<SpriteRenderer>() == null)
             {
-                Draw.Sprite(Util.Debug.cursorTex, Transform.Position.xy + new vec2(3,3));
+                //Draw.Sprite(Util.Debug.cursorTex, Transform.Position.xy + new vec2(3,3));
             }
         }
 
