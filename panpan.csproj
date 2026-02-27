@@ -22,8 +22,9 @@
 
   <ItemGroup>
     <Content Include="thirdparty/osx/**" Condition=" '$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' ">
-      <Link>%(Filename)%(Extension)</Link>
+      <Link>runtimes/osx/native/%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>runtimes/osx/native/%(Filename)%(Extension)</TargetPath>
     </Content>
     <Content Include="thirdparty/win64/**" Condition=" '$(OS)' == 'Windows_NT' ">
       <Link>%(Filename)%(Extension)</Link>
