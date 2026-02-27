@@ -28,9 +28,14 @@ namespace panpan.Rendering.Text
         private FontAtlas atlas;
 
         private bool pixelPerfect = false;
+        private uint pixelSize;
+
+        public uint PixelSize => pixelSize;
+
  
         public Font(string path, uint pixelSize, bool pixelPerfect = true)
         {
+            this.pixelSize = pixelSize;
             this.pixelPerfect = pixelPerfect;
             byte[] pathBytes = Encoding.UTF8.GetBytes(path + "\0");
             FT_FaceRec_* face = null;
@@ -165,6 +170,14 @@ namespace panpan.Rendering.Text
         public Texture GetAtlasTexture()
         {
             return atlas.Tex;
+        }
+
+        public int GetSpacing()
+        {
+            var g = GetGlyph('i');
+            if(!g.HasValue)
+                return 0;
+            return g.Value.Clip.Width;
         }
 
         public Glyph? GetGlyph(char c)

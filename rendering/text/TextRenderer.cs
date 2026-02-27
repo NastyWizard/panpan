@@ -38,8 +38,13 @@ namespace panpan.Rendering.Text
                 if(g.HasValue)
                 {
                     //Draw.Sprite(tex, pen + new ivec2(g.Value.BearingX,g.Value.BearingY), vec2.Ones, g.Value.Clip);
-                    batch.SubmitSprite(new vec3(pen + new ivec2(g.Value.BearingX,g.Value.BearingY), 0), g.Value.Clip);
+                    // TODO: needs fixing for bearing, batch should render from top left not bottom left 
+                    batch.SubmitSprite(new vec3(pen + new ivec2(g.Value.BearingX,0), 0), g.Value.Clip);
                     pen.x += g.Value.Clip.Width+1;
+                }
+                if(c == ' ')
+                {
+                    pen.x += this.font.GetSpacing();
                 }
             }
             batch.Render();
