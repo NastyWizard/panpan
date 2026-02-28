@@ -55,6 +55,8 @@ namespace panpan.Scene
             DrawBatch.Flush();
         }
 
+        public virtual void OnFSToggle(){}
+
         public Entity AddChild(Entity entity)
         {
             entities.Add(entity);

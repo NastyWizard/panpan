@@ -39,7 +39,7 @@ namespace panpan
         static nint commandBuffer;
         static nint renderPass;
         static nint swapchainTexture;
-        static bool isFullScreen = false;
+        public static bool isFullScreen = false;
         static readonly List<nint> renderFences = new List<nint>();
         static ImGuiController? imguiController;
 
@@ -62,6 +62,8 @@ namespace panpan
         static RenderTarget backBuffer = null!;
 
         public static bool IsFullScreen => isFullScreen;
+
+        private static vec2 cachedScreenBounds;
 
         public App(string title, Scene.Scene startScene, int width = 320, int height = 180)
         {
@@ -173,6 +175,9 @@ namespace panpan
         public static void ToggleFullscreen()
         {
             SDL.SetWindowFullscreen(window, !isFullScreen);
+            isFullScreen = !isFullScreen;
+
+            sceneManager.ActiveScene.OnFSToggle();
         }
 
         /// <summary>
