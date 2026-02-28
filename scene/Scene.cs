@@ -10,6 +10,8 @@ namespace panpan.Scene
         private Camera camera;
         public Camera Camera => camera;
 
+        public Camera ActiveCamera;
+
         private string name;
         public string Name => name;
 
@@ -22,6 +24,7 @@ namespace panpan.Scene
             this.name = name;
             entities = new List<Entity>();
             camera = new Camera(0,0,800, 600);
+            ActiveCamera = camera;
         }
 
         public virtual void Init()
@@ -45,13 +48,13 @@ namespace panpan.Scene
         }
         public virtual void Render()
         {
-            camera.PushUniformData();
+            ActiveCamera.PushUniformData();
             DrawBatch.BeginFrame();
             foreach (Entity ent in entities)
             {
                 ent.Render();
             }
-            camera.Render();
+            ActiveCamera.Render();
             DrawBatch.Flush();
         }
 
