@@ -78,7 +78,7 @@ namespace panpan.Rendering
         public static void Sprite(Texture texture, vec2 pos, vec2? scale = null, Rect? clipRect = null)
         {
             scale ??= vec2.Ones;
-            App.GetSceneManager().ActiveScene.Camera.PushUniformData();
+            App.GetSceneManager().ActiveScene.ActiveCamera.PushUniformData();
             spriteRenderer.SetTexture(texture);
             
             if (clipRect != null)
