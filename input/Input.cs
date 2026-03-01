@@ -105,10 +105,27 @@ namespace panpan
             mouseUpEvents.Add(BuildActionKey(action), action);
         }
 
+        public static void DeregisterOnMouseDown(MouseDelegate action)
+        {
+            mouseDownEvents.Remove(BuildActionKey(action));
+        }
+        public static void DeregisterOnMouseHeld(MouseDelegate action)
+        {
+            mouseHeldEvents.Remove(BuildActionKey(action));
+        }
+        public static void DeregisterOnMouseReleased(MouseDelegate action)
+        {
+            mouseUpEvents.Remove(BuildActionKey(action));
+        }
+
 
         public static void DeregisterOnKeyDown(InputDelegate action)
         {
             keyDownEvents.Remove(BuildActionKey(action));
+        }
+        public static void DeregisterOnKeyHeld(InputDelegate action)
+        {
+            keyHeldEvents.Remove(BuildActionKey(action));
         }
 
         private static void KeyDown(SDL.Keycode? keycode)

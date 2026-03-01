@@ -81,8 +81,8 @@ namespace panpan.Rendering
             }
 
             renderer.UpdateGeometry(vertices.ToArray(), indices.ToArray());
-            Scene.Scene activeScene = App.GetSceneManager().ActiveScene;
-            activeScene.ActiveCamera.PushUniformData();
+            //Scene.Scene activeScene = App.GetSceneManager().ActiveScene;
+            //activeScene.ActiveCamera.PushUniformData();
             renderer.RenderBatch();
 
             sprites.Clear();

@@ -12,7 +12,8 @@ end
 folders = {
   "SHADER_ASSETS" => ASSETS_PATH + "/shaders",
   "SPRITE_ASSETS" => ASSETS_PATH + "/sprites",
-  "AUDIO_ASSETS"  => ASSETS_PATH + "/audio"
+  "AUDIO_ASSETS"  => ASSETS_PATH + "/audio",
+  "FONT_ASSETS"  => ASSETS_PATH + "/fonts"
 }
 
 # Path to your template C# file

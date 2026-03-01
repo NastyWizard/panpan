@@ -59,6 +59,11 @@ namespace panpan.Scene
             return comp;
         }
 
+        public void RemoveComponent(in Component comp)
+        {
+            components.Remove(comp);
+        }
+
         public T? GetComponent<T>() where T : Component
         {
             foreach (Component comp in components)

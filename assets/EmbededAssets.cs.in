@@ -15,4 +15,9 @@ namespace panpan.Assets
     {
         @AUDIO_ASSETS@
     }
+
+    public class Fonts
+    {
+        @FONT_ASSETS@
+    }
 }

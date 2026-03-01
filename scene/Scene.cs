@@ -38,6 +38,12 @@ namespace panpan.Scene
             }
         }
 
+        public void RestartScene()
+        {
+            entities.Clear();
+            Init();
+        }
+
         public virtual void Update()
         {
             camera.Update();

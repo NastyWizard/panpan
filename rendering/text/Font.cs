@@ -30,25 +30,29 @@ namespace panpan.Rendering.Text
         private bool pixelPerfect = false;
         private uint pixelSize;
 
+        private SpriteBatch batch;
+
         public uint PixelSize => pixelSize;
 
  
-        public Font(string path, uint pixelSize, bool pixelPerfect = true)
+        public Font(byte[] fontData, uint pixelSize, bool pixelPerfect = true)
         {
             this.pixelSize = pixelSize;
             this.pixelPerfect = pixelPerfect;
-            byte[] pathBytes = Encoding.UTF8.GetBytes(path + "\0");
             FT_FaceRec_* face = null;
 
-            fixed (byte* pathPtr = pathBytes)
+            fixed (byte* fontPtr = fontData)
             {
                 // TODO: use FT_New_Memory_Face and bundle font in Assets
-                FT.FT_New_Face(App.FreetypeLib, pathPtr, 0, &face);
+                FT.FT_New_Memory_Face(App.FreetypeLib, fontPtr, fontData.Length * sizeof(byte), 0, &face);
                 FT.FT_Set_Pixel_Sizes(face, 0, pixelSize);
                 this.face = face;
             }
 
             PopulateAtlas();
+
+            batch = new SpriteBatch(GetAtlasTexture(), new Material(Assets.Shaders.standardFont_frag_hlsl, Assets.Shaders.standard_vert_hlsl));
+            batch.SetOrigin(new vec2(0,1));
         }
 
         private void PopulateAtlas()
@@ -185,6 +189,11 @@ namespace panpan.Rendering.Text
             return atlas.glyphs[c];
         }
 
+        public SpriteBatch GetBatch()
+        {
+            return batch;
+        }
+
         private byte[] ConvertR8ToRGBA(byte[] rData, uint w, uint h)
         {
             byte[] rgba = new byte[w * h * 4];
@@ -197,7 +206,7 @@ namespace panpan.Rendering.Text
                 rgba[idx + 0] = 255;
                 rgba[idx + 1] = 255;
                 rgba[idx + 2] = 255;
-                rgba[idx + 3] = v;   // put glyph into alpha
+                rgba[idx + 3] = v;
             }
 
             return rgba;
