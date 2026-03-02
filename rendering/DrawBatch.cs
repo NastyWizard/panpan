@@ -13,6 +13,7 @@ namespace panpan.Rendering
         {
             public Rect Rect;
             public vec4 Color;
+            public bool Fill;
         }
 
         private struct PixelRequest
@@ -31,10 +32,10 @@ namespace panpan.Rendering
             pixels.Clear();
         }
 
-        public static void SubmitRect(Rect rect, vec4 color)
+        public static void SubmitRect(Rect rect, vec4 color, bool fill = false)
         {
             rect.Y -= 1;
-            rects.Add(new RectRequest { Rect = rect, Color = color });
+            rects.Add(new RectRequest { Rect = rect, Color = color, Fill = fill });
         }
 
         public static void SubmitPixel(vec2 position, vec4 color)
@@ -55,7 +56,10 @@ namespace panpan.Rendering
 
             foreach (RectRequest request in rects)
             {
-                AddRectOutline(request.Rect, request.Color, vertices, indices, ref indexOffset);
+                if(request.Fill)
+                    AddStretchedQuad(request.Rect.X,request.Rect.Y,request.Rect.Width,request.Rect.Height,request.Color, vertices, indices, ref indexOffset);
+                else
+                    AddRectOutline(request.Rect, request.Color, vertices, indices, ref indexOffset);
             }
 
             foreach (PixelRequest request in pixels)

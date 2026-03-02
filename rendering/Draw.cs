@@ -29,10 +29,10 @@ namespace panpan.Rendering
             var rect = new Rect((int)bl.x, (int)bl.y, (int)size.x, (int)size.y);
             DrawBatch.SubmitRect(rect, color.Value);
         }
-        public static void Rect(Rect rect, vec4? color = null)
+        public static void Rect(Rect rect, vec4? color = null, bool fill = false)
         {
             color ??= Color.White;
-            DrawBatch.SubmitRect(rect, color.Value);
+            DrawBatch.SubmitRect(rect, color.Value, fill);
         }
 
         public static void Line(vec2 p1, vec2 p2, vec4? color = null, bool pixelPerfect = true)

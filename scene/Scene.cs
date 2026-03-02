@@ -6,6 +6,7 @@ namespace panpan.Scene
     public abstract class Scene
     {
         private List<Entity> entities;
+        private List<Entity> markedChildrenForRemoval;
 
         private Camera camera;
         public Camera Camera => camera;
@@ -23,6 +24,7 @@ namespace panpan.Scene
         {
             this.name = name;
             entities = new List<Entity>();
+            markedChildrenForRemoval = new List<Entity>();
             camera = new Camera(0,0,800, 600);
             ActiveCamera = camera;
         }
@@ -51,6 +53,13 @@ namespace panpan.Scene
             {
                 ent.Update();
             }
+            
+            foreach (Entity ent in markedChildrenForRemoval)
+            {
+                entities.Remove(ent);
+                ent.Scene = null;
+            }
+            markedChildrenForRemoval.Clear();
         }
         public virtual void Render()
         {
@@ -78,14 +87,8 @@ namespace panpan.Scene
             if (entity == null)
                 return false;
             
-            bool removed = entities.Remove(entity);
-            
-            if (removed)
-            {
-                entity.Scene = null;
-                return true;
-            }
-            return false;
+            markedChildrenForRemoval.Add(entity);
+            return true;
         }
 
     }

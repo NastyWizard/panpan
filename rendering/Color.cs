@@ -5,7 +5,7 @@ using GlmSharp;
 
 namespace panpan.Rendering
 {
-    public class Color
+    public partial class Color
     {
         public static vec4 White = vec4.Ones;
         public static vec4 Black = vec4.UnitW;
