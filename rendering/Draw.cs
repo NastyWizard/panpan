@@ -7,7 +7,7 @@ using panpan.Rendering.Text;
 
 namespace panpan.Rendering
 {
-    public class Draw
+    public partial class Draw
     {
         static BasicRenderer renderer = new BasicRenderer();
         static SpriteRenderer spriteRenderer = new SpriteRenderer(null, null, Shapes.quad, new Material(Assets.Shaders.standard_frag_hlsl, Assets.Shaders.standard_vert_hlsl));

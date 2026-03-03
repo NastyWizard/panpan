@@ -178,6 +178,11 @@ namespace panpan
             isFullScreen = !isFullScreen;
 
             sceneManager.ActiveScene.OnFSToggle();
+            if(isFullScreen)
+                backBuffer.Resize((uint)GetDisplayBounds().Width, (uint)GetDisplayBounds().Height);
+            else
+                backBuffer.Resize((uint)gameSize.x, (uint)gameSize.y);
+
         }
 
         /// <summary>
