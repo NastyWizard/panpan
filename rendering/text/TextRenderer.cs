@@ -30,21 +30,26 @@ namespace panpan.Rendering.Text
             for(int i = 0; i < str.Length; i++)
             {
                 char c = str[i];
+                if(c == '\n')
+                {
+                    pen.x = (int)pos.x;
+                    pen.y -= (int)this.font.PixelSize+2;
+                    continue;
+                }
                 Glyph? g = font.GetGlyph(c);
                 if(g.HasValue)
                 {
                     //Draw.Sprite(tex, pen + new ivec2(g.Value.BearingX,g.Value.BearingY), vec2.Ones, g.Value.Clip);
                     // TODO: needs fixing for bearing, this.font.GetBatch() should render from top left not bottom left 
-                    batch.SubmitSprite(new vec3(pen + new ivec2(g.Value.BearingX,0), 0), g.Value.Clip);
-                    pen.x += g.Value.Clip.Width+1;
+                    batch.SubmitSprite(new vec3(pen + new ivec2(g.Value.BearingX,-g.Value.Clip.Height+g.Value.BearingY), 0), g.Value.Clip);
+                    pen.x += g.Value.Clip.Width+(int)font.Kerning;
                 }
                 if(c == ' ')
                 {
-                    pen.x += this.font.GetSpacing();
+                    pen.x += font.GetSpacing();
                 }
             }
             batch.Render();
-
         }
     }
 }

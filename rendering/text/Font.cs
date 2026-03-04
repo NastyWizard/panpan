@@ -29,16 +29,21 @@ namespace panpan.Rendering.Text
 
         private bool pixelPerfect = false;
         private uint pixelSize;
+        private uint kerning;
 
         private SpriteBatch batch;
 
+
         public uint PixelSize => pixelSize;
+        public uint Kerning => kerning;
+
 
  
-        public Font(byte[] fontData, uint pixelSize, bool pixelPerfect = true)
+        public Font(byte[] fontData, uint pixelSize, bool pixelPerfect = true, uint kerning = 1)
         {
             this.pixelSize = pixelSize;
             this.pixelPerfect = pixelPerfect;
+            this.kerning = kerning;
             FT_FaceRec_* face = null;
 
             fixed (byte* fontPtr = fontData)
@@ -84,6 +89,7 @@ namespace panpan.Rendering.Text
 
                 var glyphSlot = face->glyph;
                 var bitmap = glyphSlot->bitmap;
+                
 
                 uint width = bitmap.width;
                 uint height = bitmap.rows;
@@ -97,6 +103,7 @@ namespace panpan.Rendering.Text
                     pen.y += (int)(face->size->metrics.height >> 6) + 1;
                 }
 
+                
                 // Save glyph data for lookup
                 var glyph = new Glyph
                 {
@@ -210,6 +217,21 @@ namespace panpan.Rendering.Text
             }
 
             return rgba;
+        }
+
+        public int Measure(string text)
+        {
+            int measure = 0; 
+            foreach(char c in text)
+            {
+                Glyph? g = GetGlyph(c);
+                if(g != null)
+                {
+                    measure += (int)(g.Value.Clip.Width + kerning);
+                }
+            }
+
+            return measure - (int)kerning;
         }
     }
 }
