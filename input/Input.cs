@@ -105,6 +105,15 @@ namespace panpan
             mouseUpEvents.Add(BuildActionKey(action), action);
         }
 
+        public static void DeregisterAll()
+        {
+            mouseDownEvents.Clear();
+            mouseHeldEvents.Clear();
+            mouseUpEvents.Clear();
+            keyDownEvents.Clear();
+            keyUpEvents.Clear();
+            keyHeldEvents.Clear();
+        }
         public static void DeregisterOnMouseDown(MouseDelegate action)
         {
             mouseDownEvents.Remove(BuildActionKey(action));
