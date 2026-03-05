@@ -33,7 +33,7 @@ namespace panpan.Rendering.Text
                 if(c == '\n')
                 {
                     pen.x = (int)pos.x;
-                    pen.y -= (int)this.font.PixelSize+2;
+                    pen.y -= (int)this.font.PixelSize+(int)font.Spacing;
                     continue;
                 }
                 Glyph? g = font.GetGlyph(c);

@@ -30,20 +30,23 @@ namespace panpan.Rendering.Text
         private bool pixelPerfect = false;
         private uint pixelSize;
         private uint kerning;
+        private uint spacing;
 
         private SpriteBatch batch;
 
 
         public uint PixelSize => pixelSize;
         public uint Kerning => kerning;
+        public uint Spacing => spacing;
 
 
  
-        public Font(byte[] fontData, uint pixelSize, bool pixelPerfect = true, uint kerning = 1)
+        public Font(byte[] fontData, uint pixelSize, bool pixelPerfect = true, uint kerning = 1, uint spacing = 2)
         {
             this.pixelSize = pixelSize;
             this.pixelPerfect = pixelPerfect;
             this.kerning = kerning;
+            this.spacing = spacing;
             FT_FaceRec_* face = null;
 
             fixed (byte* fontPtr = fontData)
