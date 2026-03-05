@@ -20,8 +20,11 @@ namespace panpan.Rendering.Text
             this.font = font;
         }
 
-        public void DrawText(String str, vec2 pos)
+        public void DrawText(String str, vec2 pos, vec4? color = null)
         {
+            if(color == null)
+                color = Color.White;
+
             var batch = this.font.GetBatch(); 
             batch.BeginFrame();
             var tex = font.GetAtlasTexture();
@@ -41,7 +44,7 @@ namespace panpan.Rendering.Text
                 {
                     //Draw.Sprite(tex, pen + new ivec2(g.Value.BearingX,g.Value.BearingY), vec2.Ones, g.Value.Clip);
                     // TODO: needs fixing for bearing, this.font.GetBatch() should render from top left not bottom left 
-                    batch.SubmitSprite(new vec3(pen + new ivec2(g.Value.BearingX,-g.Value.Clip.Height+g.Value.BearingY), 0), g.Value.Clip);
+                    batch.SubmitSprite(new vec3(pen + new ivec2(g.Value.BearingX,-g.Value.Clip.Height+g.Value.BearingY), 0), g.Value.Clip, color.Value);
                     pen.x += g.Value.Clip.Width+(int)font.Kerning;
                 }
                 if(c == ' ')

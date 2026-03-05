@@ -12,6 +12,7 @@ namespace panpan.Rendering
         {
             public vec3 Position;
             public Rect Crop;
+            public vec4 Color;
         }
 
         private readonly List<SpriteRequest> sprites;
@@ -55,7 +56,11 @@ namespace panpan.Rendering
 
         public void SubmitSprite(vec3 pos, Rect crop)
         {
-            sprites.Add(new SpriteRequest { Position = pos, Crop = crop });
+            sprites.Add(new SpriteRequest { Position = pos, Crop = crop, Color = Color.White });
+        }
+        public void SubmitSprite(vec3 pos, Rect crop, vec4 color)
+        {
+            sprites.Add(new SpriteRequest { Position = pos, Crop = crop, Color = color });
         }
 
         public void Render()
@@ -71,7 +76,7 @@ namespace panpan.Rendering
 
             foreach (SpriteRequest request in sprites)
             {
-                AddSprite(request.Position, request.Crop, vertices, indices, ref indexOffset);
+                AddSprite(request.Position, request.Crop, request.Color, vertices, indices, ref indexOffset);
             }
 
             if (vertices.Count == 0 || indices.Count == 0)
@@ -88,12 +93,12 @@ namespace panpan.Rendering
             sprites.Clear();
         }
 
-        private void AddSprite(vec3 position, Rect crop, List<Vertex> vertices, List<uint> indices, ref uint indexOffset)
+        private void AddSprite(vec3 position, Rect crop, vec4 color, List<Vertex> vertices, List<uint> indices, ref uint indexOffset)
         {
-            float r = 1.0f;
-            float g = 1.0f;
-            float b = 1.0f;
-            float a = 1.0f;
+            float r = color.r;
+            float g = color.g;
+            float b = color.b;
+            float a = color.a;
 
             float x = position.x;
             float y = position.y;

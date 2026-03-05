@@ -17,15 +17,15 @@ namespace panpan.Rendering
         
         static vec4 color;
 
-        public static void Text(String str, Font font, vec2 pos)
+        public static void Text(String str, Font font, vec2 pos, vec4? color = null)
         {
             textRenderer.SetFont(font);
-            textRenderer.DrawText(str, pos);
+            textRenderer.DrawText(str, pos, color);
         }
-        public static void TextCenter(String str, Font font, vec2 pos)
+        public static void TextCenter(String str, Font font, vec2 pos, vec4? color = null)
         {
             textRenderer.SetFont(font);
-            textRenderer.DrawText(str, pos - new vec2(font.Measure(str)/2,0));
+            textRenderer.DrawText(str, pos - new vec2(font.Measure(str)/2,0), color);
         }
 
         public static void Rect(vec2 bl, vec2 size, vec4? color = null)
