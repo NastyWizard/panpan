@@ -144,7 +144,7 @@ namespace panpan
         public static Rect GetDisplayBounds()
         {
             SDL.Rect r;
-            SDL.GetDisplayBounds(SDL.GetPrimaryDisplay(), out r);
+            SDL.GetDisplayBounds(SDL.GetDisplayForWindow(window), out r);
             return new Rect(r.X,r.Y,r.W,r.H);
         }
 
