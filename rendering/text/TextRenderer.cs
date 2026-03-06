@@ -26,7 +26,7 @@ namespace panpan.Rendering.Text
                 color = Color.White;
 
             var batch = this.font.GetBatch(); 
-            batch.BeginFrame();
+            //batch.BeginFrame();
             var tex = font.GetAtlasTexture();
             ivec2 pen = (ivec2)pos;
 
@@ -52,7 +52,7 @@ namespace panpan.Rendering.Text
                     pen.x += font.GetSpacing();
                 }
             }
-            batch.Render();
+            //batch.Render();
         }
     }
 }
