@@ -7,6 +7,7 @@ namespace panpan.Scene
     {
         private List<Entity> entities;
         private List<Entity> markedChildrenForRemoval;
+        private List<Entity> markedChildrenForAddition;
 
         private Camera camera;
         public Camera Camera => camera;
@@ -25,6 +26,7 @@ namespace panpan.Scene
             this.name = name;
             entities = new List<Entity>();
             markedChildrenForRemoval = new List<Entity>();
+            markedChildrenForAddition = new List<Entity>();
             camera = new Camera(0,0,800, 600);
             ActiveCamera = camera;
         }
@@ -34,6 +36,13 @@ namespace panpan.Scene
             camera.Init();
             camera.Scene = this;
             
+
+            foreach (Entity ent in markedChildrenForAddition)
+            {
+                entities.Add(ent);
+            }
+            markedChildrenForAddition.Clear();
+
             foreach (Entity ent in entities)
             {
                 ent.Init();
@@ -60,6 +69,12 @@ namespace panpan.Scene
                 ent.Scene = null;
             }
             markedChildrenForRemoval.Clear();
+
+            foreach (Entity ent in markedChildrenForAddition)
+            {
+                entities.Add(ent);
+            }
+            markedChildrenForAddition.Clear();
         }
         public virtual void Render()
         {
@@ -77,7 +92,7 @@ namespace panpan.Scene
 
         public Entity AddChild(Entity entity)
         {
-            entities.Add(entity);
+            markedChildrenForAddition.Add(entity);
             entity.Scene = this;
             return entity;
         }
