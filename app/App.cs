@@ -136,7 +136,7 @@ namespace panpan
             return window;
         }
 
-        public static vec2 GetGameSize()
+        public static vec2 GetWindowSize()
         {
             return gameSize;
         }

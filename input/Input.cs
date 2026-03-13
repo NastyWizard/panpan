@@ -7,6 +7,7 @@ namespace panpan
 {
     public delegate void InputDelegate(SDL.Keycode? e);
     public delegate void MouseDelegate(byte button);
+    public delegate void MouseWheelDelegate(float delta);
     public class Input
     {
         public static Dictionary<string, InputDelegate> keyDownEvents = new Dictionary<string, InputDelegate>();
@@ -16,6 +17,7 @@ namespace panpan
         public static Dictionary<string, MouseDelegate> mouseDownEvents = new Dictionary<string, MouseDelegate>();
         public static Dictionary<string, MouseDelegate> mouseUpEvents = new Dictionary<string, MouseDelegate>();
         public static Dictionary<string, MouseDelegate> mouseHeldEvents = new Dictionary<string, MouseDelegate>();
+        public static Dictionary<string, MouseWheelDelegate> mouseWheelEvents = new Dictionary<string, MouseWheelDelegate>();
 
         private static Dictionary<SDL.Keycode, bool> keysCurrentlyDown = new Dictionary<SDL.Keycode, bool>();
         private static Dictionary<byte, bool> mouseCurrentlyDown = new Dictionary<byte, bool>();
@@ -54,6 +56,9 @@ namespace panpan
                         MouseUp(e.Button.Button);
                         mouseCurrentlyDown.Remove(e.Button.Button);
                     }
+                    break;
+                case SDL.EventType.MouseWheel:
+                    MouseWheel(e.Wheel.Y);
                     break;
             }
         }
@@ -104,27 +109,42 @@ namespace panpan
         {
             mouseUpEvents.Add(BuildActionKey(action), action);
         }
+        public static void RegisterOnMouseWheel(MouseWheelDelegate action)
+        {
+            mouseWheelEvents.Add(BuildActionKey(action), action);
+        }
 
         public static void DeregisterAll()
         {
             mouseDownEvents.Clear();
             mouseHeldEvents.Clear();
             mouseUpEvents.Clear();
+            mouseWheelEvents.Clear();
+
             keyDownEvents.Clear();
             keyUpEvents.Clear();
             keyHeldEvents.Clear();
         }
+      
         public static void DeregisterOnMouseDown(MouseDelegate action)
         {
             mouseDownEvents.Remove(BuildActionKey(action));
         }
+        
         public static void DeregisterOnMouseHeld(MouseDelegate action)
         {
             mouseHeldEvents.Remove(BuildActionKey(action));
         }
+       
         public static void DeregisterOnMouseReleased(MouseDelegate action)
         {
             mouseUpEvents.Remove(BuildActionKey(action));
+        }
+
+       
+        public static void DeregisterOnMouseWheel(MouseWheelDelegate action)
+        {
+            mouseWheelEvents.Remove(BuildActionKey(action));
         }
 
 
@@ -132,6 +152,7 @@ namespace panpan
         {
             keyDownEvents.Remove(BuildActionKey(action));
         }
+        
         public static void DeregisterOnKeyHeld(InputDelegate action)
         {
             keyHeldEvents.Remove(BuildActionKey(action));
@@ -144,6 +165,7 @@ namespace panpan
                 action.Invoke(keycode);
             }
         }
+        
         private static void KeyUp(SDL.Keycode? keycode)
         {
             foreach (InputDelegate action in keyUpEvents.Values)
@@ -151,6 +173,7 @@ namespace panpan
                 action.Invoke(keycode);
             }
         }
+        
         private static void KeyHeld(SDL.Keycode? keycode)
         {
             foreach (InputDelegate action in keyHeldEvents.Values)
@@ -158,6 +181,7 @@ namespace panpan
                 action.Invoke(keycode);
             }
         }
+        
         private static void MouseDown(byte btn)
         {
             foreach (MouseDelegate action in mouseDownEvents.Values)
@@ -165,6 +189,7 @@ namespace panpan
                 action.Invoke(btn);
             }
         }
+        
         private static void MouseHeld(byte btn)
         {
             foreach (MouseDelegate action in mouseHeldEvents.Values)
@@ -172,6 +197,7 @@ namespace panpan
                 action.Invoke(btn);
             }
         }
+        
         private static void MouseUp(byte btn)
         {
             foreach (MouseDelegate action in mouseUpEvents.Values)
@@ -179,6 +205,15 @@ namespace panpan
                 action.Invoke(btn);
             }
         }
+        
+        private static void MouseWheel(float delta)
+        {
+            foreach (MouseWheelDelegate action in mouseWheelEvents.Values)
+            {
+                action.Invoke(delta);
+            }
+        }
+
         private static string BuildActionKey(Delegate action)
         {
             var target = action.Target;
