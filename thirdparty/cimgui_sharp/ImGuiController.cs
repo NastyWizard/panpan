@@ -17,12 +17,15 @@ namespace panpan.Rendering
             public SDL.GPUPresentMode PresentMode;
         }
 
+#if DEBUG
         private SWIGTYPE_p_ImGuiContext? context;
         private SWIGTYPE_p_ImDrawData? currentDrawData;
+#endif
         private bool initialized;
         public event Action? OnRender;
         public void Initialize(nint device, nint window)
         {
+#if DEBUG
             if (initialized)
             {
                 return;
@@ -63,10 +66,12 @@ namespace panpan.Rendering
             }
 
             initialized = true;
+#endif
         }
 
         public unsafe void ProcessEvent(ref SDL.Event evt)
         {
+#if DEBUG
             if (!initialized)
             {
                 return;
@@ -77,10 +82,12 @@ namespace panpan.Rendering
                 var swigEvent = new SWIGTYPE_p_SDL_Event((nint)evtPtr, false);
                 cimgui_sdlgpu.igImplSDL3_ProcessEvent(swigEvent);
             }
+#endif
         }
 
         public void NewFrame()
         {
+#if DEBUG
             if (!initialized || context == null)
             {
                 return;
@@ -91,10 +98,12 @@ namespace panpan.Rendering
             cimgui_sdlgpu.igImplSDLGPU3_NewFrame();
             cimgui_sdlgpu.igImplSDL3_NewFrame();
             cimgui_sdlgpu.igNewFrame();
+#endif
         }
 
         public void RenderUI()
         {
+#if DEBUG
             if (!initialized)
             {
                 return;
@@ -104,10 +113,12 @@ namespace panpan.Rendering
 
             cimgui_sdlgpu.igRender();
             currentDrawData = cimgui_sdlgpu.igGetDrawData();
+#endif
         }
 
         public void PrepareDrawData(nint commandBuffer)
         {
+#if DEBUG
             if (!initialized || currentDrawData == null || commandBuffer == nint.Zero)
             {
                 return;
@@ -115,10 +126,12 @@ namespace panpan.Rendering
 
             var commandBufferPtr = new SWIGTYPE_p_SDL_GPUCommandBuffer(commandBuffer, false);
             cimgui_sdlgpu.igImplSDLGPU3_PrepareDrawData(currentDrawData, commandBufferPtr);
+#endif
         }
 
         public void RenderDrawData(nint commandBuffer, nint renderPass)
         {
+#if DEBUG
             if (!initialized || currentDrawData == null || commandBuffer == nint.Zero || renderPass == nint.Zero)
             {
                 return;
@@ -127,10 +140,12 @@ namespace panpan.Rendering
             var commandBufferPtr = new SWIGTYPE_p_SDL_GPUCommandBuffer(commandBuffer, false);
             var renderPassPtr = new SWIGTYPE_p_SDL_GPURenderPass(renderPass, false);
             cimgui_sdlgpu.igImplSDLGPU3_RenderDrawData(currentDrawData, commandBufferPtr, renderPassPtr);
+#endif
         }
 
         public void Dispose()
         {
+#if DEBUG
             if (!initialized)
             {
                 return;
@@ -146,6 +161,7 @@ namespace panpan.Rendering
             }
 
             initialized = false;
+#endif
         }
     }
 }

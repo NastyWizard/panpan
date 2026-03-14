@@ -1,3 +1,5 @@
+
+#if DEBUG
 using System;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -696,3 +698,4 @@ namespace panpan.Rendering
     }
 }
 
+#endif
