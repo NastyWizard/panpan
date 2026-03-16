@@ -22,6 +22,7 @@ namespace panpan.Rendering
             textRenderer.SetFont(font);
             textRenderer.DrawText(str, pos, color);
         }
+        public static void Text(String str, Font font, int x, int y, vec4? color = null) => Text(str, font, new vec2(x,y), color);
         public static void TextCenter(String str, Font font, vec2 pos, vec4? color = null)
         {
             textRenderer.SetFont(font);
