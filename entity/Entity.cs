@@ -39,6 +39,13 @@ namespace panpan.Scene
                 comp.Update();
             }
         }
+        public virtual void FixedUpdate()
+        {
+            foreach (Component comp in components)
+            {
+                comp.FixedUpdate();
+            }
+        }
         public virtual void Render()
         {
             foreach (Component comp in components)

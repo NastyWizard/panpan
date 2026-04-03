@@ -224,11 +224,16 @@ namespace panpan.Rendering.Text
 
         public int Measure(string text)
         {
+            bool skipping = false;
             int measure = 0; 
             foreach(char c in text)
             {
+                if(c == '{')
+                    skipping = true;
+                if(c == '}')
+                    skipping = false;
                 Glyph? g = GetGlyph(c);
-                if(g != null)
+                if(g != null && !skipping)
                 {
                     measure += (int)(g.Value.Clip.Width + kerning);
                 }

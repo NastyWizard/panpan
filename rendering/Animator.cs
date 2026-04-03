@@ -32,7 +32,7 @@ namespace panpan.Rendering
             animations = new Dictionary<string, Animation>();
         }
 
-        public override void Update()
+        public override void FixedUpdate()
         {
 
             if (currentlyPlaying != quedToPlay)
@@ -60,7 +60,7 @@ namespace panpan.Rendering
 
                 renderer.Clip(new Util.Rect(anim.Frames[(int)anim.CurrentFrame] * frameWidth, 0, frameWidth, frameHeight));
             }
-            base.Update();
+            base.FixedUpdate();
         }
 
         public void AddAnimation(string key, int[] frames, float framerate = 12f)

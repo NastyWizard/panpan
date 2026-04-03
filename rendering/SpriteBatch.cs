@@ -11,6 +11,9 @@ namespace panpan.Rendering
         private struct SpriteRequest
         {
             public vec3 Position;
+            public vec2 Scale;
+            public vec3 Rotation;
+            public vec3 Origin;
             public Rect Crop;
             public vec4 Color;
         }
@@ -54,13 +57,19 @@ namespace panpan.Rendering
             sprites.Clear();
         }
 
-        public void SubmitSprite(vec3 pos, Rect crop)
+        public void SubmitSprite(vec3 pos, Rect crop, vec2? scale = null, vec3? rotation = null, vec3? origin = null)
         {
-            sprites.Add(new SpriteRequest { Position = pos, Crop = crop, Color = Color.White });
+            scale ??= vec2.Ones;
+            rotation ??= vec3.Zero;
+            origin ??= vec3.Zero;
+            sprites.Add(new SpriteRequest { Position = pos, Scale = scale.Value, Rotation = rotation.Value, Origin = origin.Value, Crop = crop, Color = Color.White });
         }
-        public void SubmitSprite(vec3 pos, Rect crop, vec4 color)
+        public void SubmitSprite(vec3 pos, Rect crop, vec4 color, vec2? scale = null, vec3? rotation = null, vec3? origin = null)
         {
-            sprites.Add(new SpriteRequest { Position = pos, Crop = crop, Color = color });
+            scale ??= vec2.Ones;
+            rotation ??= vec3.Zero;
+            origin ??= vec3.Zero;
+            sprites.Add(new SpriteRequest { Position = pos, Scale = scale.Value, Rotation = rotation.Value, Origin = origin.Value, Crop = crop, Color = color });
         }
 
         public void Render()
@@ -76,7 +85,7 @@ namespace panpan.Rendering
 
             foreach (SpriteRequest request in sprites)
             {
-                AddSprite(request.Position, request.Crop, request.Color, vertices, indices, ref indexOffset);
+                AddSprite(request.Position, request.Scale, request.Rotation, request.Origin, request.Crop, request.Color, vertices, indices, ref indexOffset);
             }
 
             if (vertices.Count == 0 || indices.Count == 0)
@@ -91,7 +100,7 @@ namespace panpan.Rendering
             sprites.Clear();
         }
 
-        private void AddSprite(vec3 position, Rect crop, vec4 color, List<Vertex> vertices, List<uint> indices, ref uint indexOffset)
+        private void AddSprite(vec3 position, vec2 scale, vec3 rotation, vec3 origin, Rect crop, vec4 color, List<Vertex> vertices, List<uint> indices, ref uint indexOffset)
         {
             float r = color.r;
             float g = color.g;
@@ -110,10 +119,55 @@ namespace panpan.Rendering
                 new vec2(crop.X + crop.Width,   crop.Y + crop.Height) / textureSize // tr
             };
 
-            vertices.Add(new Vertex(x, y + crop.Height, z, r, g, b, a, uvs[0].x, uvs[0].y)); // tl
-            vertices.Add(new Vertex(x + crop.Width, y + crop.Height, z, r, g, b, a, uvs[1].x, uvs[1].y)); // tr
-            vertices.Add(new Vertex(x, y, z, r, g, b, a, uvs[2].x, uvs[2].y)); // bl
-            vertices.Add(new Vertex(x + crop.Width, y, z, r, g, b, a, uvs[3].x, uvs[3].y)); // br
+            float width = crop.Width*scale.x;
+            float height = crop.Height*scale.y;
+
+
+            vec4[] verts =
+            {
+              new vec4(0,height,0,1),
+              new vec4(width,height,0,1),
+              new vec4(0,0,0,1),
+              new vec4(width,0,0,1),  
+            };
+
+            if(rotation != vec3.Zero)
+            {
+                mat4 rotx = new mat4(
+                    1,  0,                     0,                        0,
+                    0,  MathF.Cos(rotation.x), -MathF.Sin(rotation.x),   0,
+                    0,  MathF.Sin(rotation.x), MathF.Cos(rotation.x),    0,
+                    0,  0,                     0,                        1
+                );
+                
+                mat4 roty = new mat4(
+                    MathF.Cos(rotation.y),  0,  MathF.Sin(rotation.y),    0,
+                    0,                      1,  0,                        0,
+                    -MathF.Sin(rotation.y), 0,  MathF.Cos(rotation.y),    0,
+                    0,                      0,  0,                        1
+                );
+                
+                mat4 rotz = new mat4(
+                    MathF.Cos(rotation.z),  -MathF.Sin(rotation.z),  0,    0,
+                    MathF.Sin(rotation.z),  MathF.Cos(rotation.z),   0,    0,
+                    0,                      0,                       0,    0,
+                    0,                      0,                       0,    1
+                );
+
+                for(int i = 0; i < 4; i++)
+                {
+                    verts[i] -= new vec4(origin.x,origin.y,origin.z,0);
+                    verts[i] = rotx * verts[i];
+                    verts[i] = roty * verts[i];
+                    verts[i] = rotz * verts[i];
+                }
+            }
+
+
+            vertices.Add(new Vertex(x + verts[0].x, y + verts[0].y, z + verts[0].z, r, g, b, a, uvs[0].x, uvs[0].y)); // tl
+            vertices.Add(new Vertex(x + verts[1].x, y + verts[1].y, z + verts[1].x, r, g, b, a, uvs[1].x, uvs[1].y)); // tr
+            vertices.Add(new Vertex(x + verts[2].x, y + verts[2].y, z + verts[2].z, r, g, b, a, uvs[2].x, uvs[2].y)); // bl
+            vertices.Add(new Vertex(x + verts[3].x, y + verts[3].y, z + verts[3].z, r, g, b, a, uvs[3].x, uvs[3].y)); // br
 
             indices.Add(indexOffset + 0);
             indices.Add(indexOffset + 2);

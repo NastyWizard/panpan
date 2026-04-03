@@ -9,14 +9,18 @@ namespace panpan.Rendering
 {
     public partial class Draw
     {
+        public static Material StandardMat = new Material(Assets.Shaders.standard_frag_hlsl, Assets.Shaders.standard_vert_hlsl);
+        
+        static Material defaultBackMat = new Material(Assets.Shaders.backbuffer_frag_hlsl, Assets.Shaders.backbuffer_vert_hlsl);
         static BasicRenderer renderer = new BasicRenderer();
         static SpriteRenderer spriteRenderer = new SpriteRenderer(null, null, Shapes.quad, new Material(Assets.Shaders.standard_frag_hlsl, Assets.Shaders.standard_vert_hlsl));
-        static Material defaultBackMat = new Material(Assets.Shaders.backbuffer_frag_hlsl, Assets.Shaders.backbuffer_vert_hlsl);
         static SpriteRenderer backRenderer = new SpriteRenderer(null, null, Shapes.quad, defaultBackMat);
         static TextRenderer textRenderer = new TextRenderer();
+        public static TextRenderer TextRenderer => textRenderer;
         
         static vec4 color;
 
+        // Text
         public static void Text(String str, Font font, vec2 pos, vec4? color = null)
         {
             textRenderer.SetFont(font);
@@ -29,6 +33,59 @@ namespace panpan.Rendering
             textRenderer.DrawText(str, pos - new vec2(font.Measure(str)/2,0), color);
         }
 
+        public static void TextWrap(string str, Font font, vec2 pos, int maxLen, vec4? color = null)
+        {
+            textRenderer.SetFont(font);
+
+            string outString = "";
+            string currentLine = "";
+            string currentWord = "";
+
+            int pen = 0;
+
+            while (pen < str.Length)
+            {
+                char c = str[pen];
+
+                if (c != ' ')
+                    currentWord += c;
+
+                if (c == ' ' || pen == str.Length - 1)
+                {
+                    // handle last char case
+                    if (pen == str.Length - 1 && c != ' ')
+                        currentWord += "";
+
+                    string testLine = currentLine == "" ? currentWord : currentLine + " " + currentWord;
+                    int m = font.Measure(testLine);
+
+                    if (currentLine == "")
+                    {
+                        currentLine = currentWord;
+                    }
+                    else if (m < maxLen)
+                    {
+                        currentLine += " " + currentWord;
+                    }
+                    else
+                    {
+                        outString += currentLine + "\n";
+                        currentLine = currentWord;
+                    }
+
+                    currentWord = "";
+                }
+
+                pen++;
+            }
+
+            if (currentLine.Length > 0)
+                outString += currentLine;
+
+            textRenderer.DrawText(outString, pos, color);
+        }
+
+        // Shapes
         public static void Rect(vec2 bl, vec2 size, vec4? color = null)
         {
             color ??= Color.White;
@@ -81,6 +138,7 @@ namespace panpan.Rendering
             DrawBatch.SubmitPixel(p1, color.Value);
         }
 
+        // Sprites / RT
         public static void Sprite(Texture texture, vec2 pos, vec2? scale = null, Rect? clipRect = null)
         {
             scale ??= vec2.Ones;

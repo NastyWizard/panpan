@@ -55,8 +55,17 @@ namespace panpan.Scene
             Init();
         }
 
-        public virtual void Update()
+        public virtual void FixedUpdate()
         {
+            camera.FixedUpdate();
+            foreach (Entity ent in entities)
+            {
+                ent.FixedUpdate();
+            }
+        }
+
+        public virtual void Update()
+        {   
             camera.Update();
             foreach (Entity ent in entities)
             {
@@ -76,6 +85,7 @@ namespace panpan.Scene
             }
             markedChildrenForAddition.Clear();
         }
+
         public virtual void Render()
         {
             ActiveCamera.PushUniformData();
