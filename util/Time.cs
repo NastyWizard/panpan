@@ -5,10 +5,20 @@ namespace panpan.Util
 {
     public class Time
     {
+        private static float deltaTime;
+        private static float lastFrameTime;
+
+        public static float DeltaTime => deltaTime;
         public static float Elapsed()
         {
             float seconds = SDL.GetTicks() / 1000.0f;
             return seconds;
+        }
+
+        public static void Update()
+        {
+            deltaTime = Time.Elapsed() - lastFrameTime;
+            lastFrameTime = Time.Elapsed();
         }
     }
 

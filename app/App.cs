@@ -40,6 +40,7 @@ namespace panpan
         static nint renderPass;
         static nint swapchainTexture;
         public static bool isFullScreen = false;
+        public static bool isScreenSizeDirty = false;
         static readonly List<nint> renderFences = new List<nint>();
         static ImGuiController? imguiController;
 
@@ -138,6 +139,11 @@ namespace panpan
 
         public static vec2 GetWindowSize()
         {
+            return new vec2(backBuffer.Width, backBuffer.Height);
+        }
+
+        public static vec2 GetGameSize()
+        {
             return gameSize;
         }
 
@@ -177,6 +183,8 @@ namespace panpan
             SDL.SetWindowFullscreen(window, !isFullScreen);
             isFullScreen = !isFullScreen;
 
+            isScreenSizeDirty = true;
+
             sceneManager.ActiveScene.OnFSToggle();
             if(isFullScreen)
                 backBuffer.Resize((uint)GetDisplayBounds().Width, (uint)GetDisplayBounds().Height);
@@ -214,12 +222,13 @@ namespace panpan
             fpsUpdateTime = currentTime;
             fpsFrameCount = 0;
 
-            float deltaTime = 0.0f;
-            float lastFrameTime = 0.0f;
             float fixedUpdateAccumulator = 0.0f;
 
             while (!token.IsCancellationRequested)
             {
+                isScreenSizeDirty = false;
+
+                Time.Update();
                 currentTime = Time.Elapsed();
                 while (SDL.PollEvent(out var evt))
                 {
@@ -233,22 +242,24 @@ namespace panpan
                 Input.Update();
                 imguiController?.NewFrame();
 
+                float deltaTime = Time.DeltaTime;
 
-                deltaTime = Time.Elapsed() - lastFrameTime;
-                lastFrameTime = Time.Elapsed();
-
-                if(MathF.Abs(deltaTime - 1.0f/120.0f) < .0002f){
+                if(MathF.Abs(deltaTime - 1.0f/120.0f) < .0002f)
+                {
                     deltaTime = 1.0f/120.0f;
                 }
-                if(MathF.Abs(deltaTime - 1.0f/60.0f) < .0002f){
+                if(MathF.Abs(deltaTime - 1.0f/60.0f) < .0002f)
+                {
                     deltaTime = 1.0f/60.0f;
                 }
-                if(MathF.Abs(deltaTime - 1.0f/30.0f) < .0002f){
+                if(MathF.Abs(deltaTime - 1.0f/30.0f) < .0002f)
+                {
                     deltaTime = 1.0f/30.0f;
                 }
 
                 fixedUpdateAccumulator += deltaTime;
-                while(fixedUpdateAccumulator >= 1.0f / 62.0f){
+                while(fixedUpdateAccumulator >= 1.0f / 62.0f)
+                {
                     FixedUpdate();
                     fixedUpdateAccumulator -= 1.0f / 60.0f;
                 }
