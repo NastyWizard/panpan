@@ -102,6 +102,11 @@ namespace panpan.Rendering
                 Draw.Text(str,font,pos - new vec2(-i,0),outline);
                 Draw.Text(str,font,pos - new vec2(0,i),outline);
                 Draw.Text(str,font,pos - new vec2(0,-i),outline);
+
+                Draw.Text(str,font,pos - new vec2(i,i),outline);
+                Draw.Text(str,font,pos - new vec2(-i,i),outline);
+                Draw.Text(str,font,pos - new vec2(i,-i),outline);
+                Draw.Text(str,font,pos - new vec2(-i,-i),outline);
             }
             Draw.Text(str,font,pos,color);
         }

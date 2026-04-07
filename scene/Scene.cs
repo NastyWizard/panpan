@@ -40,6 +40,7 @@ namespace panpan.Scene
             foreach (Entity ent in markedChildrenForAddition)
             {
                 entities.Add(ent);
+                ent.OnAdd();
             }
             markedChildrenForAddition.Clear();
 
@@ -75,6 +76,7 @@ namespace panpan.Scene
             foreach (Entity ent in markedChildrenForRemoval)
             {
                 entities.Remove(ent);
+                ent.OnRemove();
                 ent.Scene = null;
             }
             markedChildrenForRemoval.Clear();

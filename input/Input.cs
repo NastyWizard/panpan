@@ -82,6 +82,8 @@ namespace panpan
             vec4 clipPos = new vec4((2.0f * MousePosition.x) / w - 1.0f, (2.0f * MousePosition.y) / h - 1.0f, 0f, 1f);
             vec4 worldPos = App.GetSceneManager().ActiveScene.Camera.GetViewProjectionMatrix().Inverse * clipPos;
             MousePosition = new vec2(worldPos.x, -worldPos.y) + App.GetSceneManager().ActiveScene.Camera.Position.xy;
+
+            MousePositionWindow.y = h - MousePositionWindow.y;
         }
 
         public static void RegisterOnKeyHeld(InputDelegate action)

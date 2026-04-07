@@ -10,8 +10,10 @@ namespace panpan.Scene
     public abstract class Entity
     {
         public Scene? Scene { get; internal set; } = null;
+        public Entity? Parent { get; internal set;} = null;
 
         private readonly List<Component> components = new List<Component>();
+        private readonly List<Entity> children = new List<Entity>();
 
         public Transform Transform = new Transform();
         public ref vec3 Position => ref Transform.Position;
@@ -24,12 +26,20 @@ namespace panpan.Scene
             {
                 comp.Init();
             }
+            foreach (Entity entity in children)
+            {
+                entity.Init();
+            }
         }
         public virtual void Destroy()
         {
             foreach (Component comp in components)
             {
                 comp.Destroy();
+            }
+            foreach (Entity entity in children)
+            {
+                entity.Destroy();
             }
         }
         public virtual void Update()
@@ -38,12 +48,20 @@ namespace panpan.Scene
             {
                 comp.Update();
             }
+            foreach (Entity entity in children)
+            {
+                entity.Update();
+            }
         }
         public virtual void FixedUpdate()
         {
             foreach (Component comp in components)
             {
                 comp.FixedUpdate();
+            }
+            foreach (Entity entity in children)
+            {
+                entity.FixedUpdate();
             }
         }
         public virtual void Render()
@@ -52,12 +70,18 @@ namespace panpan.Scene
             {
                 comp.Render();
             }
+            foreach (Entity entity in children)
+            {
+                entity.Render();
+            }
 
             //if (Util.Debug.showObjectsWithoutRenderer && GetComponent<SpriteRenderer>() == null)
             {
                 //Draw.Sprite(Util.Debug.cursorTex, Transform.Position.xy + new vec2(3,3));
             }
         }
+        public virtual void OnRemove(){}
+        public virtual void OnAdd(){}
 
         public Component AddComponent(in Component comp)
         {
@@ -82,6 +106,25 @@ namespace panpan.Scene
             }
 
             return null;
+        }
+        public virtual Entity AddChild(in Entity entity)
+        {
+            children.Add(entity);
+            entity.Parent = this;
+            entity.OnAdd();
+            return entity;
+        }
+
+        public virtual void RemoveChild(in Entity entity)
+        {
+            entity.OnRemove();
+            entity.Parent = null;
+            children.Remove(entity);
+        }
+
+        public virtual void ClearChildren()
+        {
+            children.Clear();
         }
 
     }
