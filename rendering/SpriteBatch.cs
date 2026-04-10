@@ -162,6 +162,13 @@ namespace panpan.Rendering
                     verts[i] = rotz * verts[i];
                 }
             }
+            else if(origin != vec3.Zero)
+            {
+                for(int i = 0; i < 4; i++)
+                {
+                    verts[i] -= new vec4(origin.x,origin.y,origin.z,0);   
+                }
+            }
 
 
             vertices.Add(new Vertex(x + verts[0].x, y + verts[0].y, z + verts[0].z, r, g, b, a, uvs[0].x, uvs[0].y)); // tl
