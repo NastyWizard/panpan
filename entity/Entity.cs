@@ -13,7 +13,7 @@ namespace panpan.Scene
         public Entity? Parent { get; internal set;} = null;
 
         private readonly List<Component> components = new List<Component>();
-        private readonly List<Entity> children = new List<Entity>();
+        protected readonly List<Entity> children = new List<Entity>();
 
         public Transform Transform = new Transform();
         public ref vec3 Position => ref Transform.Position;

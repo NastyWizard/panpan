@@ -88,32 +88,46 @@ namespace panpan
 
         public static void RegisterOnKeyHeld(InputDelegate action)
         {
-            keyHeldEvents.Add(BuildActionKey(action), action);
+            var key = BuildActionKey(action);
+            if(!keyHeldEvents.ContainsKey(key))
+                keyHeldEvents.Add(key, action);
         }
         public static void RegisterOnKeyDown(InputDelegate action)
         {
-            keyDownEvents.Add(BuildActionKey(action), action);
+            var key = BuildActionKey(action);
+            if(!keyDownEvents.ContainsKey(key))
+                keyDownEvents.Add(key, action);
         }
         public static void RegisterOnKeyReleased(InputDelegate action)
         {
-            keyUpEvents.Add(BuildActionKey(action), action);
+            var key = BuildActionKey(action);
+            if(!keyUpEvents.ContainsKey(key))
+                keyUpEvents.Add(key, action);
         }
 
         public static void RegisterOnMouseDown(MouseDelegate action)
         {
-            mouseDownEvents.Add(BuildActionKey(action), action);
+            var key = BuildActionKey(action);
+            if(!mouseDownEvents.ContainsKey(key))
+                mouseDownEvents.Add(key, action);
         }
         public static void RegisterOnMouseHeld(MouseDelegate action)
         {
-            mouseHeldEvents.Add(BuildActionKey(action), action);
+            var key = BuildActionKey(action);
+            if(!mouseHeldEvents.ContainsKey(key))
+                mouseHeldEvents.Add(key, action);
         }
         public static void RegisterOnMouseReleased(MouseDelegate action)
         {
-            mouseUpEvents.Add(BuildActionKey(action), action);
+            var key = BuildActionKey(action);
+            if(!mouseUpEvents.ContainsKey(key))
+                mouseUpEvents.Add(key, action);
         }
         public static void RegisterOnMouseWheel(MouseWheelDelegate action)
         {
-            mouseWheelEvents.Add(BuildActionKey(action), action);
+            var key = BuildActionKey(action);
+            if(!mouseWheelEvents.ContainsKey(key))
+                mouseWheelEvents.Add(key, action);
         }
 
         public static void DeregisterAll()
@@ -154,6 +168,11 @@ namespace panpan
         {
             keyDownEvents.Remove(BuildActionKey(action));
         }
+
+        public static void DeregisterOnKeyReleased(InputDelegate action)
+        {
+            keyUpEvents.Remove(BuildActionKey(action));
+        }
         
         public static void DeregisterOnKeyHeld(InputDelegate action)
         {
@@ -162,9 +181,16 @@ namespace panpan
 
         private static void KeyDown(SDL.Keycode? keycode)
         {
-            foreach (InputDelegate action in keyDownEvents.Values)
+            try
             {
-                action.Invoke(keycode);
+                foreach (InputDelegate action in keyDownEvents.Values)
+                {
+                    action.Invoke(keycode);
+                }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
             }
         }
         
@@ -202,9 +228,16 @@ namespace panpan
         
         private static void MouseUp(byte btn)
         {
-            foreach (MouseDelegate action in mouseUpEvents.Values)
+            try
             {
-                action.Invoke(btn);
+                foreach (MouseDelegate action in mouseUpEvents.Values)
+                {
+                    action.Invoke(btn);
+                }
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e.Message);
             }
         }
         
