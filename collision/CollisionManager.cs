@@ -33,6 +33,8 @@ namespace panpan.Collision
                 throw new NotSupportedException($"{nameof(CollisionManager)} currently only supports {ManagerType.SPACIAL_HASH}.");
             }
 
+            Log.Write($"Creating collision manager with type: {ManagerType.SPACIAL_HASH}");
+
             spatialHash = new SpatialHash(cellSize, worldSize);
         }
 

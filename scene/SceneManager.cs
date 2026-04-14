@@ -12,8 +12,10 @@ namespace panpan.Scene
 
         public void SwapScene(Scene scene)
         {
+            Log.Write("Swapping scenes");
             this.activeScene = scene;
             scene.Init();
+            Log.Write("Scene swap complete");
         }
 
     }

@@ -190,7 +190,7 @@ namespace panpan
             }
             catch(Exception e)
             {
-                Console.WriteLine(e.Message);
+                Log.Warn(e.Message,"panpan-Input");
             }
         }
         
@@ -237,7 +237,7 @@ namespace panpan
             }
             catch(Exception e)
             {
-                Console.WriteLine(e.Message);
+                Log.Warn(e.Message,"panpan-Input");
             }
         }
         

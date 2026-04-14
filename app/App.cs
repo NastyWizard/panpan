@@ -108,18 +108,22 @@ namespace panpan
             gpuDevice = SDL.CreateGPUDevice(gpuShaderFormat, true, null);
             if (gpuDevice == nint.Zero)
             {
-                Console.WriteLine($"Error: Failed to create gpu device: {SDL.GetError()}");
+                Log.Error($"Error: Failed to create gpu device: {SDL.GetError()}");
                 Environment.Exit(1);
             }
             window = SDL.CreateWindow(title, width, height, 0);
 
             if (!SDL.ClaimWindowForGPUDevice(gpuDevice, window))
             {
-                Console.WriteLine($"Error: Failed to create window for gpu device: {SDL.GetError()}");
+                Log.Error($"Error: Failed to create window for gpu device: {SDL.GetError()}");
                 Environment.Exit(1);
             }
 
-            SDL.SetGPUAllowedFramesInFlight(gpuDevice, 3);
+            Log.Write($"Window created {width}w  {height}h");
+            Log.Write($"    gpu shader format: {gpuShaderFormat}");
+            Log.Write($"    platform: {platform}");
+
+            SDL.SetGPUAllowedFramesInFlight(gpuDevice, 2);
         }
 
         public static float GetFPS()
@@ -373,6 +377,7 @@ namespace panpan
                 1,
                 nint.Zero
             );
+
             Marshal.FreeHGlobal(ptr);
         }
 
@@ -415,6 +420,8 @@ namespace panpan
             {
                 return;
             }
+
+            Log.Write("Clearing render fences...");
 
             SDL.WaitForGPUFences(GetDevice(), true, renderFences.ToArray(), (uint)renderFences.Count);
 
