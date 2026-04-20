@@ -134,7 +134,7 @@ namespace panpan.Rendering
             return (mat4.Translate(pos) *
                 mat4.RotateZ(rot) *
                 mat4.Scale(scale) *
-                mat4.Translate(-new vec3(Origin.x, Origin.y, 0))).Transposed;
+                mat4.Translate(-new vec3(Origin.x, Origin.y, 0)));
         }
 
         public void SetTransform(vec3 pos, vec3? scale = null, float? angle = null)

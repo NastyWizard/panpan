@@ -171,7 +171,7 @@ cbuffer GlobalUniforms : register(b1, space1)
 VertexOutput main(VertexInput input)
 {
     VertexOutput output;
-    output.position = mul(mul(float4(input.position, 1.0f), model), viewProjection);
+    output.position = mul(viewProjection, mul(model, float4(input.position, 1.0f)));
     output.color = input.color;
     output.uv = input.uv;
     return output;

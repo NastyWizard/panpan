@@ -119,9 +119,9 @@ namespace panpan
                 Environment.Exit(1);
             }
 
-            Log.Write($"Window created {width}w  {height}h");
-            Log.Write($"    gpu shader format: {gpuShaderFormat}");
-            Log.Write($"    platform: {platform}");
+            Log.Info($"Window created {width}w  {height}h");
+            Log.Info($"    gpu shader format: {gpuShaderFormat}");
+            Log.Info($"    platform: {platform}");
 
             SDL.SetGPUAllowedFramesInFlight(gpuDevice, 2);
         }
@@ -421,7 +421,7 @@ namespace panpan
                 return;
             }
 
-            Log.Write("Clearing render fences...");
+            Log.Info("Clearing render fences...");
 
             SDL.WaitForGPUFences(GetDevice(), true, renderFences.ToArray(), (uint)renderFences.Count);
 

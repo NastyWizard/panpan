@@ -9,6 +9,8 @@ namespace panpan.Rendering
 {
     public class Camera : Entity
     {
+        private float near = -200.0f;
+        private float far = 200.0f;
         private mat4 projection;
         private mat4 viewProjection;
         private uint width, height;
@@ -27,7 +29,7 @@ namespace panpan.Rendering
 
         public override void Init()
         {
-            Position = vec3.UnitZ;
+            Position = vec3.UnitZ * 10;
             Update();
             base.Init();
         }
@@ -36,7 +38,7 @@ namespace panpan.Rendering
         {
             base.Update();
             mat4 view = mat4.LookAt(Position, Position - vec3.UnitZ, vec3.UnitY);
-            viewProjection = (projection * view).Transposed;
+            viewProjection = (projection * view);
             UpdateBounds();
         }
 
@@ -65,7 +67,7 @@ namespace panpan.Rendering
 
         public void UpdateProjection()
         {
-            projection = mat4.Ortho(-(width * Zoom) / 2, (width * Zoom) / 2, -(height * Zoom) / 2, (height * Zoom) / 2, 0.1f, 1000.0f);
+            projection = mat4.Ortho(-(width * Zoom) / 2, (width * Zoom) / 2, -(height * Zoom) / 2, (height * Zoom) / 2, near, far); 
             UpdateBounds();
         }
 

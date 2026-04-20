@@ -10,20 +10,24 @@ namespace panpan.Rendering
     public class RenderTarget
     {
         nint? gpuTexture;
+        nint depthStencilTexture = nint.Zero;
         Texture texture;
         nint renderPass;
         vec4 clearColor;
 
         bool doesClear = true;
+        bool hasDepth;
+
 
         public uint Width, Height;
 
-        public RenderTarget(uint width, uint height, vec4? clearColor = null)
+        public RenderTarget(uint width, uint height, vec4? clearColor = null, bool hasDepth = false)
         {
             texture = new Texture(null, width, height);
             clearColor ??= vec4.Zero;
             this.clearColor = clearColor.Value;
             gpuTexture = null;
+            this.hasDepth = hasDepth;
             // Create the texture
             Resize(width, height);
         }
@@ -52,7 +56,7 @@ namespace panpan.Rendering
                 throw new InvalidOperationException("Render target GPU texture has not been created.");
             }
 
-            var colorTargetInfo = new SDL.GPUColorTargetInfo
+            SDL.GPUColorTargetInfo colorTargetInfo = new SDL.GPUColorTargetInfo
             {
                 Texture = gpuTexture.Value,
                 LoadOp = doesClear ? SDL.GPULoadOp.Clear : SDL.GPULoadOp.Load,
@@ -66,14 +70,29 @@ namespace panpan.Rendering
                 }
             };
 
-            var ptr = SDL.StructureToPointer<SDL.GPUColorTargetInfo>(colorTargetInfo);
+            SDL.GPUDepthStencilTargetInfo depthInfo = new SDL.GPUDepthStencilTargetInfo
+            {
+                Texture = depthStencilTexture,
+                LoadOp = SDL.GPULoadOp.Clear,
+                StoreOp = SDL.GPUStoreOp.Store,
+                StencilLoadOp = SDL.GPULoadOp.Clear,
+                StencilStoreOp = SDL.GPUStoreOp.Store,
+                ClearDepth = 1,
+                ClearStencil = 0,
+                Cycle = 1
+            };
+
+            nint pColorInfo = SDL.StructureToPointer<SDL.GPUColorTargetInfo>(colorTargetInfo);
+            nint pDepthInfo = SDL.StructureToPointer<SDL.GPUDepthStencilTargetInfo>(depthInfo);
+            
             renderPass = SDL.BeginGPURenderPass(
                 App.GetCommandBuffer(),
-                ptr,
+                pColorInfo,
                 1,
-                nint.Zero
+                hasDepth ? pDepthInfo : nint.Zero
             );
-            Marshal.FreeHGlobal(ptr);
+            Marshal.FreeHGlobal(pColorInfo);
+            Marshal.FreeHGlobal(pDepthInfo);
             return renderPass;
         }
 
@@ -100,10 +119,37 @@ namespace panpan.Rendering
             textureCreateInfo.LayerCountOrDepth = 1;
             textureCreateInfo.NumLevels = 1;
 
+
+            if(hasDepth)
+            {
+                SDL.GPUTextureCreateInfo depthTextureCreateInfo = new SDL.GPUTextureCreateInfo
+                {
+                    Type = SDL.GPUTextureType.Texturetype2D,
+                    Width = width,
+                    Height = height,
+                    LayerCountOrDepth = 1,
+                    NumLevels = 1,
+                    SampleCount = SDL.GPUSampleCount.SampleCount1,
+                    Format = SDL.GPUTextureFormat.D16Unorm,
+                    Usage = SDL.GPUTextureUsageFlags.Sampler | SDL.GPUTextureUsageFlags.DepthStencilTarget
+                };
+
+                depthStencilTexture = SDL.CreateGPUTexture(App.GetDevice(), depthTextureCreateInfo);
+
+                if (depthStencilTexture == nint.Zero)
+                {
+                    throw new Exception($"Failed to create depth texture for Render Target: {SDL.GetError()}");
+                }
+                else
+                {
+                    Log.Info("Created depth texture");
+                }
+            }
+
             var handle = SDL.CreateGPUTexture(App.GetDevice(), textureCreateInfo);
             if (handle == nint.Zero)
             {
-                throw new Exception($"Failed to create GPU texture for Render Target: {SDL.GetError()}");
+                throw new Exception($"Failed to create color texture for Render Target: {SDL.GetError()}");
             }
             gpuTexture = handle;
             texture.SetGPUTexture(handle);

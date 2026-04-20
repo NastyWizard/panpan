@@ -6,7 +6,7 @@ namespace panpan
     {
         private static string tag = "panpan";
         private static List<string> log = new();
-        public static void Write<T>(T message, string? tag = null, ConsoleColor? col = null)
+        public static void Info<T>(T message, string? tag = null, ConsoleColor? col = null)
         {
             col ??= ConsoleColor.Cyan;
             Console.ForegroundColor = col.Value;
@@ -20,13 +20,13 @@ namespace panpan
         {
             tag ??= Log.tag;
             System.Diagnostics.StackTrace trace = new System.Diagnostics.StackTrace();
-            Log.Write($"{message}\n{trace}",$"{tag}-ERROR", ConsoleColor.Red);
+            Log.Info($"{message}\n{trace}",$"{tag}-ERROR", ConsoleColor.Red);
         }
         
         public static void Warn(string message, string? tag = null)
         {
             tag ??= Log.tag;
-            Log.Write($"{message}",$"{tag}-WARNING", ConsoleColor.DarkYellow);
+            Log.Info($"{message}",$"{tag}-WARNING", ConsoleColor.DarkYellow);
         }
 
         public static void Assert(bool condition, string message, string? tag = null)

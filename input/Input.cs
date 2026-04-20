@@ -77,12 +77,24 @@ namespace panpan
             int w, h;
             SDL.GetWindowSize(App.GetWindow(), out w, out h);
             SDL.GetMouseState(out MousePositionWindow.x, out MousePositionWindow.y);
-            
-            MousePosition = MousePositionWindow;
-            vec4 clipPos = new vec4((2.0f * MousePosition.x) / w - 1.0f, (2.0f * MousePosition.y) / h - 1.0f, 0f, 1f);
-            vec4 worldPos = App.GetSceneManager().ActiveScene.Camera.GetViewProjectionMatrix().Inverse * clipPos;
-            MousePosition = new vec2(worldPos.x, -worldPos.y) + App.GetSceneManager().ActiveScene.Camera.Position.xy;
 
+            // Convert to NDC (correct Y!)
+            vec4 clipPos = new vec4(
+                (2.0f * MousePositionWindow.x) / w - 1.0f,
+                1.0f - (2.0f * MousePositionWindow.y) / h, // <-- FIXED
+                0.0f,
+                1.0f
+            );
+
+            // Transform to world
+            mat4 invVP = App.GetSceneManager().ActiveScene.Camera.GetViewProjectionMatrix().Inverse;
+            vec4 worldPos = invVP * clipPos;
+
+            // Perspective divide (CRITICAL)
+            worldPos /= worldPos.w;
+
+            // Final position
+            MousePosition = new vec2(worldPos.x, worldPos.y);
             MousePositionWindow.y = h - MousePositionWindow.y;
         }
 

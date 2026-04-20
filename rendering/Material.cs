@@ -112,6 +112,10 @@ namespace panpan.Rendering
 
             pipelineInfo.VertexInputState.NumVertexAttributes = 3;
             pipelineInfo.VertexInputState.VertexAttributes = SDL.StructureArrayToPointer(vertexAttributes);
+            pipelineInfo.DepthStencilState.EnableDepthTest = 1;
+            pipelineInfo.DepthStencilState.EnableDepthWrite = 1;
+            pipelineInfo.DepthStencilState.CompareOp = SDL.GPUCompareOp.Less;
+            
 
             SDL.GPUColorTargetDescription[] colorTargetDescriptions = new SDL.GPUColorTargetDescription[1];
             colorTargetDescriptions[0] = new SDL.GPUColorTargetDescription();
@@ -129,6 +133,9 @@ namespace panpan.Rendering
 
             pipelineInfo.TargetInfo.NumColorTargets = 1;
             pipelineInfo.TargetInfo.ColorTargetDescriptions = SDL.StructureArrayToPointer(colorTargetDescriptions);
+            pipelineInfo.TargetInfo.HasDepthStencilTarget = 1;
+            pipelineInfo.TargetInfo.DepthStencilFormat = SDL.GPUTextureFormat.D16Unorm;
+            
 
             //pipelineInfo.RasterizerState.CullMode = SDL.GPUCullMode.Back;
 
