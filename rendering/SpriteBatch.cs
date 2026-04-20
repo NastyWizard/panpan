@@ -83,6 +83,13 @@ namespace panpan.Rendering
             List<uint> indices = new List<uint>(sprites.Count * 4 * 6);
             uint indexOffset = 0;
 
+            sprites.Sort(delegate (SpriteRequest a, SpriteRequest b)
+            {
+                if(a.Position.z == b.Position.z) return 0;
+                else if(a.Position.z > b.Position.z) return -1;
+                else return 1;
+            });
+
             foreach (SpriteRequest request in sprites)
             {
                 AddSprite(request.Position, request.Scale, request.Rotation, request.Origin, request.Crop, request.Color, vertices, indices, ref indexOffset);
