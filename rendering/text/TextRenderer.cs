@@ -32,7 +32,7 @@ namespace panpan.Rendering.Text
             colorOverride = null;
         }
 
-        public void DrawText(String str, vec2 pos, vec4? color = null)
+        public void DrawText(String str, vec3 pos, vec4? color = null)
         {
             if(color == null)
                 color = Color.White;
@@ -78,7 +78,7 @@ namespace panpan.Rendering.Text
                 if(g.HasValue)
                 {
                     vec4 col = colorOverride != null ? colorOverride.Value : color.Value;
-                    batch.SubmitSprite(new vec3(pen + new ivec2(g.Value.BearingX,-g.Value.Clip.Height+g.Value.BearingY), 0), g.Value.Clip, col);
+                    batch.SubmitSprite(new vec3(pen + new ivec2(g.Value.BearingX,-g.Value.Clip.Height+g.Value.BearingY), pos.z), g.Value.Clip, col);
                     pen.x += g.Value.Clip.Width+(int)font.Kerning;
                 }
                 if(c == ' ')

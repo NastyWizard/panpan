@@ -21,23 +21,23 @@ namespace panpan.Rendering
         static vec4 color;
 
         // Text
-        public static void Text(String str, Font font, vec2 pos, vec4? color = null)
+        public static void Text(String str, Font font, vec3 pos, vec4? color = null)
         {
             textRenderer.SetFont(font);
             textRenderer.DrawText(str, pos, color);
         }
-        public static void Text(String str, Font font, int x, int y, vec4? color = null) => Text(str, font, new vec2(x,y), color);
+        public static void Text(String str, Font font, int x, int y, int z, vec4? color = null) => Text(str, font, new vec3(x,y,z), color);
         
         // CENTER
-        public static void TextCenter(String str, Font font, vec2 pos, vec4? color = null)
+        public static void TextCenter(String str, Font font, vec3 pos, vec4? color = null)
         {
             textRenderer.SetFont(font);
-            textRenderer.DrawText(str, pos - new vec2(font.Measure(str)/2,0), color);
+            textRenderer.DrawText(str, pos - new vec3(font.Measure(str)/2,0,0), color);
         }
-        public static void TextCenter(String str, Font font, int x, int y, vec4? color = null) => TextCenter(str, font, new vec2(x,y), color);
+        public static void TextCenter(String str, Font font, int x, int y, int z, vec4? color = null) => TextCenter(str, font, new vec3(x,y,z), color);
 
         // WRAP
-        public static void TextWrap(string str, Font font, vec2 pos, int maxLen, vec4? color = null)
+        public static void TextWrap(string str, Font font, vec3 pos, int maxLen, vec4? color = null)
         {
             textRenderer.SetFont(font);
 
@@ -91,33 +91,33 @@ namespace panpan.Rendering
 
         // OUTLINE
         //
-        public static void TextOutline(String str, Font font, vec2 pos, int thickness = 1, vec4? color = null, vec4? outline = null)
+        public static void TextOutline(String str, Font font, vec3 pos, int thickness = 1, vec4? color = null, vec4? outline = null)
         {
             color ??= panpan.Rendering.Color.White;
             outline ??= panpan.Rendering.Color.Black;
 
             for(int i = 0; i < thickness; i++)
             {
-                Draw.Text(str,font,pos - new vec2(i,0),outline);
-                Draw.Text(str,font,pos - new vec2(-i,0),outline);
-                Draw.Text(str,font,pos - new vec2(0,i),outline);
-                Draw.Text(str,font,pos - new vec2(0,-i),outline);
+                Draw.Text(str,font,pos - new vec3(i,0,pos.z-1),outline);
+                Draw.Text(str,font,pos - new vec3(-i,0,pos.z-1),outline);
+                Draw.Text(str,font,pos - new vec3(0,i,pos.z-1),outline);
+                Draw.Text(str,font,pos - new vec3(0,-i,pos.z-1),outline);
 
-                Draw.Text(str,font,pos - new vec2(i,i),outline);
-                Draw.Text(str,font,pos - new vec2(-i,i),outline);
-                Draw.Text(str,font,pos - new vec2(i,-i),outline);
-                Draw.Text(str,font,pos - new vec2(-i,-i),outline);
+                Draw.Text(str,font,pos - new vec3(i,i,pos.z-1),outline);
+                Draw.Text(str,font,pos - new vec3(-i,i,pos.z-1),outline);
+                Draw.Text(str,font,pos - new vec3(i,-i,pos.z-1),outline);
+                Draw.Text(str,font,pos - new vec3(-i,-i,pos.z-1),outline);
             }
             Draw.Text(str,font,pos,color);
         }
-        public static void TextOutline(String str, Font font, int x, int y, int thickness = 1, vec4? color = null, vec4? outline = null) => TextOutline(str, font, new vec2(x,y), thickness, color, outline);
+        public static void TextOutline(String str, Font font, int x, int y, int z, int thickness = 1, vec4? color = null, vec4? outline = null) => TextOutline(str, font, new vec3(x,y,z), thickness, color, outline);
         
         //
-        public static void TextCenterOutline(String str, Font font, vec2 pos, int thickness = 1, vec4? color = null, vec4? outline = null)
+        public static void TextCenterOutline(String str, Font font, vec3 pos, int thickness = 1, vec4? color = null, vec4? outline = null)
         {
-            Draw.TextOutline(str, font, pos - new vec2(font.Measure(str)/2,0), thickness, color, outline);
+            Draw.TextOutline(str, font, pos - new vec3(font.Measure(str)/2,0,0), thickness, color, outline);
         }
-        public static void TextCenterOutline(String str, Font font, int x, int y, int thickness = 1, vec4? color = null, vec4? outline = null) => TextCenterOutline(str, font, new vec2(x,y), thickness, color, outline);
+        public static void TextCenterOutline(String str, Font font, int x, int y, int z, int thickness = 1, vec4? color = null, vec4? outline = null) => TextCenterOutline(str, font, new vec3(x,y,z), thickness, color, outline);
 
 
         // Shapes
