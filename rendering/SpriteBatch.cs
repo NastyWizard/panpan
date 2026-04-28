@@ -47,6 +47,11 @@ namespace panpan.Rendering
             renderer.SetTexture(tex);
         }
 
+        public DrawBatchRenderer GetRenderer()
+        {
+            return renderer;
+        }
+
         public void SetOrigin (vec2 o)
         {
             renderer.Origin = o;
@@ -192,7 +197,7 @@ namespace panpan.Rendering
             indexOffset += 4;
         }
 
-        private sealed class DrawBatchRenderer : MeshRenderer
+        public sealed class DrawBatchRenderer : MeshRenderer
         {
 
             public DrawBatchRenderer(Texture? texture, Material mat)
