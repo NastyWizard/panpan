@@ -5,10 +5,10 @@ namespace panpan.Util
 {
     public class Time
     {
-        private static float deltaTime;
-        private static float lastFrameTime;
+        private static double deltaTime;
+        private static ulong lastFrameTime;
 
-        public static float DeltaTime => deltaTime;
+        public static float DeltaTime => (float)deltaTime;
         public static float Elapsed()
         {
             float seconds = SDL.GetTicks() / 1000.0f;
@@ -17,8 +17,11 @@ namespace panpan.Util
 
         public static void Update()
         {
-            deltaTime = Time.Elapsed() - lastFrameTime;
-            lastFrameTime = Time.Elapsed();
+            ulong now = SDL.GetPerformanceCounter();
+            deltaTime = (double)((now-lastFrameTime)*1000 / (double)SDL.GetPerformanceFrequency())/1000.0;//Time.Elapsed() - lastFrameTime;
+            lastFrameTime = now;//Time.Elapsed();
+            if(deltaTime > 1.0)
+                deltaTime = 1.0;
         }
     }
 

@@ -61,6 +61,10 @@ namespace panpan.Rendering
             fragInfo.Entrypoint = "main";
             fragInfo.ShaderStage = ShaderCross.ShaderStage.Fragment;
             var fragMetadataPtr = ShaderCross.ReflectGraphicsSPIRV(fragInfo.ByteCode, fragSize, 0);
+            if(fragMetadataPtr == nint.Zero)
+            {
+                Log.Error(SDL.GetError());
+            }
             ShaderCross.GraphicsShaderMetadata fragMetadata = Marshal.PtrToStructure<ShaderCross.GraphicsShaderMetadata>(fragMetadataPtr);
 
             fragmentShader = ShaderCross.CompileGraphicsShaderFromSPIRV(App.GetDevice(), fragInfo, fragMetadata, 0);
