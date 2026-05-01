@@ -12,7 +12,7 @@ namespace panpan.Rendering.Util
 
         public static readonly Shader StandardFontFrag = new(Assets.Shaders.standardFont_frag_sprv, 0, 1);
 
-        public static readonly Shader StandardNoTexFrag = new(Assets.Shaders.standardNoTex_frag_sprv, 1, 0);
+        public static readonly Shader StandardNoTexFrag = new(Assets.Shaders.standardNoTex_frag_sprv, 0, 0);
     }
 
     public static class DefaultMaterials
