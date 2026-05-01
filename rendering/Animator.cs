@@ -58,7 +58,7 @@ namespace panpan.Rendering
                 }
                 animations[currentlyPlaying] = anim;
 
-                renderer.Clip(new Util.Rect(anim.Frames[(int)anim.CurrentFrame] * frameWidth, 0, frameWidth, frameHeight));
+                renderer.Clip(new panpan.Util.Rect(anim.Frames[(int)anim.CurrentFrame] * frameWidth, 0, frameWidth, frameHeight));
             }
             base.FixedUpdate();
         }

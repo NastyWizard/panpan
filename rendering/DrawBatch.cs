@@ -4,6 +4,7 @@ using GlmSharp;
 using panpan;
 using panpan.Scene;
 using panpan.Util;
+using panpan.Rendering.Util;
 
 namespace panpan.Rendering
 {
@@ -143,54 +144,6 @@ namespace panpan.Rendering
 
         private sealed class DrawBatchRenderer : MeshRenderer
         {
-            private static readonly byte[] DebugVertBytes = Encoding.UTF8.GetBytes(@"
-struct VertexInput
-{
-    float3 position : POSITION;
-    float4 color    : COLOR0;
-    float2 uv       : TEXCOORD0;
-};
-
-struct VertexOutput
-{
-    float4 position : SV_POSITION;
-    float4 color    : COLOR0;
-    float2 uv       : TEXCOORD0;
-};
-
-cbuffer CameraBuffer : register(b0, space1)
-{
-    float4x4 viewProjection;
-}
-
-cbuffer GlobalUniforms : register(b1, space1)
-{
-    float4x4 model;
-}
-
-VertexOutput main(VertexInput input)
-{
-    VertexOutput output;
-    output.position = mul(viewProjection, mul(model, float4(input.position, 1.0f)));
-    output.color = input.color;
-    output.uv = input.uv;
-    return output;
-}
-");
-
-            private static readonly byte[] DebugFragBytes = Encoding.UTF8.GetBytes(@"
-struct FragInput
-{
-    float4 color : COLOR0;
-    float2 uv    : TEXCOORD0;
-};
-
-float4 main(FragInput input) : SV_TARGET
-{
-    return input.color;
-}
-");
-
             public DrawBatchRenderer()
                 : base(
                     new Mesh(
@@ -202,7 +155,7 @@ float4 main(FragInput input) : SV_TARGET
                             new Vertex(1f, 0f, 0f, 1f, 1f, 1f, 1f),
                         },
                         new uint[] { 0, 2, 1, 1, 2, 3 }),
-                    new Material(DebugFragBytes, DebugVertBytes))
+                    DefaultMaterials.StandardNoTexture!)
             {
                 Width = 1f;
                 Height = 1f;

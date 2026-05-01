@@ -1,6 +1,7 @@
 using FreeTypeSharp;
 using GlmSharp;
 using panpan;
+using panpan.Rendering.Util;
 using panpan.Util;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -59,7 +60,7 @@ namespace panpan.Rendering.Text
 
             PopulateAtlas();
 
-            batch = new SpriteBatch(GetAtlasTexture(), new Material(Assets.Shaders.standardFont_frag_hlsl, Assets.Shaders.standard_vert_hlsl));
+            batch = new SpriteBatch(GetAtlasTexture(), DefaultMaterials.StandardFont);
             batch.SetOrigin(new vec2(0,1));
         }
 

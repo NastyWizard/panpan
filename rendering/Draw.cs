@@ -4,17 +4,15 @@ using panpan.Util;
 using panpan.Assets;
 using System.Drawing;
 using panpan.Rendering.Text;
+using panpan.Rendering.Util;
 
 namespace panpan.Rendering
 {
     public partial class Draw
     {
-        public static Material StandardMat = new Material(Assets.Shaders.standard_frag_hlsl, Assets.Shaders.standard_vert_hlsl);
-        
-        static Material defaultBackMat = new Material(Assets.Shaders.backbuffer_frag_hlsl, Assets.Shaders.backbuffer_vert_hlsl);
         static BasicRenderer renderer = new BasicRenderer();
-        static SpriteRenderer spriteRenderer = new SpriteRenderer(null, null, Shapes.quad, new Material(Assets.Shaders.standard_frag_hlsl, Assets.Shaders.standard_vert_hlsl));
-        static SpriteRenderer backRenderer = new SpriteRenderer(null, null, Shapes.quad, defaultBackMat);
+        static SpriteRenderer spriteRenderer = new SpriteRenderer(null, null, Shapes.quad, DefaultMaterials.Standard!);
+        static SpriteRenderer backRenderer = new SpriteRenderer(null, null, Shapes.quad, DefaultMaterials.Backbuffer!);
         static TextRenderer textRenderer = new TextRenderer();
         public static TextRenderer TextRenderer => textRenderer;
         
@@ -214,7 +212,7 @@ namespace panpan.Rendering
         }
         public static void ResetRTMaterial()
         {
-            backRenderer.SetMaterial(defaultBackMat);
+            backRenderer.SetMaterial(DefaultMaterials.Backbuffer!);
         }
 
         public static void SetRTUniformFloats(float[] unfs)
@@ -235,7 +233,7 @@ namespace panpan.Rendering
 
             public vec3 Position, Scale;
             public float Angle;
-            public BasicRenderer() : base(Shapes.quad, new Material(Shaders.standardNoTex_frag_hlsl,Shaders.standard_vert_hlsl))
+            public BasicRenderer() : base(Shapes.quad, DefaultMaterials.StandardNoTexture!)
             {
                 RegisterSetUniforms(SetUniforms);
             }

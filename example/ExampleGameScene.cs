@@ -39,7 +39,7 @@ namespace panpanExample
         {
             ExampleGameTextures.Init();
             ActivePalette = ExampleGameTextures.palette_3;
-            lightingMat = new Material(Shaders.bbLighting_frag_hlsl, Shaders.backbuffer_vert_hlsl);
+            lightingMat = DefaultMaterials.BackbufferLighting;
 
             player = (ExamplePlayer)AddChild(new ExamplePlayer(64 + 320*6, 33 + 176*6));
 

@@ -1,4 +1,6 @@
 using System.Runtime.InteropServices;
+using System.Text;
+using panpan.Rendering.Util;
 using SDL3;
 
 namespace panpan.Rendering
@@ -10,65 +12,71 @@ namespace panpan.Rendering
         {
             get { return pipeline; }
         }
-        public Material(byte[]? frag = null, byte[]? vert = null)
+
+        private const string LOG_TAG = "panpan-Material";
+
+        public Material(Shader? frag = null, Shader? vert = null)
         {
             if (vert == null)
             {
-                vert = Assets.Shaders.standard_vert_hlsl;
+                vert = DefaultShaders.StandardVert;
             }
 
             if (frag == null)
             {
-                frag = Assets.Shaders.standard_frag_hlsl;
+                frag = DefaultShaders.StandardFrag;
             }
-
-            // convert from hlsl to spirv
-            ShaderCross.HLSLInfo vertInfoHLSL = new ShaderCross.HLSLInfo();
-            vertInfoHLSL.Entrypoint = "main";
-            vertInfoHLSL.Source = System.Text.Encoding.UTF8.GetString(vert);
-            vertInfoHLSL.ShaderStage = ShaderCross.ShaderStage.Vertex;
-            nuint vertSize;
-            var vertPtr = ShaderCross.CompileSPIRVFromHLSL(vertInfoHLSL, out vertSize);
-
-            ShaderCross.HLSLInfo fragInfoHLSL = new ShaderCross.HLSLInfo();
-            fragInfoHLSL.Entrypoint = "main";
-            fragInfoHLSL.Source = System.Text.Encoding.UTF8.GetString(frag);
-            fragInfoHLSL.ShaderStage = ShaderCross.ShaderStage.Fragment;
-            nuint fragSize;
-            var fragPtr = ShaderCross.CompileSPIRVFromHLSL(fragInfoHLSL, out fragSize);
-            //
 
             nint vertexShader;
             nint fragmentShader;
 
-            // Load Vertex shader
-            ShaderCross.SPIRVInfo vertexInfo = new ShaderCross.SPIRVInfo();
-            vertexInfo.ByteCode = vertPtr;
-            vertexInfo.ByteCodeSize = vertSize;
-            vertexInfo.Entrypoint = "main";
-            vertexInfo.ShaderStage = ShaderCross.ShaderStage.Vertex;
-            var vertexMetadataPtr = ShaderCross.ReflectGraphicsSPIRV(vertexInfo.ByteCode, vertSize, 0);
-            ShaderCross.GraphicsShaderMetadata vertexMetadata = Marshal.PtrToStructure<ShaderCross.GraphicsShaderMetadata>(vertexMetadataPtr);
+            byte[] entryPoint = Encoding.UTF8.GetBytes("main\0");
 
-            vertexShader = ShaderCross.CompileGraphicsShaderFromSPIRV(App.GetDevice(), vertexInfo, vertexMetadata, 0);
-
-            SDL.Free(vertexMetadataPtr);
-
-            // Load Fragment shader
-            ShaderCross.SPIRVInfo fragInfo = new ShaderCross.SPIRVInfo();
-            fragInfo.ByteCode = fragPtr;
-            fragInfo.ByteCodeSize = fragSize;
-            fragInfo.Entrypoint = "main";
-            fragInfo.ShaderStage = ShaderCross.ShaderStage.Fragment;
-            var fragMetadataPtr = ShaderCross.ReflectGraphicsSPIRV(fragInfo.ByteCode, fragSize, 0);
-            if(fragMetadataPtr == nint.Zero)
+            // Load Vertex shader (SPIR-V bytes)
+            SDL.GPUShaderCreateInfo vertexInfo = new();
+            unsafe
             {
-                Log.Error(SDL.GetError());
-            }
-            ShaderCross.GraphicsShaderMetadata fragMetadata = Marshal.PtrToStructure<ShaderCross.GraphicsShaderMetadata>(fragMetadataPtr);
+                fixed (byte* vertPtr = vert.Value.Data)
+                fixed (byte* entryPtr = entryPoint)
+                {
+                    vertexInfo.CodeSize = (nuint)vert.Value.Data.Length;
+                    vertexInfo.Code = (nint)vertPtr;
+                    vertexInfo.Entrypoint = (nint)entryPtr;
+                    vertexInfo.Stage = SDL.GPUShaderStage.Vertex;
+                    vertexInfo.Format = SDL.GPUShaderFormat.SPIRV;
+                    vertexInfo.NumUniformBuffers = vert.Value.NumUnifromBuffers;
+                    vertexInfo.NumSamplers = vert.Value.NumSamplers;
 
-            fragmentShader = ShaderCross.CompileGraphicsShaderFromSPIRV(App.GetDevice(), fragInfo, fragMetadata, 0);
-            SDL.Free(fragMetadataPtr);
+                    vertexShader = SDL.CreateGPUShader(App.GetDevice(), vertexInfo);
+                    if (vertexShader == nint.Zero)
+                    {
+                        Log.Error($"Failed to create vertex shader: {SDL.GetError()}", LOG_TAG);
+                    }
+                }
+            }
+
+            // Load Fragment shader (SPIR-V bytes)
+            SDL.GPUShaderCreateInfo fragInfo = new();
+            unsafe
+            {
+                fixed (byte* fragPtr = frag.Value.Data)
+                fixed (byte* entryPtr = entryPoint)
+                {
+                    fragInfo.CodeSize = (nuint)frag.Value.Data.Length;
+                    fragInfo.Code = (nint)fragPtr;
+                    fragInfo.Entrypoint = (nint)entryPtr;
+                    fragInfo.Stage = SDL.GPUShaderStage.Fragment;
+                    fragInfo.Format = SDL.GPUShaderFormat.SPIRV;
+                    fragInfo.NumUniformBuffers = frag.Value.NumUnifromBuffers;
+                    fragInfo.NumSamplers = frag.Value.NumSamplers;
+
+                    fragmentShader = SDL.CreateGPUShader(App.GetDevice(), fragInfo);
+                    if (fragmentShader == nint.Zero)
+                    {
+                        Log.Error($"Failed to create fragment shader: {SDL.GetError()}", LOG_TAG);
+                    }
+                }
+            }
 
             // Vertex buffer description
             SDL.GPUVertexBufferDescription[] vertexBufferDescriptions = [
@@ -116,6 +124,8 @@ namespace panpan.Rendering
 
             pipelineInfo.VertexInputState.NumVertexAttributes = 3;
             pipelineInfo.VertexInputState.VertexAttributes = SDL.StructureArrayToPointer(vertexAttributes);
+            // This engine is primarily 2D; most render passes do not provide a depth attachment.
+            // Enabling depth without a depth target can prevent rendering on some backends.
             pipelineInfo.DepthStencilState.EnableDepthTest = 1;
             pipelineInfo.DepthStencilState.EnableDepthWrite = 1;
             pipelineInfo.DepthStencilState.CompareOp = SDL.GPUCompareOp.Less;
@@ -144,6 +154,11 @@ namespace panpan.Rendering
             //pipelineInfo.RasterizerState.CullMode = SDL.GPUCullMode.Back;
 
             pipeline = SDL.CreateGPUGraphicsPipeline(App.GetDevice(), pipelineInfo);
+
+            if (pipeline == nint.Zero)
+            {
+                Log.Error($"Failed to create material: {SDL.GetError()}", LOG_TAG);
+            }
 
             SDL.ReleaseGPUShader(App.GetDevice(), vertexShader);
             SDL.ReleaseGPUShader(App.GetDevice(), fragmentShader);

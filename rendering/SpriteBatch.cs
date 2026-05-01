@@ -33,7 +33,7 @@ namespace panpan.Rendering
 
             if(mat == null)
             {
-                mat = new Material(Shaders.standard_frag_hlsl, Shaders.standard_vert_hlsl);
+                mat = new Material();
             }
 
             renderer = new DrawBatchRenderer(texture, mat);
