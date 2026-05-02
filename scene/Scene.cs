@@ -102,14 +102,14 @@ namespace panpan.Scene
 
         public virtual void OnFSToggle(){}
 
-        public Entity AddChild(Entity entity)
+        public virtual Entity AddChild(Entity entity)
         {
             markedChildrenForAddition.Add(entity);
             entity.Scene = this;
             return entity;
         }
 
-        public bool RemoveChild(Entity entity)
+        public virtual bool RemoveChild(Entity entity)
         {
             if (entity == null)
                 return false;
