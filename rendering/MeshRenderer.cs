@@ -15,6 +15,8 @@ namespace panpan.Rendering
         protected Texture[] additionalTextures = [];
         private UniformDelegate? uniformDelegate;
 
+        private static int drawCallCount = 0;
+
         public float Width, Height;
         public vec2 Origin;
 
@@ -69,6 +71,7 @@ namespace panpan.Rendering
             }
 
             SDL.DrawGPUIndexedPrimitives(App.GetRenderPass(), mesh.NumIndices, 1, 0, 0, 0);
+            drawCallCount++;
             
             base.Render();
         }
@@ -144,6 +147,15 @@ namespace panpan.Rendering
                 transform.Scale = scale.Value;
             if (angle != null)
                 transform.Angle = angle.Value;
+        }
+
+        public static void ResetDrawCallCount()
+        {
+            drawCallCount = 0;
+        }
+        public static int GetDrawCallCount()
+        {
+            return drawCallCount;
         }
     }
 }

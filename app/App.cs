@@ -136,6 +136,11 @@ namespace panpan
             return fps;
         }
 
+        public static int GetDrawCallCount()
+        {
+            return MeshRenderer.GetDrawCallCount();
+        }
+
         public static nint GetDevice()
         {
             return gpuDevice;
@@ -246,6 +251,7 @@ namespace panpan
 
             while (!token.IsCancellationRequested)
             {
+                MeshRenderer.ResetDrawCallCount();
                 isScreenSizeDirty = false;
 
                 Time.Update();
@@ -283,7 +289,6 @@ namespace panpan
                     FixedUpdate();
                     fixedUpdateAccumulator -= 1.0f / 60.0f;
                 }
-
                 Update();
                 Render();
 
