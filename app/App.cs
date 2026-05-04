@@ -15,7 +15,7 @@ using panpan.Rendering.Util;
 
 namespace panpan
 {
-    enum Platform
+    public enum Platform
     {
         Mac,
         Windows,
@@ -29,13 +29,14 @@ namespace panpan
     {
 
         // Rendering data
-        private Platform platform;
+        private static Platform platform;
         private static ivec2 gameSize;
         static float fps;
         static float fpsUpdateTime;
         static int fpsFrameCount;
         const float FPS_UPDATE_INTERVAL = 1.0f; // Update FPS every 1 second
         static nint gpuDevice;
+        static SDL.GPUShaderFormat gpuShaderFormat;
         static nint window;
         static nint commandBuffer;
         static nint renderPass;
@@ -67,6 +68,8 @@ namespace panpan
 
         private static vec2 cachedScreenBounds;
 
+        private const string LOG_TAG = "panpan-App";
+
         public App(string title, Scene.Scene startScene, int width = 320, int height = 180)
         {
             // General
@@ -85,17 +88,17 @@ namespace panpan
 
             SDL.Init(SDL.InitFlags.Video);
 
-            var gpuShaderFormat = SDL.GPUShaderFormat.SPIRV;
+            gpuShaderFormat = SDL.GPUShaderFormat.SPIRV;
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 platform = Platform.Mac;
-                gpuShaderFormat |= SDL.GPUShaderFormat.MSL;
+                gpuShaderFormat = SDL.GPUShaderFormat.MSL;
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 platform = Platform.Windows;
-                gpuShaderFormat |= SDL.GPUShaderFormat.DXBC | SDL.GPUShaderFormat.DXIL;
+                // gpuShaderFormat |= SDL.GPUShaderFormat.DXBC | SDL.GPUShaderFormat.DXIL;
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
@@ -120,9 +123,10 @@ namespace panpan
                 Environment.Exit(1);
             }
 
-            Log.Info($"Window created {width}w  {height}h");
-            Log.Info($"    gpu shader format: {gpuShaderFormat}");
-            Log.Info($"    platform: {platform}");
+            Log.Info("App Info:", LOG_TAG);
+            Log.Info($"     Platform Name: {platform}", LOG_TAG);
+            Log.Info($"     GPU Shader Format: {gpuShaderFormat}", LOG_TAG);
+            Log.Info($"     Window created {width}w  {height}h");
 
             SDL.SetGPUAllowedFramesInFlight(gpuDevice, 2);
         }
@@ -157,6 +161,15 @@ namespace panpan
             SDL.Rect r;
             SDL.GetDisplayBounds(SDL.GetDisplayForWindow(window), out r);
             return new Rect(r.X,r.Y,r.W,r.H);
+        }
+        public static SDL.GPUShaderFormat GetShaderFormat()
+        {
+            return gpuShaderFormat;
+        }
+
+        public static Platform GetPlatform()
+        {
+            return platform;
         }
 
         public static nint GetCommandBuffer()

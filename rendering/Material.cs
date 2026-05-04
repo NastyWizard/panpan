@@ -30,9 +30,9 @@ namespace panpan.Rendering
             nint vertexShader;
             nint fragmentShader;
 
-            byte[] entryPoint = Encoding.UTF8.GetBytes("main\0");
+            byte[] entryPoint = Encoding.UTF8.GetBytes(App.GetPlatform() == Platform.Mac ? "main0\0" :  "main\0");
 
-            // Load Vertex shader (SPIR-V bytes)
+            // Load Vertex shader
             SDL.GPUShaderCreateInfo vertexInfo = new();
             unsafe
             {
@@ -43,7 +43,7 @@ namespace panpan.Rendering
                     vertexInfo.Code = (nint)vertPtr;
                     vertexInfo.Entrypoint = (nint)entryPtr;
                     vertexInfo.Stage = SDL.GPUShaderStage.Vertex;
-                    vertexInfo.Format = SDL.GPUShaderFormat.SPIRV;
+                    vertexInfo.Format = App.GetShaderFormat();
                     vertexInfo.NumUniformBuffers = vert.Value.NumUnifromBuffers;
                     vertexInfo.NumSamplers = vert.Value.NumSamplers;
 
@@ -51,11 +51,12 @@ namespace panpan.Rendering
                     if (vertexShader == nint.Zero)
                     {
                         Log.Error($"Failed to create vertex shader: {SDL.GetError()}", LOG_TAG);
+                        Log.Info($"{System.Text.Encoding.UTF8.GetString(vert.Value.Data)}",LOG_TAG);
                     }
                 }
             }
 
-            // Load Fragment shader (SPIR-V bytes)
+            // Load Fragment shader
             SDL.GPUShaderCreateInfo fragInfo = new();
             unsafe
             {
@@ -66,7 +67,7 @@ namespace panpan.Rendering
                     fragInfo.Code = (nint)fragPtr;
                     fragInfo.Entrypoint = (nint)entryPtr;
                     fragInfo.Stage = SDL.GPUShaderStage.Fragment;
-                    fragInfo.Format = SDL.GPUShaderFormat.SPIRV;
+                    fragInfo.Format = App.GetShaderFormat();
                     fragInfo.NumUniformBuffers = frag.Value.NumUnifromBuffers;
                     fragInfo.NumSamplers = frag.Value.NumSamplers;
 
@@ -74,6 +75,7 @@ namespace panpan.Rendering
                     if (fragmentShader == nint.Zero)
                     {
                         Log.Error($"Failed to create fragment shader: {SDL.GetError()}", LOG_TAG);
+                        Log.Info($"{System.Text.Encoding.UTF8.GetString(frag.Value.Data)}",LOG_TAG);
                     }
                 }
             }
@@ -147,7 +149,7 @@ namespace panpan.Rendering
 
             pipelineInfo.TargetInfo.NumColorTargets = 1;
             pipelineInfo.TargetInfo.ColorTargetDescriptions = SDL.StructureArrayToPointer(colorTargetDescriptions);
-            pipelineInfo.TargetInfo.HasDepthStencilTarget = 1;
+            pipelineInfo.TargetInfo.HasDepthStencilTarget = 0;
             pipelineInfo.TargetInfo.DepthStencilFormat = SDL.GPUTextureFormat.D16Unorm;
             
 

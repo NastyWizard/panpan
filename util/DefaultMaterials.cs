@@ -2,17 +2,17 @@ namespace panpan.Rendering.Util
 {
     public static class DefaultShaders
     {
-        public static readonly Shader StandardFrag = new(Assets.Shaders.standard_frag_sprv, 0, 1);
-        public static readonly Shader StandardVert = new(Assets.Shaders.standard_vert_sprv, 2, 0);
+        public static readonly Shader StandardFrag = new(Assets.Shaders.standard_frag, 0, 1);
+        public static readonly Shader StandardVert = new(Assets.Shaders.standard_vert, 2, 0);
 
-        public static readonly Shader BackbufferFrag = new(Assets.Shaders.backbuffer_frag_sprv, 0, 1);
-        public static readonly Shader BackbufferVert = new(Assets.Shaders.backbuffer_vert_sprv, 0, 0);
+        public static readonly Shader BackbufferFrag = new(Assets.Shaders.backbuffer_frag, 0, 1);
+        public static readonly Shader BackbufferVert = new(Assets.Shaders.backbuffer_vert, 0, 0);
 
-        public static readonly Shader BackbufferLightingFrag = new(Assets.Shaders.bbLighting_frag_sprv, 1, 3);
+        public static readonly Shader BackbufferLightingFrag = new(Assets.Shaders.bbLighting_frag, 1, 3);
 
-        public static readonly Shader StandardFontFrag = new(Assets.Shaders.standardFont_frag_sprv, 0, 1);
+        public static readonly Shader StandardFontFrag = new(Assets.Shaders.standardFont_frag, 0, 1);
 
-        public static readonly Shader StandardNoTexFrag = new(Assets.Shaders.standardNoTex_frag_sprv, 0, 0);
+        public static readonly Shader StandardNoTexFrag = new(Assets.Shaders.standardNoTex_frag, 0, 0);
     }
 
     public static class DefaultMaterials

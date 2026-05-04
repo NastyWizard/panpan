@@ -1,6 +1,7 @@
 #! /usr/bin/ruby
 
 require 'fileutils'
+require 'rbconfig'
 
 # Configuration: folder paths
 
@@ -33,9 +34,6 @@ end
 def generate_field_from_file(filepath)
   ext = File.extname(filepath).downcase
   name = sanitize_variable_name(filepath)
-  if /shaders/.match(filepath)
-      name += "_#{ext.gsub(".","")}"
-  end
   data = File.binread(filepath)
 
   if [".glsl", ".txt", ".cs", ".json", ".xml"].include?(ext)
@@ -67,14 +65,19 @@ def generate_assets_code(folder)
 end
 
 def _generate_shader(folder, shaderName)
-  outputFile = shaderName.sub(".hlsl", ".sprv")
+  isMac = RbConfig::CONFIG['host_os'] =~ /darwin/i
+  outputFile = shaderName.sub(".hlsl", isMac ? ".msl" : ".sprv")
   stage = shaderName.include?("frag") ? "fragment" : "vertex"
-  puts "shadercross #{File.join(folder, shaderName)} -o #{File.join(folder, "generated", outputFile)} -s HLSL -d SPIRV -t #{stage}"
-  system("shadercross #{File.join(folder, shaderName)} -o #{File.join(folder, "generated", outputFile)} -s HLSL -d SPIRV -t #{stage}")
+  outFileType = isMac ? "MSL" : "SPIRV"
+  puts "shadercross #{File.join(folder, shaderName)} -g -o #{File.join(folder, "generated", outputFile)} -s HLSL -d #{outFileType} -t #{stage}"
+  system("shadercross #{File.join(folder, shaderName)} -g -o #{File.join(folder, "generated", outputFile)} -s HLSL -d #{outFileType} -t #{stage}")
 end
 
 def generate_shaders(folder)
   genDir = File.join(folder, "generated");
+  if(!Dir.exist?(genDir))
+    Dir.mkdir(genDir)
+  end
   #FileUtils.rm_rf(genDir)
   #Dir.mkdir(genDir)
   entries = Dir.children(folder).select { |f| File.file?(File.join(folder, f)) }
