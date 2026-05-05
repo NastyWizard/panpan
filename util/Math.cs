@@ -110,5 +110,10 @@ namespace panpan.Util
             Draw.Line(p4, p1, Color.Green);
             Draw.Line(p1, p3, Color.Green);
         }
+
+        public override string ToString()
+        {
+            return $"[{X}, {Y}, {Width}, {Height}, ox:{OriginX}, oy:{OriginY}]";
+        }
     }
 }
