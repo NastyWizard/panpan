@@ -123,6 +123,8 @@ namespace panpan.Rendering
             float y = position.y;
             float z = position.z;
 
+            origin.xy *= scale;
+
             vec2[] uvs =
             {
                 new vec2(crop.X,                crop.Y) / textureSize, // br

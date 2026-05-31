@@ -3,19 +3,20 @@ using panpan;
 using GlmSharp;
 using panpan.Scene;
 using SDL3;
+using panpan.Util;
 
 namespace panpan.Rendering
-{
-    internal struct Animation
-    {
-        public string Name;
-        public int[] Frames;
-        public float Framerate;
-        public float CurrentFrame;
-    }
+{  
     public class Animator : Component
     {
-        private SpriteRenderer renderer;
+        protected struct Animation
+        {
+            public string Name;
+            public List<Rect> Frames;
+            public float Framerate;
+            public float CurrentFrame;
+        }      
+        private SpriteRenderer? renderer;
         private Dictionary<string, Animation> animations;
         private int frameWidth;
         private int frameHeight;
@@ -24,7 +25,9 @@ namespace panpan.Rendering
         private string quedToPlay = "";
         private bool quedAnimDoesResetOnStart = false;
 
-        public Animator(ref SpriteRenderer renderer, int frameWidth, int frameHeight)
+        protected bool submitOnRender = false;
+
+        public Animator(SpriteRenderer? renderer, int frameWidth, int frameHeight)
         {
             this.renderer = renderer;
             this.frameWidth = frameWidth;
@@ -52,22 +55,46 @@ namespace panpan.Rendering
                 var anim = animations[currentlyPlaying];
                 float framerate = anim.Framerate;
                 anim.CurrentFrame += framerate / 60.0f;
-                if (anim.CurrentFrame >= anim.Frames.Length)
+                if (anim.CurrentFrame >= anim.Frames.Count)
                 {
-                    anim.CurrentFrame -= anim.Frames.Length;
+                    anim.CurrentFrame -= anim.Frames.Count;
                 }
                 animations[currentlyPlaying] = anim;
 
-                renderer.Clip(new panpan.Util.Rect(anim.Frames[(int)anim.CurrentFrame] * frameWidth, 0, frameWidth, frameHeight));
+                if(!submitOnRender)
+                    SubmitAnimation(anim);
             }
             base.FixedUpdate();
+        }
+
+        public override void Render()
+        {
+            base.Render();
+            if(submitOnRender)
+            {
+                if (currentlyPlaying != "")
+                    SubmitAnimation(animations[currentlyPlaying]);
+            }
+                
         }
 
         public void AddAnimation(string key, int[] frames, float framerate = 12f)
         {
             var anim = new Animation();
             anim.Name = key;
-            anim.Frames = frames;
+            anim.Frames = new();
+            foreach(int frame in frames)
+                anim.Frames.Add(new panpan.Util.Rect(frame * frameWidth, 0, frameWidth, frameHeight));
+            anim.Framerate = framerate;
+            anim.CurrentFrame = 0;
+            animations.Add(key, anim);
+        }
+
+        public void AddAnimation(string key, Rect[] frames, float framerate = 12f)
+        {
+            var anim = new Animation();
+            anim.Name = key;
+            anim.Frames = frames.ToList();
             anim.Framerate = framerate;
             anim.CurrentFrame = 0;
             animations.Add(key, anim);
@@ -77,6 +104,11 @@ namespace panpan.Rendering
         {
             quedToPlay = key;
             quedAnimDoesResetOnStart = resetOnStart;
+        }
+
+        protected virtual void SubmitAnimation(Animation anim)
+        {
+            renderer!.Clip(anim.Frames[(int)anim.CurrentFrame]);
         }
 
     }
