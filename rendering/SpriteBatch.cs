@@ -90,7 +90,7 @@ namespace panpan.Rendering
 
             sprites.Sort(delegate (SpriteRequest a, SpriteRequest b)
             {
-                if(a.Position.z == b.Position.z) return 0;
+                if(a.Position.z == b.Position.z) return b.Position.x.CompareTo(a.Position.x);
                 else if(a.Position.z > b.Position.z) return -1;
                 else return 1;
             });
