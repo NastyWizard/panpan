@@ -51,6 +51,7 @@ namespace panpan.Rendering
             clip = rect.Value;
             Width = rect.Value.Width;
             Height = rect.Value.Height;
+            mesh = mesh.Clone();
             mesh.Clip(rect.Value, texture!.Width, texture.Height);
         }
         public void Clip(int x, int y, int width, int height) => Clip(new Rect(x, y, width, height));
