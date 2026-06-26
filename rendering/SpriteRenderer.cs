@@ -28,7 +28,7 @@ namespace panpan.Rendering
             clip = rect;
             Width = rect.Width;
             Height = rect.Height;
-            SetMesh(Shapes.ClipQuad(clip.Value, texture!.Width, texture.Height));
+            SetMesh(Shapes.ClipQuad(rect, texture!.Width, texture.Height));
         }
 
         public void Clip(Rect? rect)
@@ -36,8 +36,8 @@ namespace panpan.Rendering
             if(rect == null)
             {
                 clip = null;
-                Width = texture.Width;
-                Height = texture.Width;
+                Width = texture!.Width;
+                Height = texture!.Height;
                 SetMesh(Shapes.quad);
                 return;
             }
@@ -48,7 +48,7 @@ namespace panpan.Rendering
                 return;
             }
 
-            clip = rect;
+            clip = rect.Value;
             Width = rect.Value.Width;
             Height = rect.Value.Height;
             mesh.Clip(rect.Value, texture!.Width, texture.Height);

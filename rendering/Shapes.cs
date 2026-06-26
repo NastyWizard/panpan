@@ -63,7 +63,16 @@ namespace panpan.Rendering
                     1, 2, 3  // second triangle
                 ]
             );
+            q.CopyPass();
             return q;
+        }
+
+        public static void Init()
+        {
+            triangle.CopyPass();
+            quad.CopyPass();
+            fsQuad.CopyPass();
+            line.CopyPass();
         }
     }
 

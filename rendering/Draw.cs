@@ -215,10 +215,15 @@ namespace panpan.Rendering
             backRenderer.SetMaterial(DefaultMaterials.Backbuffer!);
         }
 
-        public static void SetRTUniformFloats(float[] unfs)
+        public static void SetRTUniforms(float[] unfs)
         {
-            backRenderer.SetUniformFloat(unfs);
+            backRenderer.SetUniforms(unfs);
         }
+        public void SetRTUniformFloat(byte location, params float[] value)
+        {
+            backRenderer.SetUniformFloat(location, value);
+        }
+
         public static void SetRTAdditionalTextures(Texture[] textures)
         {
             backRenderer.SetAdditionalTextures(textures);
@@ -245,7 +250,7 @@ namespace panpan.Rendering
                     color.r, color.g, color.b, color.a
                 };
 
-                SetUniformFloat(uniforms);
+                SetUniforms(uniforms);
             }
 
             protected override mat4 ComputeModelMatrix()

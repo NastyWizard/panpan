@@ -231,6 +231,8 @@ namespace panpan
             
             DefaultMaterials.Init();
             sceneManager.SwapScene(startScene);
+
+            Shapes.Init();
             return true;
         }
 

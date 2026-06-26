@@ -190,21 +190,6 @@ namespace panpan.Rendering
             uploaded = true;
         }
 
-        public void Clip(Rect rect, float totalWidth, float totalHeight)
-        {
-            vec4 clipBox = new vec4(rect.X / totalWidth, rect.Y / totalHeight, rect.Width / totalWidth, rect.Height / totalHeight);
-
-            vertices[0].uv = new vec2(clipBox.x, clipBox.y);
-            vertices[1].uv = new vec2(clipBox.x + clipBox.z, clipBox.y);
-            vertices[2].uv = new vec2(clipBox.x, clipBox.y + clipBox.w);
-            vertices[3].uv = new vec2(clipBox.x + clipBox.z, clipBox.y + clipBox.w);
-            
-            // Re-upload modified vertex data
-            TransferBuffer(vertices, vertexSize, vertexTransferBuffer);
-            uploaded = false;
-            CopyPass();
-        }
-
         public void SetData(Vertex[] newVertices, uint[] newIndices)
         {
             if (newVertices == null || newIndices == null || newVertices.Length == 0 || newIndices.Length == 0)
@@ -216,6 +201,26 @@ namespace panpan.Rendering
             HandleIndices(newIndices);
             uploaded = false;
             CopyPass();
+        }
+
+        public void Clip(Rect rect, float totalWidth, float totalHeight)
+        {
+            vec4 clipBox = new vec4(rect.X / totalWidth, rect.Y / totalHeight, rect.Width / totalWidth, rect.Height / totalHeight);
+
+            vertices[0].uv = new vec2(clipBox.x, clipBox.y);
+            vertices[1].uv = new vec2(clipBox.x + clipBox.z, clipBox.y);
+            vertices[2].uv = new vec2(clipBox.x, clipBox.y + clipBox.w);
+            vertices[3].uv = new vec2(clipBox.x + clipBox.z, clipBox.y + clipBox.w);
+
+            TransferBuffer(vertices, vertexSize, vertexTransferBuffer);
+            uploaded = false;
+            CopyPass();
+        }
+        
+        public Mesh Clone()
+        {
+            Mesh clone = new (vertices, indices);
+            return clone;
         }
     }
 }

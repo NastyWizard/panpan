@@ -13,6 +13,8 @@ namespace panpan.Rendering
             get { return pipeline; }
         }
 
+        private List<float[]> uniforms;
+
         private const string LOG_TAG = "panpan-Material";
 
         public Material(Shader? frag = null, Shader? vert = null)
@@ -26,6 +28,8 @@ namespace panpan.Rendering
             {
                 frag = DefaultShaders.StandardFrag;
             }
+
+            uniforms = new();
 
             nint vertexShader;
             nint fragmentShader;
@@ -166,7 +170,7 @@ namespace panpan.Rendering
             SDL.ReleaseGPUShader(App.GetDevice(), fragmentShader);
         }
 
-        public void SetUniformFloat(float[] uniforms)
+        public void SetUniforms(float[] uniforms)
         {
             unsafe
             {
@@ -176,6 +180,41 @@ namespace panpan.Rendering
                     SDL.PushGPUFragmentUniformData(App.GetCommandBuffer(), 0, (nint)ptr, len);
                 }
             }
+        }
+
+        public void SetUniformFloat(byte location, params float[] value)
+        {
+            uniforms[location] = value;
+        }
+
+        public void PushUniformData()
+        {
+            if(uniforms.Count == 0)
+                return;
+
+            float[] unf = PadUniforms(uniforms);
+
+            SetUniforms(unf);
+        }
+
+        private float[] PadUniforms(in List<float[]> unf)
+        {
+            var r = unf.Count % 8;
+            List<float> unrolled = new();
+            foreach(float[] a in unf)
+            {
+                foreach(float u in a)
+                {
+                    unrolled.Add(u);
+                }
+            }
+
+            if(r == 0)
+            {
+                return unrolled.ToArray();
+            }
+
+            return unrolled.ToArray().Concat(new float[8-r]).ToArray();
         }
         
     }

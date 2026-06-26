@@ -18,7 +18,6 @@ namespace panpan.Rendering
         bool doesClear = true;
         bool hasDepth;
 
-
         public uint Width, Height;
 
         public RenderTarget(uint width, uint height, vec4? clearColor = null, bool hasDepth = false)

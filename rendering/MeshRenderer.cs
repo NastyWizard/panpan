@@ -55,7 +55,7 @@ namespace panpan.Rendering
                 additionalTextures[i].BindTexture(App.GetRenderPass(), i + 1);
             }
 
-            uniformDelegate?.Invoke();
+            PushUniforms();
 
             if (Parent != null)
             {
@@ -116,15 +116,26 @@ namespace panpan.Rendering
             this.uniformDelegate = uniformDelegate;
         }
 
-        public void SetUniformFloat(float[] uniforms)
+        public void SetUniforms(float[] uniforms)
         {
-            material.SetUniformFloat(uniforms);
+            material.SetUniforms(uniforms);
+        }
+
+        public void SetUniformFloat(byte location, params float[] value)
+        {
+            material.SetUniformFloat(location, value);
         }
 
         private void CopyPass()
         {
             mesh.CopyPass();
             texture?.CopyPass();
+        }
+
+        protected virtual void PushUniforms()
+        {
+            material.PushUniformData();
+            uniformDelegate?.Invoke();
         }
 
         protected virtual mat4 ComputeModelMatrix()
