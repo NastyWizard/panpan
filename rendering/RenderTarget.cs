@@ -152,6 +152,7 @@ namespace panpan.Rendering
             }
             gpuTexture = handle;
             texture.SetGPUTexture(handle);
+            texture.Resize(Width, Height);
         }
 
         public void SetDoesClear(bool doesClear)

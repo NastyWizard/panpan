@@ -159,6 +159,11 @@ namespace panpan.Rendering
             this.gpuTexture = tex;
         }
 
+        public void Resize(uint w, uint h)
+        {
+            width = w;
+            height = h;
+        }
 
         public void CopyPass()
         {

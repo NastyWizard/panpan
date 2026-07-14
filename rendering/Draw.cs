@@ -198,6 +198,16 @@ namespace panpan.Rendering
             spriteRenderer.Render();
         }
 
+        public static void SetMaterial(Material mat)
+        {
+            spriteRenderer.SetMaterial(mat);
+        }
+
+        public static void ResetMaterial()
+        {
+            spriteRenderer.SetMaterial(DefaultMaterials.Standard!);
+        }
+
         public static void RenderTarget(RenderTarget rt, vec2 pos, vec2? scale = null)
         {
             App.GetSceneManager().ActiveScene.Camera.PushUniformData();

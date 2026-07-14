@@ -232,6 +232,11 @@ namespace panpan.Rendering
             {
                 Render();
             }
+
+            public override void SetTexture(Texture tex)
+            {
+                this.texture = tex;
+            }
         }
     }
 }

@@ -184,6 +184,8 @@ namespace panpan.Rendering
 
         public void SetUniformFloat(byte location, params float[] value)
         {
+            while(uniforms.Count < location);
+                uniforms.Add([0]);
             uniforms[location] = value;
         }
 

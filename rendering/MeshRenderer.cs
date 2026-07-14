@@ -83,7 +83,7 @@ namespace panpan.Rendering
             base.Init();
         }
 
-        public void SetTexture(Texture tex)
+        public virtual void SetTexture(Texture tex)
         {
             texture = tex;
             Width = tex.Width;
