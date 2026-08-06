@@ -27,6 +27,8 @@ namespace panpan.Rendering
 
         protected bool submitOnRender = false;
 
+        private const string LOG_TAG = "panpan-Animator";
+
         public Animator(SpriteRenderer? renderer, int frameWidth, int frameHeight)
         {
             this.renderer = renderer;
@@ -37,6 +39,7 @@ namespace panpan.Rendering
 
         public override void FixedUpdate()
         {
+            Log.Assert(animations.ContainsKey(quedToPlay) || quedToPlay == "", $"qued animation doesnt exist: {quedToPlay}", LOG_TAG);
 
             if (currentlyPlaying != quedToPlay)
             {
@@ -87,7 +90,10 @@ namespace panpan.Rendering
                 anim.Frames.Add(new panpan.Util.Rect(frame * frameWidth, 0, frameWidth, frameHeight));
             anim.Framerate = framerate;
             anim.CurrentFrame = 0;
-            animations.Add(key, anim);
+            if(animations.ContainsKey(key))
+                animations[key] = anim;
+            else
+                animations.Add(key, anim);
         }
 
         public void AddAnimation(string key, Rect[] frames, float framerate = 12f)
@@ -97,7 +103,10 @@ namespace panpan.Rendering
             anim.Frames = frames.ToList();
             anim.Framerate = framerate;
             anim.CurrentFrame = 0;
-            animations.Add(key, anim);
+            if(animations.ContainsKey(key))
+                animations[key] = anim;
+            else
+                animations.Add(key, anim);
         }
 
         public void Play(string key, bool resetOnStart = true)

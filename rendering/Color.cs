@@ -10,6 +10,8 @@ namespace panpan.Rendering
         public static vec4 White = vec4.Ones;
         public static vec4 Black = vec4.UnitW;
 
+        public static vec4 Gray = new (0.5f,0.5f,0.5f,1.0f);
+
         public static vec4 Transparent = vec4.Zero;
 
         public static vec4 Red = new vec4(1f,0f,0f,1f);
