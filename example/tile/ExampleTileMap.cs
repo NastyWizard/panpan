@@ -83,10 +83,9 @@ namespace panpanExample
             tiles = new List<ExampleTile>();
 
             lights = new List<ExampleLight>();
-            var r = new Random();
             for(int i = 0; i < 16; i++)
             {
-                lights.Add(new ExampleFireFly((int)(r.NextInt64(0,320) + Position.x),(int)(r.NextInt64(0,176) + Position.y)));
+                lights.Add(new ExampleFireFly((int)(Random.Range(0,320) + Position.x),(int)(Random.Range(0,176) + Position.y)));
             }
         }
 

@@ -1,7 +1,6 @@
 
 using GlmSharp;
 using panpan.Rendering;
-using panpan.Scene;
 using panpan.Util;
 
 namespace panpanExample
@@ -19,8 +18,7 @@ namespace panpanExample
         {
             speed = 0.2f;
             turnSpeed = 1.0f;
-            var r = new Random();
-            angle = r.NextInt64(0,359);
+            angle = Random.Range(0,359);
             secondLightOffset = new vec2(r.NextInt64(-128,128), r.NextInt64(-128,128));
             startPos = new vec2(x, y);
             FindNewTargetPos();
@@ -59,8 +57,7 @@ namespace panpanExample
 
         private void FindNewTargetPos()
         {
-            var r = new Random();
-            targetPos = startPos + new vec2(r.NextInt64(-128, 128));
+            targetPos = startPos + new vec2(Random.Range(-128, 128));
         }
     }
 }

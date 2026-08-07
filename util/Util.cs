@@ -35,7 +35,7 @@ namespace panpan.Util
 
         public static void ShuffleList<T>(ref List<T> list)
         {
-            var rng = new Random();
+            var rng = new System.Random();
             
             for (int i = list.Count - 1; i > 0; i--)
             {

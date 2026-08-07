@@ -5,6 +5,7 @@ using panpan.Assets;
 using GlmSharp;
 using panpan.Collision;
 using panpan;
+using panpan.Util;
 
 namespace panpanExample
 {
@@ -16,7 +17,7 @@ namespace panpanExample
         public int CurrentFrame = -1;
         public ExampleTile(int x, int y, ExampleTileSet? tileSet = null)
         {
-            tileSet ??= new Random().Next(0,1) == 1 ? ExampleTileSets.Dirt : ExampleTileSets.Brick;
+            tileSet ??= Random.Range(0,1) == 1 ? ExampleTileSets.Dirt : ExampleTileSets.Brick;
             this.tileSet = tileSet.Value;
             Position.xy = new vec2(x, y);
         }
