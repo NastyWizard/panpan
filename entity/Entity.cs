@@ -80,19 +80,29 @@ namespace panpan.Scene
                 //Draw.Sprite(Util.Debug.cursorTex, Transform.Position.xy + new vec2(3,3));
             }
         }
-        public virtual void OnRemove(){}
-        public virtual void OnAdd(){}
+        public virtual void OnRemove()
+        {
+            foreach(Entity child in children)
+            {
+                child.OnRemove();
+            }
+        }
+        public virtual void OnAdd()
+        {
+        }
 
         public Component AddComponent(in Component comp)
         {
             components.Add(comp);
             comp.Parent = this;
+            comp.OnAdd();
             return comp;
         }
 
         public void RemoveComponent(in Component comp)
         {
             components.Remove(comp);
+            comp.OnRemove();
         }
 
         public T? GetComponent<T>() where T : Component

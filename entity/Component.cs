@@ -9,6 +9,8 @@ namespace panpan.Scene
         public virtual void Update() { }
         public virtual void FixedUpdate() { }
         public virtual void Render() { }
+        public virtual void OnAdd(){}
+        public virtual void OnRemove(){}
 
     }
 }
