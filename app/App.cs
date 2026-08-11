@@ -129,6 +129,10 @@ namespace panpan
             Log.Info($"     Window created {width}w  {height}h");
 
             SDL.SetGPUAllowedFramesInFlight(gpuDevice, 2);
+
+            //
+
+            AudioSystem.Init();
         }
 
         public static float GetFPS()
@@ -268,6 +272,7 @@ namespace panpan
                     Input.HandleEvents(evt);
                 }
                 Input.Update();
+                AudioSystem.Update();
                 imguiController?.NewFrame();
 
                 float deltaTime = Time.DeltaTime;
