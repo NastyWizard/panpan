@@ -1,6 +1,7 @@
 
 #define FMOD_LOGGING
 
+using System.Reflection;
 using FMOD.Studio;
 
 namespace panpan
@@ -24,12 +25,25 @@ namespace panpan
             fmodStudioSystem.update();
         }
 
-        public static void Play(FMOD.GUID ev)
+        public static bool IsPlaying(FMOD.GUID ev)
+        {
+            fmodStudioSystem.getEventByID(ev, out EventDescription evDesc);
+            evDesc.getInstanceCount(out int count);
+            return count > 0;
+        }
+        public static bool IsPlaying(EventInstance evInst)
+        {
+            evInst.getPlaybackState(out PLAYBACK_STATE state);
+            return (state & PLAYBACK_STATE.PLAYING | PLAYBACK_STATE.STARTING) != 0;
+        }
+
+        public static EventInstance Play(FMOD.GUID ev)
         {
             fmodStudioSystem.getEventByID(ev, out EventDescription evDesc);
             evDesc.createInstance(out EventInstance evInst);
             evInst.start();
             evInst.release();
+            return evInst;
         }
         #endregion
 
@@ -39,9 +53,13 @@ namespace panpan
             FMOD.Studio.System.create(out fmodStudioSystem);
             fmodStudioSystem.getCoreSystem(out fmodSystem);
             fmodSystem.setDSPBufferSize(256,4);
-            fmodStudioSystem.initialize(128, FMOD.Studio.INITFLAGS.NORMAL, FMOD.INITFLAGS.NORMAL, (IntPtr)0);
+            fmodStudioSystem.initialize(128, FMOD.Studio.INITFLAGS.NORMAL | INITFLAGS.LIVEUPDATE, FMOD.INITFLAGS.NORMAL, (IntPtr)0);
+
+            Assembly asm = Assembly.GetExecutingAssembly();
+            string path = System.IO.Path.GetDirectoryName(asm.Location);
+
             
-            FMOD.RESULT res = fmodStudioSystem.loadBankFile("/home/casey/dev/cardavan_panpan/fmod/cardavan/Build/Desktop/Master.bank", FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out Bank bank);
+            FMOD.RESULT res = fmodStudioSystem.loadBankFile(Path.Join(path,"Master.bank"), FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out Bank bank);
             if(res != FMOD.RESULT.OK)
             {
                 Log.Error($"Error loading bank file: {res}", "FMOD");
@@ -50,7 +68,7 @@ namespace panpan
             {
                 Log.Info("Bank Loaded", "FMOD");
             }
-            res = fmodStudioSystem.loadBankFile("/home/casey/dev/cardavan_panpan/fmod/cardavan/Build/Desktop/Master.strings.bank", FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out Bank strings);
+            res = fmodStudioSystem.loadBankFile(Path.Join(path,"Master.strings.bank"), FMOD.Studio.LOAD_BANK_FLAGS.NORMAL, out Bank strings);
             if(res != FMOD.RESULT.OK)
             {
                 Log.Error($"Error loading bank strings file: {res}", "FMOD");
